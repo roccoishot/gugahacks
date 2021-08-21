@@ -482,11 +482,10 @@ namespace Hooks {
 		oldSideMove = cmd->sidemove;
 		if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
 			Misc::MovementFix(oldAngle, cmd, oldForward, oldSideMove);
-		if (g_Options.misc_desync)
-			Math::CorrectMovement(cmd, oldAngle, cmd->viewangles);
 			Math::Normalize3(LastAngle);
 			if (g_Options.nocool)
 			cmd->buttons |= IN_BULLRUSH;
+			Math::CorrectMovement(cmd, oldAngle, cmd->viewangles);
 		verified->m_cmd = *cmd;
 		verified->m_crc = cmd->GetChecksum();
 

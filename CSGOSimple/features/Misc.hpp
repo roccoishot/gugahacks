@@ -9,6 +9,7 @@ class CUserCmd;
 
 namespace Misc
 {
+	void MovementFixxa(CUserCmd* m_Cmd, QAngle wish_angle, QAngle old_angles);
 	void MovementFix(QAngle vOldAngles, CUserCmd* pCmd, float fOldForward, float fOldSidemove);
 	void Fakelag(CUserCmd* cmd, bool& bSendPacket);
 	void UpdateLBY(CUserCmd* cmd, bool& bSendPacket);

@@ -4,6 +4,7 @@
 
 #include "..//helpers/math.hpp"
 #include "..//helpers/input.hpp"
+#include "Misc.hpp"
 
 float CLegitbot::GetFovToPlayer(QAngle viewAngle, QAngle aimAngle)
 {
@@ -267,6 +268,16 @@ void CLegitbot::Run(CUserCmd* cmd)
 	if (!IsSilent())
 		g_EngineClient->SetViewAngles(&angles);
 
+	if (~IN_ATTACK)
+		g_LocalPlayer->SetVAngles(current);
+
+	QAngle LastAngle = QAngle(0, 0, 0);
+	QAngle oldAngle = cmd->viewangles;
+	Math::Normalize3(cmd->viewangles);
+	Math::ClampAngles(cmd->viewangles);
+	LastAngle = cmd->viewangles;
+	g_EngineClient->GetViewAngles(&oldAngle);
+	Math::Normalize3(LastAngle);
 
 	if (g_LocalPlayer->m_hActiveWeapon()->IsPistol() && settings.autopistol)
 	{
