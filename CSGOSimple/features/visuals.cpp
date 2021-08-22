@@ -159,21 +159,14 @@ void Visuals::Nightmode() {
 		{
 			IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
 
-			if (!pMaterial)
-				continue;
+			//if (!pMaterial)
+				//continue;
 
 			//if (!pMaterial->IsPrecached())
 				//continue;
 
 			if (strstr(pMaterial->GetTextureGroupName(), "World"))
 			pMaterial->ColorModulate(g_Options.worldr, g_Options.worldg, g_Options.worldb);
-
-			if (strstr(pMaterial->GetTextureGroupName(), ("Particle textures")))
-				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.colormodulate);
-			if (strstr(pMaterial->GetTextureGroupName(), ("models/props/de_dust/palace_bigdome")))
-				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.colormodulate);
-			if (strstr(pMaterial->GetTextureGroupName(), ("models/props/de_dust/palace_pillars")))
-				pMaterial->ColorModulate(g_Options.propr * 2, g_Options.propg * 2, g_Options.propb * 2);
 
 		}
 
@@ -185,8 +178,8 @@ void Visuals::Nightmode() {
 			{
 				IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
 
-				if (!pMaterial)
-					continue;
+				//if (!pMaterial)
+					//continue;
 
 				//if (!pMaterial->IsPrecached())
 					//continue;

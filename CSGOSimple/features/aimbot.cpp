@@ -275,6 +275,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 	float oldSideMove;
 	oldForward = cmd->forwardmove;
 	oldSideMove = cmd->sidemove;
+	if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
 	Misc::MovementFix(current, cmd, oldForward, oldSideMove);
 
 	if (g_LocalPlayer->m_hActiveWeapon()->IsPistol() && settings.autopistol)

@@ -263,10 +263,10 @@ void Menu::Render()
 						if (g_Options.ragebot_antiaim_yaw == 2) {
 							ImGui::SliderInt("Spin Speed", &g_Options.spinspeed, 1.f, 10.f, "%.f");
 						}
-						ImGui::Checkbox("Desync", &g_Options.ragebot_antiaim_desync);
+						ImGui::Checkbox("Desync", &g_Options.ragebot_antiaim_desync);	
 					ImGui::Checkbox("Fakelag", &g_Options.fakelag);
 					if (g_Options.fakelag) {
-						ImGui::SliderInt("Ticks", &g_Options.faketicks, 1.f, 64.f, "%.f");
+						ImGui::SliderInt("Ticks", &g_Options.faketicks, 1.f, 62.f, "%.f");
 					}
 					ImGui::Checkbox("Fake Ping", &g_Options.fakeping);
 					if (g_Options.fakeping) {
@@ -318,7 +318,7 @@ void Menu::Render()
 					ImGui::Separator("Others");
 					ImGui::Checkbox("Backtrack", &g_Options.misc_backtrack);
 					if (g_Options.misc_backtrack) {
-						ImGui::SliderInt("Ticks", &g_Options.backtix, 0.f, 64.f, "%.f");
+						ImGui::SliderInt("Ticks", &g_Options.backtix, 0.f, 62.f, "%.f");
 					}
 					ImGui::Checkbox("Silent", &settings->silent2);
 					if (settings->silent2) {
@@ -538,7 +538,7 @@ void Menu::Render()
 					ImGui::Checkbox("Grenade Prediction", &g_Options.pnade);
 					ImGui::Checkbox("Third Person", &g_Options.misc_thirdperson); ImGui::SameLine(); ImGui::Hotkey("            ", &g_Options.misc_thirdperson_key);
 					ImGui::Spacing();
-					ImGui::SliderInt("Fov", &g_Options.fovchangaaa, 1, 120, "%.f");
+					ImGui::SliderInt("Fov", &g_Options.fovchangaaa, 0, 120, "%.f");
 					ImGui::Checkbox("Aspect Ratio", &g_Options.aspectchange);
 					if (g_Options.aspectchange) {
 						ImGui::Spacing();
