@@ -208,6 +208,7 @@ public:
 		// ESP
 		// 
 	//	bool esp_enabled = false;
+	int fakepingkey = 0;
 	int vangleyaw = 0;
 	int vanglepitch = 0;
 	bool teamesp = false;

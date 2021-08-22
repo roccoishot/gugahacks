@@ -271,6 +271,7 @@ void Menu::Render()
 					ImGui::Checkbox("Fake Ping", &g_Options.fakeping);
 					if (g_Options.fakeping) {
 						ImGui::SliderInt("Ping", &g_Options.fakepingzzz, 1.f, 1000.f, "%.f");
+						ImGui::Text("On Key"); ImGui::SameLine(); ImGui::Hotkey("                                                                                             ", &g_Options.fakepingkey);
 					}
 				}
 				ImGui::EndChild();

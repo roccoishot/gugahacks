@@ -247,22 +247,44 @@ namespace Hooks {
 		fov_cs_debug->SetValue(g_Options.fovchangaaa);
 
 		//Fake Ping Exploits
-		if (g_Options.fakeping == true && g_EngineClient->IsInGame()) {
-			static auto fakeping = g_CVar->FindVar("net_fakelag");
-			fakeping->m_fnChangeCallbacks.m_Size = 0;
-			fakeping->SetValue(g_Options.fakepingzzz);
-			static auto unlag = g_CVar->FindVar("sv_maxunlag");
-			unlag->m_fnChangeCallbacks.m_Size = 0;
-			unlag->SetValue(g_Options.fakepingzzz);
-		}
-		if (g_Options.fakeping == false) {
-			static auto fakeping = g_CVar->FindVar("net_fakelag");
-			fakeping->m_fnChangeCallbacks.m_Size = 0;
-			fakeping->SetValue(0);
-			static auto unlag = g_CVar->FindVar("sv_maxunlag");
-			unlag->m_fnChangeCallbacks.m_Size = 0;
-			unlag->SetValue("0.200");
-		}
+		if (g_Options.fakepingkey == 0) {
+			if (g_Options.fakeping == true && g_EngineClient->IsInGame()) {
+				static auto fakeping = g_CVar->FindVar("net_fakelag");
+				fakeping->m_fnChangeCallbacks.m_Size = 0;
+				fakeping->SetValue(g_Options.fakepingzzz);
+				static auto unlag = g_CVar->FindVar("sv_maxunlag");
+				unlag->m_fnChangeCallbacks.m_Size = 0;
+				unlag->SetValue(g_Options.fakepingzzz);
+			}
+			if (g_Options.fakeping == false) {
+				static auto fakeping = g_CVar->FindVar("net_fakelag");
+				fakeping->m_fnChangeCallbacks.m_Size = 0;
+				fakeping->SetValue(0);
+				static auto unlag = g_CVar->FindVar("sv_maxunlag");
+				unlag->m_fnChangeCallbacks.m_Size = 0;
+				unlag->SetValue("0.200");
+			}
+	}
+		if (!g_Options.fakepingkey == 0) {
+			if (GetAsyncKeyState(g_Options.fakepingkey)) {
+				if (g_Options.fakeping && g_EngineClient->IsInGame()) {
+					static auto fakeping = g_CVar->FindVar("net_fakelag");
+					fakeping->m_fnChangeCallbacks.m_Size = 0;
+					fakeping->SetValue(g_Options.fakepingzzz);
+					static auto unlag = g_CVar->FindVar("sv_maxunlag");
+					unlag->m_fnChangeCallbacks.m_Size = 0;
+					unlag->SetValue(g_Options.fakepingzzz);
+				}
+			}
+				else {
+					static auto fakeping = g_CVar->FindVar("net_fakelag");
+					fakeping->m_fnChangeCallbacks.m_Size = 0;
+					fakeping->SetValue(0);
+					static auto unlag = g_CVar->FindVar("sv_maxunlag");
+					unlag->m_fnChangeCallbacks.m_Size = 0;
+					unlag->SetValue("0.200");
+				}
+			}
 
 		//Nade Prediction
 		static auto pnade = g_CVar->FindVar("cl_grenadepreview");
