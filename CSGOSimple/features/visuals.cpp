@@ -151,7 +151,7 @@ void Visuals::Player::RenderName(C_BaseEntity* pl)
 }
 
 void Visuals::Nightmode() {
-	if (g_Options.colormodulate == true) {
+	if (g_Options.colormodulate) {
 		if (!g_EngineClient->IsInGame() && !g_EngineClient->IsConnected())
 			return;
 
@@ -177,7 +177,7 @@ void Visuals::Nightmode() {
 
 		}
 
-		if (g_Options.propmodulate == true) {
+		if (g_Options.propmodulate) {
 			static ConVar* r_DrawSpecificStaticProp = g_CVar->FindVar("r_DrawSpecificStaticProp");
 			r_DrawSpecificStaticProp->SetValue(1);
 

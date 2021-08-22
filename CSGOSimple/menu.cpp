@@ -209,7 +209,7 @@ void Menu::Render()
 				tab = 5;
 
 			ImGui::SetCursorPos({ 15 + 115 + 10,17 });
-			if (Tab("LEGIT", { 125,35 }, tab == 0))
+			if (Tab("AIMBOT", { 125,35 }, tab == 0))
 				tab = 0;
 
 			ImGui::SetCursorPos({ 15 + 235 + 20,17 });

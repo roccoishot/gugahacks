@@ -271,19 +271,11 @@ void CLegitbot::Run(CUserCmd* cmd)
 	if (~IN_ATTACK)
 		g_LocalPlayer->SetVAngles(current);
 
-	QAngle oldAngle = cmd->viewangles;
-	QAngle LastAngle = QAngle(0, 0, 0);
-	Math::Normalize3(cmd->viewangles);
-	Math::ClampAngles(cmd->viewangles);
-	LastAngle = cmd->viewangles;
 	float oldForward;
 	float oldSideMove;
-	g_EngineClient->GetViewAngles(&oldAngle);
 	oldForward = cmd->forwardmove;
 	oldSideMove = cmd->sidemove;
-	if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
-		Misc::MovementFix(oldAngle, cmd, oldForward, oldSideMove);
-	Math::Normalize3(LastAngle);
+	Misc::MovementFix(current, cmd, oldForward, oldSideMove);
 
 	if (g_LocalPlayer->m_hActiveWeapon()->IsPistol() && settings.autopistol)
 	{

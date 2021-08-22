@@ -486,7 +486,6 @@ namespace Hooks {
 		g_EngineClient->GetViewAngles(&oldAngle);
 		oldForward = cmd->forwardmove;
 		oldSideMove = cmd->sidemove;
-		if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
 			Misc::MovementFix(oldAngle, cmd, oldForward, oldSideMove);
 			Math::Normalize3(LastAngle);
 			if (g_Options.nocool)
