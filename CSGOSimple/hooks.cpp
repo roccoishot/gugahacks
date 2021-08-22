@@ -247,15 +247,21 @@ namespace Hooks {
 		fov_cs_debug->SetValue(g_Options.fovchangaaa);
 
 		//Fake Ping Exploits
-		if (g_Options.fakeping == true) {
+		if (g_Options.fakeping == true && g_EngineClient->IsInGame()) {
 			static auto fakeping = g_CVar->FindVar("net_fakelag");
 			fakeping->m_fnChangeCallbacks.m_Size = 0;
 			fakeping->SetValue(g_Options.fakepingzzz);
+			static auto unlag = g_CVar->FindVar("sv_maxunlag");
+			unlag->m_fnChangeCallbacks.m_Size = 0;
+			unlag->SetValue(g_Options.fakepingzzz);
 		}
 		if (g_Options.fakeping == false) {
 			static auto fakeping = g_CVar->FindVar("net_fakelag");
 			fakeping->m_fnChangeCallbacks.m_Size = 0;
 			fakeping->SetValue(0);
+			static auto unlag = g_CVar->FindVar("sv_maxunlag");
+			unlag->m_fnChangeCallbacks.m_Size = 0;
+			unlag->SetValue("0.200");
 		}
 
 		//Nade Prediction
@@ -485,7 +491,7 @@ namespace Hooks {
 			Math::Normalize3(LastAngle);
 			if (g_Options.nocool)
 			cmd->buttons |= IN_BULLRUSH;
-			Math::CorrectMovement(cmd, oldAngle, cmd->viewangles);
+			//Math::CorrectMovement(cmd, oldAngle, cmd->viewangles);
 		verified->m_cmd = *cmd;
 		verified->m_crc = cmd->GetChecksum();
 

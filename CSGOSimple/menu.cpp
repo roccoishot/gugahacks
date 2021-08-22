@@ -205,7 +205,7 @@ void Menu::Render()
 			ImVec2 p = ImGui::GetWindowPos();
 
 			ImGui::SetCursorPos({ 5 + 5 + 0,17 });
-			if (Tab("RAGE", { 125,35 }, tab == 5))
+			if (Tab("ANTIAIM", { 125,35 }, tab == 5))
 				tab = 5;
 
 			ImGui::SetCursorPos({ 15 + 115 + 10,17 });
@@ -251,6 +251,8 @@ void Menu::Render()
 
 					ImGui::Text("More Coming Soon!");
 					ImGui::Separator("AntiAim");
+					ImGui::Checkbox("Legit AA", &g_Options.misc_desync);
+					ImGui::Separator("RageAA");
 						ImGui::Checkbox("Break LBY", &g_Options.breaklby);
 						ImGui::Text("Slowwalk Key"); ImGui::SameLine(); ImGui::Hotkey("                                                            ", &g_Options.ragebot_slowwalk_key);
 						ImGui::Spacing();
@@ -313,7 +315,6 @@ void Menu::Render()
 					}
 
 					ImGui::Separator("Others");
-					ImGui::Checkbox("Legit AA", &g_Options.misc_desync);
 					ImGui::Checkbox("Backtrack", &g_Options.misc_backtrack);
 					if (g_Options.misc_backtrack) {
 						ImGui::SliderInt("Ticks", &g_Options.backtix, 0.f, 64.f, "%.f");
