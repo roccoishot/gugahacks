@@ -1,7 +1,6 @@
 #include "./features/Misc.hpp"
 #include <algorithm>
 #include "BetaAA.h"
-#include "ShitFuck.h"
 
 bool break_lby = false;
 float next_update = 0;
