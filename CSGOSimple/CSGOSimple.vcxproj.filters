@@ -27,6 +27,9 @@
     <Filter Include="Source Files\features">
       <UniqueIdentifier>{69bb20b4-f120-4f70-8694-cf3aaa9c085c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\features\sopmk make sex">
+      <UniqueIdentifier>{9e9bacc6-9ce0-409b-ab83-233f3381a225}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Helpers\math.cpp">
@@ -163,6 +166,12 @@
     </ClCompile>
     <ClCompile Include="OldPrediction.cpp">
       <Filter>Header Files\features</Filter>
+    </ClCompile>
+    <ClCompile Include="lagcompensation.cpp">
+      <Filter>Source Files\features\sopmk make sex</Filter>
+    </ClCompile>
+    <ClCompile Include="resolver.cpp">
+      <Filter>Source Files\features\sopmk make sex</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -471,6 +480,9 @@
     </ClInclude>
     <ClInclude Include="OldPrediction.h">
       <Filter>Header Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="lagcompesnation.h">
+      <Filter>Source Files\features\sopmk make sex</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

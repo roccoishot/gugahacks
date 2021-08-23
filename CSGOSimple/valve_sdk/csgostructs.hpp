@@ -249,6 +249,7 @@ public:
 	NETVAR(int32_t, m_iAccount, "DT_CSPlayer", "m_iAccount");
 	NETVAR(float, m_flFlashDuration, "DT_CSPlayer", "m_flFlashDuration");
 	NETVAR(float, m_flSimulationTime, "DT_BaseEntity", "m_flSimulationTime");
+	NETVAR(float, m_flOldSimulationTime, "DT_BaseEntity", "m_flOldSimulationTime");
 	NETVAR(float, m_flCycle, "DT_BaseAnimating", "m_flCycle");
 	NETVAR(int, m_nSequence, "DT_BaseViewModel", "m_nSequence");
 	NETVAR(float, m_flNextAttack, "DT_BaseCombatCharacter", "m_flNextAttack");

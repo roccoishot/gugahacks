@@ -16,6 +16,7 @@
 #include "./xor.h"
 #include "BetaAA.h"
 #include "OldPrediction.h"
+#include "lagcompesnation.h"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -534,6 +535,9 @@ namespace Hooks {
 			CAntiAim::Get().CreateMove(cmd, bSendPacket);
 		}
 		CPredictionSystem::Get().End(g_LocalPlayer);
+
+		if (cmd && g_LocalPlayer->IsAlive())
+			LagComp::Get().Run();
 
 		Math::Normalize3(cmd->viewangles);
 		Math::ClampAngles(cmd->viewangles);
