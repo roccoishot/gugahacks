@@ -20,7 +20,7 @@ class LagComp : public Singleton<LagComp> {
 public:
 	vector<LagRecord> records[65];
 	void Run();
-	void LagCompensate(C_BasePlayer* player, LagRecord record, LagRecord prev_record);
+	void LagCompensate(C_BasePlayer* player, LagRecord record);
 };
 
 class resolver : public Singleton<resolver>
