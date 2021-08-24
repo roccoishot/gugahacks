@@ -258,6 +258,18 @@ public:
 	//NETVAR(int, m_iAccount, "DT_CSPlayer", "m_iAccount");
 
 
+	void SetAbsAngles(const Vector& angle)
+	{
+		if (!this) //-V704
+			return;
+
+		using Fn = void(__thiscall*)(void*, const Vector&);
+		static auto fn = reinterpret_cast<Fn>(Utils::PatternScan("client.dll", "55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1 E8"));
+
+		return fn(this, angle);
+	}
+
+
 	NETVAR(QAngle, m_angAbsAngles, "DT_BaseEntity", "m_angAbsAngles");
 	NETVAR(Vector, m_angAbsOrigin, "DT_BaseEntity", "m_angAbsOrigin");
 	NETVAR(float, m_flDuckSpeed, "DT_BaseEntity", "m_flDuckSpeed");

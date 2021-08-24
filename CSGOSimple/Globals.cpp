@@ -9,4 +9,6 @@ namespace Globals
 	bool PlayerListOpened = false;
 	bool RadioOpened = false;
 	bool WeaponTabValid = false;
+	CUserCmd* m_cmd = nullptr;
+	float real_angle, fake_angle = 0.f;
 }

@@ -17,6 +17,7 @@
 #include "BetaAA.h"
 #include "OldPrediction.h"
 #include "lagcompesnation.h"
+#include "Globals.h"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -477,8 +478,12 @@ namespace Hooks {
 
 		//Desync
 
+		
+
 		if (!cmd || !cmd->command_number)
 			return;
+
+		Globals::m_cmd = cmd;
 		QAngle oldAngle = cmd->viewangles;
 
 		if (g_Options.misc_backtrack) {
@@ -650,6 +655,17 @@ namespace Hooks {
 				cmd->buttons |= IN_DUCK;
 		}
 
+		// faggot code sopmk e
+		if (int(Globals::real_angle * 1000))
+		{
+			if (!bSendPacket)
+				Globals::real_angle = cmd->viewangles.yaw;
+			else
+				Globals::fake_angle = cmd->viewangles.yaw;
+		}
+		else // reset. fuck rocco (consent)
+			Globals::real_angle = cmd->viewangles.yaw;
+
 		// https://github.com/spirthack/CSGOSimple/issues/69
 		if (g_Options.misc_showranks && cmd->buttons & IN_SCORE) // rank revealer will work even after unhooking, idk how to "hide" ranks  again
 			g_CHLClient->DispatchUserMessage(CS_UM_ServerRankRevealAll, 0, 0, nullptr);
@@ -750,7 +766,8 @@ namespace Hooks {
 
 		if (g_EngineClient->IsInGame()) {
 			//Fix Thirdperson Angles
-			Misc::SetThirdpersonAngles(stage);
+			if (Globals::m_cmd)
+				Misc::SetThirdpersonAngles(stage, Globals::m_cmd);
 
 			//if (stage != ClientFrameStage_t::FRAME_RENDER_START && stage != ClientFrameStage_t::FRAME_RENDER_END)
 			//	return;

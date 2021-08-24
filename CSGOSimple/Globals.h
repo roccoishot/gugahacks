@@ -9,4 +9,6 @@ namespace Globals
 	extern bool PlayerListOpened;
 	extern bool RadioOpened;
 	extern bool WeaponTabValid;
+	extern CUserCmd* m_cmd;
+	extern float real_angle, fake_angle;
 }

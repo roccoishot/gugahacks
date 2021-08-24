@@ -179,10 +179,19 @@ void Misc::SlowWalk(CUserCmd* cmd) {
     }
 }
 
-void Misc::SetThirdpersonAngles(ClientFrameStage_t stage)
+void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd)
 {
-        //CArlos was herer
-        if (g_Options.ragebot_antiaim_yaw == 1 && g_Options.ragebot_antiaim_pitch == 1) {
+    if (stage != FRAME_RENDER_START)
+        return;
+
+    if (g_EngineClient->IsInGame() && g_LocalPlayer)
+    {
+        if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
+            g_LocalPlayer->SetVAngles(cmd->viewangles);
+    }
+
+        //CArlos was herer - sopmk shit on carlos
+     /*if (g_Options.ragebot_antiaim_yaw == 1 && g_Options.ragebot_antiaim_pitch == 1) {
             QAngle AntiAimAngle = QAngle(73, -180, 0);
 
             if (stage != FRAME_RENDER_START)
@@ -285,5 +294,5 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage)
                 if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
                     g_LocalPlayer->SetVAngles(AntiAimAngle);
             }
-        }
+        }*/
     }

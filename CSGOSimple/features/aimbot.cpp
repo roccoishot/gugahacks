@@ -180,6 +180,9 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 		if (!player->IsEnemy())
 			continue;
 
+		if (g_LocalPlayer->m_iTeamNum() == player->m_iTeamNum())
+			continue;
+
 		player->GetBody();
 
 		for (const auto hitbox : hitboxes)

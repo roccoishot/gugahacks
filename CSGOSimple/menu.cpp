@@ -494,6 +494,8 @@ void Menu::Render()
 
 					ImGui::Checkbox("Shine OC", &g_Options.shine_oc);
 
+					ImGui::Checkbox("Fake chams pin my anus", &g_Options.fakechams);  ImGuiEx::ColorEdit4a("Rocco sex", &g_Options.color_chams_fake_fag_shit_cum_bitch_rocco_sex_sopmk_consent_none_rape_rocco_with_consent);
+
 					if (ImGui::BeginCombo("##material", "Material"))
 					{
 						ImGui::Selectable("Shine", &g_Options.player_enemies_shine, ImGuiSelectableFlags_DontClosePopups);

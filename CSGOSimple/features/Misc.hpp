@@ -20,5 +20,5 @@ namespace Misc
 	void SilentWalk(CUserCmd* cmd);
 	void BlockBot(CUserCmd* cmd);
 	void SlowWalk(CUserCmd* cmd);
-	void SetThirdpersonAngles(ClientFrameStage_t stage);
+	void SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd);
 }
