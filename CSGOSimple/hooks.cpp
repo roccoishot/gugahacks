@@ -16,6 +16,7 @@
 #include "./xor.h"
 #include "BetaAA.h"
 #include "OldPrediction.h"
+#include "lagcompesnation.h"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -487,18 +488,6 @@ namespace Hooks {
 		if (g_Options.fakelag) {
 			Misc::Fakelag(cmd, bSendPacket);
 		}
-
-		if (g_Options.misc_desync)
-		{
-			Misc::Desync(cmd, bSendPacket);
-			Misc::Desync(cmd, bSendPacket);
-		}
-
-		if (g_Options.misc_desync)
-		{
-			Misc::Desync(cmd, bSendPacket);
-			Misc::Desync(cmd, bSendPacket);
-		}
 		QAngle LastAngle = QAngle(0, 0, 0);
 		Math::Normalize3(cmd->viewangles);
 		Math::ClampAngles(cmd->viewangles);
@@ -534,6 +523,14 @@ namespace Hooks {
 			CAntiAim::Get().CreateMove(cmd, bSendPacket);
 		}
 		CPredictionSystem::Get().End(g_LocalPlayer);
+
+		if (g_Options.rageresolver) {
+			LagComp::Get().Run();
+		}
+		else
+		{
+
+		}
 
 		Math::Normalize3(cmd->viewangles);
 		Math::ClampAngles(cmd->viewangles);

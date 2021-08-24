@@ -282,6 +282,8 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
+	SetupValue(rageresolver, "Rage", "Rage Resolver");
+	SetupValue(fakepingkey, "Rage", "Fake Ping Key");
 	SetupValue(ragebot_antiaim_pitch, "Rage", "AntiAim Pitch");
 	SetupValue(ragebot_antiaim_yaw, "Rage", "AntiAim Yaw");
 	SetupValue(spinspeed, "Rage", "Spin Speed");
@@ -315,7 +317,6 @@ void Options::SetupMisc()
 	SetupValue(edgejump.hotkey, "Misc", "Edge jump Key");
 	SetupValue(edgejump.edge_jump_duck_in_air, "Misc", "Duck in Air");
 	SetupValue(clantag, "Misc", "Clantag");
-	SetupValue(misc_desync, "Misc", "Desync");
 	SetupValue(nocool, "Misc", "No Duck Cooldown");
 	SetupValue(misc_hitmarker, "Misc", "Hitsounds");
 	SetupValue(hitagree, "Misc", "Agree");

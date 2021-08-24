@@ -208,6 +208,7 @@ public:
 		// ESP
 		// 
 	//	bool esp_enabled = false;
+	bool rageresolver = false;
 	int fakepingkey = 0;
 	int vangleyaw = 0;
 	int vanglepitch = 0;
@@ -344,7 +345,6 @@ public:
 		bool pnade = false;
 		bool fatassmf = false;
 		bool carlosfatcock = true;
-		bool misc_desync = false;
 		int spinspeed = 1;
 		bool shine_oc = false;
 		bool sky_changer = false;

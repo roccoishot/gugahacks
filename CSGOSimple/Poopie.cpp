@@ -44,23 +44,6 @@ void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
     bSendPacket = (NetChannel->m_nChokedPackets >= chockepack);
 }
 //--------------------------------------------------------------------------------
-void Misc::Desync(CUserCmd* cmd, bool& bSendPacket) {
-    auto weapon = g_LocalPlayer->m_hActiveWeapon().Get();
-    if (!weapon) return;
-    if (!weapon->GetCSWeaponData()) return;
-    if (weapon->IsGrenade()) return;
-        if (cmd->buttons & IN_USE || cmd->buttons & IN_ATTACK || cmd->buttons & IN_JUMP || cmd->buttons & IN_FORWARD || cmd->buttons & IN_BACK || cmd->buttons & IN_MOVELEFT || cmd->buttons & IN_MOVERIGHT)
-            return;
-    static QAngle LastRealAngle = QAngle(0, 0, 0);
-    if (!bSendPacket) {
-        if (g_Options.misc_desync)
-            cmd->viewangles.yaw += 120.f;
-        else
-            cmd->viewangles.yaw -= 120.f;
-        }
-        else
-           LastRealAngle = cmd->viewangles;
-}
 
 void Misc::MovementFixxa(CUserCmd* m_Cmd, QAngle wish_angle, QAngle old_angles) {
     if (old_angles.pitch != wish_angle.pitch || old_angles.yaw != wish_angle.yaw || old_angles.roll != wish_angle.roll) {
@@ -200,7 +183,7 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage)
 {
         //CArlos was herer
         if (g_Options.ragebot_antiaim_yaw == 1 && g_Options.ragebot_antiaim_pitch == 1) {
-            QAngle AntiAimAngle = QAngle(82, -180, 0);
+            QAngle AntiAimAngle = QAngle(73, -180, 0);
 
             if (stage != FRAME_RENDER_START)
                 return;
@@ -253,7 +236,7 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage)
 
         //Spinning (FRFR!!!)
         if (g_Options.ragebot_antiaim_yaw == 2 && g_Options.ragebot_antiaim_pitch == 1) {
-            QAngle AntiAimAngle = QAngle(82, fmodf(g_GlobalVars->tickcount * 10.f, 360.f) * g_Options.spinspeed, 0);
+            QAngle AntiAimAngle = QAngle(73, fmodf(g_GlobalVars->tickcount * 10.f, 360.f) * g_Options.spinspeed, 0);
 
             if (stage != FRAME_RENDER_START)
                 return;

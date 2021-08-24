@@ -235,7 +235,7 @@ void Menu::Render()
 
 					const char* aa_pitch_list[] = {
 	"None",
-	"Emotion",
+	"Offset",
 	"Down",
 	"Up",
 	"Zero"
@@ -251,19 +251,18 @@ void Menu::Render()
 
 					ImGui::Text("More Coming Soon!");
 					ImGui::Separator("AntiAim");
-					ImGui::Checkbox("Legit AA", &g_Options.misc_desync);
-					ImGui::Separator("RageAA");
+						ImGui::Combo("Pitch", &g_Options.ragebot_antiaim_pitch, aa_pitch_list, IM_ARRAYSIZE(aa_pitch_list));
+						ImGui::Combo("Yaw", &g_Options.ragebot_antiaim_yaw, aa_yaw_list, IM_ARRAYSIZE(aa_yaw_list));
+						ImGui::Checkbox("Desync", &g_Options.ragebot_antiaim_desync);
 						ImGui::Checkbox("Break LBY", &g_Options.breaklby);
+						if (g_Options.ragebot_antiaim_yaw == 2) {
+							ImGui::SliderInt("Spin Speed", &g_Options.spinspeed, 1.f, 10.f, "%.f");
+						}
+						ImGui::Separator("Others");
 						ImGui::Text("Slowwalk Key"); ImGui::SameLine(); ImGui::Hotkey("                                                            ", &g_Options.ragebot_slowwalk_key);
 						ImGui::Spacing();
 						ImGui::SliderInt("Slowwalk Speed", &g_Options.ragebot_slowwalk_amt, 0, 100);
 						ImGui::Spacing();
-						ImGui::Combo("Pitch", &g_Options.ragebot_antiaim_pitch, aa_pitch_list, IM_ARRAYSIZE(aa_pitch_list));
-						ImGui::Combo("Yaw", &g_Options.ragebot_antiaim_yaw, aa_yaw_list, IM_ARRAYSIZE(aa_yaw_list));
-						if (g_Options.ragebot_antiaim_yaw == 2) {
-							ImGui::SliderInt("Spin Speed", &g_Options.spinspeed, 1.f, 10.f, "%.f");
-						}
-						ImGui::Checkbox("Desync", &g_Options.ragebot_antiaim_desync);	
 					ImGui::Checkbox("Fakelag", &g_Options.fakelag);
 					if (g_Options.fakelag) {
 						ImGui::SliderInt("Ticks", &g_Options.faketicks, 1.f, 62.f, "%.f");
@@ -324,7 +323,7 @@ void Menu::Render()
 					if (settings->silent2) {
 						ImGui::Text("  Silent fov");
 						ImGui::Spacing();
-						ImGui::SliderFloat("##Silentfov", &settings->silent_fov, 0.f, 180.f, "%.f");
+						ImGui::SliderFloat("##Silentfov", &settings->silent_fov, 0.f, 360.f, "%.f");
 						ImGui::Spacing();
 					}
 					ImGui::Checkbox("Auto Fire##autofire", &settings->autofire.enabled);

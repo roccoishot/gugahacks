@@ -159,11 +159,11 @@ void Visuals::Nightmode() {
 		{
 			IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
 
-			//if (!pMaterial)
-				//continue;
+			if (!pMaterial)
+				continue;
 
-			//if (!pMaterial->IsPrecached())
-				//continue;
+			if (!pMaterial->IsPrecached())
+				continue;
 
 			if (strstr(pMaterial->GetTextureGroupName(), "World"))
 			pMaterial->ColorModulate(g_Options.worldr, g_Options.worldg, g_Options.worldb);
@@ -178,11 +178,11 @@ void Visuals::Nightmode() {
 			{
 				IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
 
-				//if (!pMaterial)
-					//continue;
+				if (!pMaterial)
+					continue;
 
-				//if (!pMaterial->IsPrecached())
-					//continue;
+				if (!pMaterial->IsPrecached())
+					continue;
 
 				if (strstr(pMaterial->GetTextureGroupName(), "StaticProp"))
 					pMaterial->ColorModulate(g_Options.propr * 2, g_Options.propg * 2, g_Options.propb * 2);
