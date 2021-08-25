@@ -214,7 +214,6 @@ public:
 	int vanglepitch = 0;
 	bool teamesp = false;
 	bool teamchams = false;
-	bool fakechams = false;
 		bool esp_enemies_only = false;
 		bool colormodulate = false;
 		bool propmodulate = false;
@@ -434,7 +433,6 @@ public:
 		Color color_chams_player_ally_visible= {0, 161, 255, 255};
 		Color color_chams_player_ally_occluded= {52, 106, 193, 255};
 		Color color_chams_player_enemy_visible= { 96, 255, 43 };
-		Color color_chams_fake_fag_shit_cum_bitch_rocco_sex_sopmk_consent_none_rape_rocco_with_consent = { 96, 255, 43 };
 		Color color_chams_player_enemy_occluded= { 24, 104, 173 };
 		Color color_chams_strap_visible = { 255, 255, 255 };
 		Color color_chams_strap_occluded = { 255, 255, 255 };	

@@ -181,118 +181,12 @@ void Misc::SlowWalk(CUserCmd* cmd) {
 
 void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd)
 {
-    if (stage != FRAME_RENDER_START)
-        return;
-
-    if (g_EngineClient->IsInGame() && g_LocalPlayer)
-    {
-        if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
-            g_LocalPlayer->SetVAngles(cmd->viewangles);
-    }
-
-        //CArlos was herer - sopmk shit on carlos
-     /*if (g_Options.ragebot_antiaim_yaw == 1 && g_Options.ragebot_antiaim_pitch == 1) {
-            QAngle AntiAimAngle = QAngle(73, -180, 0);
-
             if (stage != FRAME_RENDER_START)
                 return;
 
             if (g_EngineClient->IsInGame() && g_LocalPlayer)
             {
                 if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
-                    g_LocalPlayer->SetVAngles(AntiAimAngle);
+                    g_LocalPlayer->SetVAngles(cmd->viewangles);
             }
-        }
-
-        if (g_Options.ragebot_antiaim_yaw == 1 && g_Options.ragebot_antiaim_pitch == 2) {
-            QAngle AntiAimAngle = QAngle(90, -180, 0);
-
-            if (stage != FRAME_RENDER_START)
-                return;
-
-            if (g_EngineClient->IsInGame() && g_LocalPlayer)
-            {
-                if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
-                    g_LocalPlayer->SetVAngles(AntiAimAngle);
-            }
-        }
-
-        if (g_Options.ragebot_antiaim_yaw == 1 && g_Options.ragebot_antiaim_pitch == 3) {
-            QAngle AntiAimAngle = QAngle(-90, -180, 0);
-
-            if (stage != FRAME_RENDER_START)
-                return;
-
-            if (g_EngineClient->IsInGame() && g_LocalPlayer)
-            {
-                if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
-                    g_LocalPlayer->SetVAngles(AntiAimAngle);
-            }
-        }
-
-        if (g_Options.ragebot_antiaim_yaw == 1 && g_Options.ragebot_antiaim_pitch == 4) {
-            QAngle AntiAimAngle = QAngle(0, -180, 0);
-
-            if (stage != FRAME_RENDER_START)
-                return;
-
-            if (g_EngineClient->IsInGame() && g_LocalPlayer)
-            {
-                if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
-                    g_LocalPlayer->SetVAngles(AntiAimAngle);
-            }
-        }
-
-        //Spinning (FRFR!!!)
-        if (g_Options.ragebot_antiaim_yaw == 2 && g_Options.ragebot_antiaim_pitch == 1) {
-            QAngle AntiAimAngle = QAngle(73, fmodf(g_GlobalVars->tickcount * 10.f, 360.f) * g_Options.spinspeed, 0);
-
-            if (stage != FRAME_RENDER_START)
-                return;
-
-            if (g_EngineClient->IsInGame() && g_LocalPlayer)
-            {
-                if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
-                    g_LocalPlayer->SetVAngles(AntiAimAngle);
-            }
-        }
-
-        if (g_Options.ragebot_antiaim_yaw == 2 && g_Options.ragebot_antiaim_pitch == 2) {
-            QAngle AntiAimAngle = QAngle(90, fmodf(g_GlobalVars->tickcount * 10.f, 360.f) * g_Options.spinspeed, 0);
-
-            if (stage != FRAME_RENDER_START)
-                return;
-
-            if (g_EngineClient->IsInGame() && g_LocalPlayer)
-            {
-                if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
-                    g_LocalPlayer->SetVAngles(AntiAimAngle);
-            }
-        }
-
-        if (g_Options.ragebot_antiaim_yaw == 2 && g_Options.ragebot_antiaim_pitch == 3) {
-            QAngle AntiAimAngle = QAngle(-90, fmodf(g_GlobalVars->tickcount * 10.f, 360.f) * g_Options.spinspeed, 0);
-
-            if (stage != FRAME_RENDER_START)
-                return;
-
-            if (g_EngineClient->IsInGame() && g_LocalPlayer)
-            {
-                if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
-                    g_LocalPlayer->SetVAngles(AntiAimAngle);
-            }
-        }
-
-        if (g_Options.ragebot_antiaim_yaw == 2 && g_Options.ragebot_antiaim_pitch == 4) {
-            QAngle AntiAimAngle = QAngle(0, fmodf(g_GlobalVars->tickcount * 10.f, 360.f) * g_Options.spinspeed, 0);
-
-            if (stage != FRAME_RENDER_START)
-                return;
-
-            if (g_EngineClient->IsInGame() && g_LocalPlayer)
-            {
-                if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
-                    g_LocalPlayer->SetVAngles(AntiAimAngle);
-            }
-        }*/
     }

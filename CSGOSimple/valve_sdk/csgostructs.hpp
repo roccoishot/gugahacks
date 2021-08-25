@@ -257,7 +257,6 @@ public:
 
 	//NETVAR(int, m_iAccount, "DT_CSPlayer", "m_iAccount");
 
-
 	void SetAbsAngles(const Vector& angle)
 	{
 		if (!this) //-V704
@@ -268,7 +267,6 @@ public:
 
 		return fn(this, angle);
 	}
-
 
 	NETVAR(QAngle, m_angAbsAngles, "DT_BaseEntity", "m_angAbsAngles");
 	NETVAR(Vector, m_angAbsOrigin, "DT_BaseEntity", "m_angAbsOrigin");

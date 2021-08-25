@@ -224,8 +224,6 @@ void Options::SetupVisuals()
 	SetupColor(color_chams_arms_occluded, "Arms Occluded");
 	SetupValue(chams_sleeve_enabled, "Visuals", "Sleeves Enabled");
 	SetupValue(chams_sleeve_ignorez, "Visuals", "Sleeves XYZ");
-	SetupValue(fakechams, "Visuals", "Fake chams (sex slave moment)");
-	SetupColor(color_chams_fake_fag_shit_cum_bitch_rocco_sex_sopmk_consent_none_rape_rocco_with_consent, "Rocco Sex slave");
 	SetupColor(color_chams_sleeve_visible, "Sleeves Visible");
 	SetupColor(color_chams_sleeve_occluded, "Sleeves Occluded");
 	SetupColor(color_name_player, "Name Color");

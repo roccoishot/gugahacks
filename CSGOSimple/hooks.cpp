@@ -478,13 +478,12 @@ namespace Hooks {
 
 		//Desync
 
-		
-
 		if (!cmd || !cmd->command_number)
 			return;
+		QAngle oldAngle = cmd->viewangles;
+
 
 		Globals::m_cmd = cmd;
-		QAngle oldAngle = cmd->viewangles;
 
 		if (g_Options.misc_backtrack) {
 			TimeWarp().Get().CreateMove(cmd);
@@ -654,6 +653,7 @@ namespace Hooks {
 			if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_Options.edgejump.edge_jump_duck_in_air && !(cmd->buttons |= IN_DUCK))
 				cmd->buttons |= IN_DUCK;
 		}
+
 
 		// faggot code sopmk e
 		if (int(Globals::real_angle * 1000))

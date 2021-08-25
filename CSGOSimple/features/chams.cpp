@@ -5,7 +5,6 @@
 #include "../options.hpp"
 #include "../hooks.hpp"
 #include "../helpers/input.hpp"
-#include "..\Globals.h"
 
 void modulate(const Color color, IMaterial* material)
 {
@@ -51,23 +50,6 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 		if (class_id == ClassId_CCSPlayer)
 		{
 			if (ent && ent->IsAlive()) {
-				if (g_Options.fakechams)
-				{
-					// store old real angle
-					auto angle = ent->m_angAbsAngles();
-					ent->SetAbsAngles(Vector(angle.pitch, Globals::fake_angle, 0.f));
-
-					auto fake_type_cum_shit_fake_shit_ion_fuck_mommy_bitch_consentual_rape_sex_forced_kys_ni = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-					fake_type_cum_shit_fake_shit_ion_fuck_mommy_bitch_consentual_rape_sex_forced_kys_ni->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
-					modulate(g_Options.color_chams_fake_fag_shit_cum_bitch_rocco_sex_sopmk_consent_none_rape_rocco_with_consent, fake_type_cum_shit_fake_shit_ion_fuck_mommy_bitch_consentual_rape_sex_forced_kys_ni);
-					g_StudioRender->ForcedMaterialOverride(fake_type_cum_shit_fake_shit_ion_fuck_mommy_bitch_consentual_rape_sex_forced_kys_ni);
-					fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
-
-					ent->SetAbsAngles(Vector(angle.pitch, angle.yaw, 0.f));
-
-					g_MdlRender->ForcedMaterialOverride(nullptr); //restore fat fucks shit
-				}
-
 				if (g_Options.teamchams) {
 					static IMaterial* player_enemies_type = nullptr;
 					switch (g_Options.chams_player_flat)
@@ -155,8 +137,6 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 					}
 				}
 
-
-				
 				const auto enemy = ent->IsEnemy();
 				if (enemy)
 				{

@@ -98,7 +98,7 @@ void CAntiAim::Pitch(CUserCmd* cmd)
 	switch (mode)
 	{
 	case PitchAntiAims::EMOTION:
-		cmd->viewangles.pitch = 73.f;
+		cmd->viewangles.pitch = 65.f;
 		break;
 
 	case PitchAntiAims::DOWN:
