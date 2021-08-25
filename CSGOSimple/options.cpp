@@ -282,6 +282,7 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
+	SetupValue(faketest, "Test", "180 Desync");
 	SetupValue(rageresolver, "Rage", "Rage Resolver");
 	SetupValue(fakepingkey, "Rage", "Fake Ping Key");
 	SetupValue(ragebot_antiaim_pitch, "Rage", "AntiAim Pitch");

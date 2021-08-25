@@ -290,6 +290,7 @@ public:
 		//
 		// MISC
 		//
+		bool faketest = false;
 		bool nocool = false;
 		int ragebot_antiaim_pitch = 0;
 		int ragebot_antiaim_yaw = 0;
