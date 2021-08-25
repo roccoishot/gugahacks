@@ -734,7 +734,7 @@ void Menu::Render()
 					ImGui::Checkbox("Edge jump", &g_Options.edgejump.enabled); ImGui::SameLine(group_w - 50); ImGui::Hotkey("    ", &g_Options.edgejump.hotkey);
 					ImGui::Checkbox("Duck EJ", &g_Options.edgejump.edge_jump_duck_in_air);
 					ImGui::Checkbox("Bowl's Fat Cock", &g_Options.bowlsfreshcut);
-
+					ImGui::Checkbox("Chat Spam", &g_Options.misc_chatspam);
 					ImGui::Separator("Test");
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
 					if (g_Options.enablebeta) {

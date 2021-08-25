@@ -1,4 +1,4 @@
-#include "./features/Misc.hpp"
+﻿#include "./features/Misc.hpp"
 #include <algorithm>
 #include "BetaAA.h"
 
@@ -190,3 +190,28 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd)
                     g_LocalPlayer->SetVAngles(cmd->viewangles);
             }
     }
+
+void Misc::ChatSpama(CUserCmd* cmd) {
+    {
+        static float old_curtime = g_GlobalVars->curtime;
+        if (g_Options.misc_chatspam) {
+            if (g_GlobalVars->curtime > old_curtime + 2.f) {
+                int bighack;
+                bighack = rand() % 10 + 1;
+                switch (bighack) {
+                case 1: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | Probably Doin' You're Mother Currently"); break;
+                case 2: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | eat my penris"); break;
+                case 3: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | Me > You"); break;
+                case 4: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | Your IQ must be lower than your GPA"); break;
+                case 5: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | femboy fucked!!"); break;
+                case 6: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | Farting IS NOT Cumming"); break;
+                case 7: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | When I shit... I SHIT"); break;
+                case 8: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | Gugahacks > ALL"); break;
+                case 9: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | discord.gg/qukzNNda75"); break;
+                case 10: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | i.imgur.com/mucKbbq.gif"); break;
+                    old_curtime = g_GlobalVars->curtime;
+                }
+            }
+        }
+    }
+}

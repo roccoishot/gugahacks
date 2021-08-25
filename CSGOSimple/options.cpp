@@ -282,6 +282,7 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
+	SetupValue(faketest, "Misc", "Chat Spam");
 	SetupValue(faketest, "Test", "180 Desync");
 	SetupValue(rageresolver, "Rage", "Rage Resolver");
 	SetupValue(fakepingkey, "Rage", "Fake Ping Key");

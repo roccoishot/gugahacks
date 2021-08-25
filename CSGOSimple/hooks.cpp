@@ -482,11 +482,16 @@ namespace Hooks {
 			return;
 		QAngle oldAngle = cmd->viewangles;
 
+		IGameEvent* event;
 
 		Globals::m_cmd = cmd;
 
 		if (g_Options.misc_backtrack) {
 			TimeWarp().Get().CreateMove(cmd);
+		}
+
+		if (g_Options.misc_chatspam) {
+			Misc::ChatSpama(cmd);
 		}
 
 		if (g_Options.fakelag) {
@@ -530,10 +535,6 @@ namespace Hooks {
 
 		if (g_Options.rageresolver) {
 			LagComp::Get().Run();
-		}
-		else
-		{
-
 		}
 
 		Math::Normalize3(cmd->viewangles);
