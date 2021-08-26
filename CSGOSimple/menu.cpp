@@ -666,8 +666,6 @@ void Menu::Render()
 					}
 
 					//Misc Man Shit FRFR
-					if (ImGui::Button("Connect to RAF"))
-						g_EngineClient->ExecuteClientCmd("connect 173.233.142.109; password randfloat");
 					if (ImGui::Checkbox("Clantag", &g_Options.clantag)) {
 						//Clantag
 						void ClantagChange(); {

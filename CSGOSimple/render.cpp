@@ -8,6 +8,7 @@
 #include "menu.hpp"
 #include "options.hpp"
 #include "helpers/math.hpp"
+#include <ctime>
 
 ImFont* g_Menufont;
 ImFont* g_pDefaultFont;
@@ -95,13 +96,29 @@ void Render::BeginScene() {
 		Render::Get().RenderText("8==D", 965, 545, 18.f, Color::White, false, true, g_VeloFont);
 	}
 
-	if (g_Options.misc_watermark)
-		Render::Get().RenderText("Made By Roccoishot, Sopmk, Levito, and You're Mother.", 10, 5, 18.f, Color::White, false, true, g_VeloFont);
+	if (g_Options.misc_watermark) {
+			std::string username = (" GUGAHACKER 8");
+			#define VERSION ("Made By Roccoishot, Sopmk, Levito, and You're Mother. |")
+			auto watermark = VERSION + username + (" | ");
+				watermark = VERSION + username + (" | ");
+				Render::Get().RenderText(watermark, 10, 5, 18.f, Color::White, false, true, g_VeloFont);
+
+				if (g_EngineClient->IsInGame()) {
+					auto server = g_EngineClient->GetNetChannelInfo()->GetAddress();
+					if (!strcmp(server, ("loopback")))
+						server = ("Local server");
+					std::string username = (" GUGAHACKER 8");
+					#define VERSION ("Made By Roccoishot, Sopmk, Levito, and You're Mother. |")
+					auto watermark = VERSION + username + (" | ") + server + (" | ");
+					watermark = VERSION + username + (" | ") + server + (" | ");
+					Render::Get().RenderText(watermark, 10, 5, 18.f, Color::White, false, true, g_VeloFont);
+				}
+			}
 
 	if (g_Options.enablebeta)
 		Render::Get().RenderText("USING TEST", 10, 35, 18.f, Color::White, false, true, g_VeloFont);
 
-	if (g_Options.backtix > 17)
+	if (g_Options.backtix > 16)
 		Render::Get().RenderText("WARNING: This Backtrack Can Be Unstable!", 10, 65, 18.f, Color::White, false, true, g_VeloFont);
 		
 	if (g_Options.drawfov)
