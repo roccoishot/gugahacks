@@ -290,6 +290,7 @@ public:
 		//
 		// MISC
 		//
+		bool fullbright = false;
 		bool misc_chatspam = false;
 		bool faketest = false;
 		bool nocool = false;

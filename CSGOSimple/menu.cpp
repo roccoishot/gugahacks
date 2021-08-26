@@ -564,6 +564,7 @@ void Menu::Render()
 					}
 					ImGui::Checkbox("Matrix Mode", &g_Options.matrix);
 					ImGui::Checkbox("Metallic Mode", &g_Options.metallica);
+					ImGui::Checkbox("Fullbright", &g_Options.fullbright);
 					ImGui::Checkbox("Sky Changer", &g_Options.sky_changer);
 					if (g_Options.sky_changer) {
 						if (ImGui::BeginCombo("##skynames", "Sky"))
@@ -665,6 +666,8 @@ void Menu::Render()
 					}
 
 					//Misc Man Shit FRFR
+					if (ImGui::Button("Connect to RAF"))
+						g_EngineClient->ExecuteClientCmd("connect 173.233.142.109; password randfloat");
 					if (ImGui::Checkbox("Clantag", &g_Options.clantag)) {
 						//Clantag
 						void ClantagChange(); {

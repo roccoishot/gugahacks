@@ -115,6 +115,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 							{
 								player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
 							}
+
 							if (g_Options.player_enemies_shine)
 							{
 								if (g_Options.shine_oc == true) {

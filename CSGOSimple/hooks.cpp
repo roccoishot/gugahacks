@@ -185,6 +185,16 @@ namespace Hooks {
 		cheatsforcer->m_fnChangeCallbacks.m_Size = 0;
 		cheatsforcer->SetValue(1);
 
+		if (g_Options.fullbright == true) {
+			static auto fullbright = g_CVar->FindVar("mat_fullbright");
+			fullbright->m_fnChangeCallbacks.m_Size = 0;
+			fullbright->SetValue(1);
+		}
+		if (g_Options.fullbright == false) {
+			static auto fullbright = g_CVar->FindVar("mat_fullbright");
+			fullbright->m_fnChangeCallbacks.m_Size = 0;
+			fullbright->SetValue(0);
+		}
 
 		//Metallic Props
 		if (g_Options.metallica == true) {
