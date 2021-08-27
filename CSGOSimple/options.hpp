@@ -420,7 +420,6 @@ public:
 
 		Color color_glow_enemy= {255, 0, 0};
 		Color color_glow_enemyOC= {0, 0, 0};
-		Color esp_player_health_color = { 0, 255, 0 };
 		Color color_dropped_weapons = { 255, 224, 48 };
 
 		Color color_glow_chickens= {0, 0, 0};

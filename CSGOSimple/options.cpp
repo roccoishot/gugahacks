@@ -298,7 +298,6 @@ void Options::SetupMisc()
 	SetupValue(pitchaaup, "Rage", "Pitch Up");
 	SetupValue(pitchaanone, "Rage", "Pitch None");
 	SetupValue(pitchaadown, "Rage", "Pitch Down");
-	SetupColor(esp_player_health_color, "Health Color");
 	SetupValue(playerModelCT, "Misc", "Player Model CT");
 	SetupValue(playerModelT, "Misc", "Player Model T");
 	SetupColor(Velocitycol, "Velocity");

@@ -410,9 +410,6 @@ void Menu::Render()
 					if (g_Options.esp_player_names) {
 						ImGui::Text("Names"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Names Color ", &g_Options.color_name_player);
 					}
-					if (g_Options.esp_player_health) {
-						ImGui::Text("Health"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Health Color ", &g_Options.esp_player_health_color);
-					}
 					if (g_Options.esp_player_armour) {
 						ImGui::Text("Armour"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Armour Color ", &g_Options.color_armour_player);
 					}

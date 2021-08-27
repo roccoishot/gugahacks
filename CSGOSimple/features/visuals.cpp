@@ -208,14 +208,21 @@ void Visuals::Player::RenderHealth(C_BaseEntity* pl)
 	int y = ctx.bbox.top;
 	int w = 4;
 	int h = box_h;
-	/*std::string text = std::to_string(hp);*/
 
-//	Render::Get().RenderBox(x, y, x + w, y + h, Color::Black, 1.f, true);
-//	Render::Get().RenderBox(x + 1, y + 1, x + w - 1, y + height - 2, Color(0, 255, 0, 255), 1.f, true);
+	if (hp <= 100) {
+		Render::Get().RenderBox(x, y - 1, x + w, y + h + 1, Color(0, 0, 0));
+		Render::Get().RenderBox(x + 1, y + h - height, x + w - 1, y + h, Color(0, 255, 0));
+	}
 
-	Render::Get().RenderBox(x, y - 1, x + w, y + h + 1, Color(0, 0, 0));
-	Render::Get().RenderBox(x + 1, y + h - height, x + w - 1, y + h, Color(g_Options.esp_player_health_color));
-	/*sRender::Get().RenderText(text, x - 20, y + h - height, 12.f, Color(255, 255, 255, flPlayerAlpha[pl->EntIndex()]));*/
+	if (hp <= 60) {
+		Render::Get().RenderBox(x, y - 1, x + w, y + h + 1, Color(0, 0, 0));
+		Render::Get().RenderBox(x + 1, y + h - height, x + w - 1, y + h, Color(255, 255, 0));
+	}
+
+	if (hp <= 30) {
+		Render::Get().RenderBox(x, y - 1, x + w, y + h + 1, Color(0, 0, 0));
+		Render::Get().RenderBox(x + 1, y + h - height, x + w - 1, y + h, Color(255, 0, 0));
+	}
 
 }
 //--------------------------------------------------------------------------------
