@@ -661,10 +661,10 @@ namespace Hooks {
 			if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && (flags & FL_ONGROUND))
 				cmd->buttons |= IN_JUMP;
 
-			if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_Options.edgejump.edge_jump_duck_in_air && !(cmd->buttons |= IN_DUCK))
-				cmd->buttons |= IN_DUCK;
 		}
 
+		if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_Options.ducknair && !(cmd->buttons |= IN_DUCK))
+			cmd->buttons |= IN_DUCK;
 
 		// faggot code sopmk e
 		if (int(Globals::real_angle * 1000))

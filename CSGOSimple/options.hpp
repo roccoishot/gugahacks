@@ -290,8 +290,7 @@ public:
 		//
 		// MISC
 		//
-		bool fakeduck = false;
-		bool fakeduck_key = false;
+		bool ducknair = false;
 		bool fullbright = false;
 		bool misc_chatspam = false;
 		bool faketest = false;
@@ -338,9 +337,7 @@ public:
 			bool pitchshit = false;
 		bool misc_backtrack = false;
 		bool misc_hitmarker = false;
-		bool osaa = false;
 		bool breaklby = false;
-		bool keybinds = false;
 		const char* skyname;
 		bool shotinfo = false;
 		bool rcross = false;
@@ -395,7 +392,6 @@ public:
 		struct
 		{
 			bool enabled = false;
-			bool edge_jump_duck_in_air = false;
 
 			int hotkey = 0;
 		} edgejump;

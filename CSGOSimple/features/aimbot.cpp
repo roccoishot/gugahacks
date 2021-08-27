@@ -254,13 +254,12 @@ void CLegitbot::Run(CUserCmd* cmd)
 
 	if (GetClosestPlayer(cmd, bestBone, fov, angles))
 	{
-		if (settings.autofire.enabled)
+		if (settings.autofire.enabled && target->IsEnemy())
 			cmd->buttons |= IN_ATTACK;
 	}
 
 	if ((cmd->buttons & IN_ATTACK) /*&& !IsSilent()*/)
 		RCS(angles, target);
-
 	last_punch = current_punch;
 
 	if (!IsSilent())

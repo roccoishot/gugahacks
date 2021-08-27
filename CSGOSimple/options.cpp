@@ -319,7 +319,7 @@ void Options::SetupMisc()
 	SetupValue(jump_bug_key, "Misc", "Jump Bug Key");
 	SetupValue(edgejump.enabled, "Misc", "Edge jump");
 	SetupValue(edgejump.hotkey, "Misc", "Edge jump Key");
-	SetupValue(edgejump.edge_jump_duck_in_air, "Misc", "Duck in Air");
+	SetupValue(ducknair, "Misc", "Duck in Air");
 	SetupValue(clantag, "Misc", "Clantag");
 	SetupValue(nocool, "Misc", "No Duck Cooldown");
 	SetupValue(misc_hitmarker, "Misc", "Hitsounds");
@@ -335,7 +335,6 @@ void Options::SetupMisc()
 	SetupValue(hitdisagree, "Misc", "Disagree");
 	SetupValue(hitagree, "Misc", "Agree");
 	SetupValue(hitfoundgame, "Misc", "FoundGame");
-	SetupValue(osaa, "Misc", "Onshot AA");
 	SetupValue(breaklby, "Misc", "Break LBY");
 	SetupValue(removeblur, "Misc", "Reduce Blur");
 	SetupValue(menur, "Misc", "Accent Red");
