@@ -27,9 +27,6 @@
     <Filter Include="Source Files\features">
       <UniqueIdentifier>{69bb20b4-f120-4f70-8694-cf3aaa9c085c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\features\sopmk sex">
-      <UniqueIdentifier>{6c9f334a-0c61-496c-a241-3c44416d7365}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Helpers\math.cpp">
@@ -171,7 +168,7 @@
       <Filter>Source Files\features</Filter>
     </ClCompile>
     <ClCompile Include="resolver.cpp">
-      <Filter>Source Files\features\sopmk sex</Filter>
+      <Filter>Source Files\features</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
