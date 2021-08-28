@@ -38,7 +38,7 @@ void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
     auto NetChannel = g_EngineClient->GetNetChannel();
     if (!NetChannel)
         return;
-    bSendPacket = true;
+    bSendPacket = false;
 
     chockepack = g_Options.faketicks;
     bSendPacket = (NetChannel->m_nChokedPackets >= chockepack);

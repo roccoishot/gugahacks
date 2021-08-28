@@ -290,8 +290,6 @@ public:
 		//
 		// MISC
 		//
-		bool fakeangleshits = false;
-		bool backtrackshits = false;
 		bool ducknair = false;
 		bool fullbright = false;
 		bool misc_chatspam = false;

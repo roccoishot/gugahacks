@@ -171,9 +171,6 @@ void Visuals::Nightmode() {
 		}
 
 		if (g_Options.propmodulate) {
-			static ConVar* r_DrawSpecificStaticProp = g_CVar->FindVar("r_DrawSpecificStaticProp");
-			r_DrawSpecificStaticProp->SetValue(1);
-
 			for (MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i))
 			{
 				IMaterial* pMaterial = g_MatSystem->GetMaterial(i);

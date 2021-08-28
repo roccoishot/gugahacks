@@ -737,7 +737,6 @@ void Menu::Render()
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
 					if (g_Options.enablebeta) {
 						ImGui::Checkbox("180 Desync", &g_Options.faketest);
-						ImGui::Checkbox("FakeAngle Test", &g_Options.fakeangleshits);
 					}
 					ImGui::EndChild();
 				}
