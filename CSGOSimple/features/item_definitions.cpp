@@ -34,7 +34,8 @@ const std::map<size_t, weapon_info> k_weapon_info =
 	{GLOVE_LEATHER_WRAP,{"models/weapons/v_models/arms/glove_handwrap_leathery/v_glove_handwrap_leathery.mdl"}},
 	{GLOVE_MOTORCYCLE,{"models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"}},
 	{GLOVE_SPECIALIST,{"models/weapons/v_models/arms/glove_specialist/v_glove_specialist.mdl"}},
-	{GLOVE_HYDRA,{"models/weapons/v_models/arms/glove_bloodhound/v_glove_bloodhound_hydra.mdl"}}
+	{GLOVE_HYDRA,{"models/weapons/v_models/arms/glove_bloodhound/v_glove_bloodhound_hydra.mdl"}},
+	{STUDDED_BROKENFANG_GLOVES,{"models/weapons/v_models/arms/glove_bloodhound/v_glove_bloodhound_brokenfang.mdl"}}
 };
 
 const std::vector<weapon_name> k_knife_names =
@@ -72,7 +73,8 @@ const std::vector<weapon_name> k_glove_names =
 	{GLOVE_LEATHER_WRAP, "Handwrap"},
 	{GLOVE_MOTORCYCLE, "Motorcycle"},
 	{GLOVE_SPECIALIST, "Specialist"},
-	{GLOVE_HYDRA, "Hydra"}
+	{GLOVE_HYDRA, "Hydra"},
+	{STUDDED_BROKENFANG_GLOVES, "Broken Fang"}
 };
 
 const std::vector<weapon_name> k_weapon_names =
@@ -157,7 +159,8 @@ const std::vector<weapon_name> k_glove_names_preview =
 	{GLOVE_LEATHER_WRAP, "leather_handwraps"},
 	{GLOVE_MOTORCYCLE, "motorcycle_gloves"},
 	{GLOVE_SPECIALIST, "specialist_gloves"},
-	{GLOVE_HYDRA, "studded_hydra_gloves"}
+	{GLOVE_HYDRA, "studded_hydra_gloves"},
+	{STUDDED_BROKENFANG_GLOVES, "studded_brokenfang_gloves"}
 };
 
 const std::vector<weapon_name> k_weapon_names_preview =

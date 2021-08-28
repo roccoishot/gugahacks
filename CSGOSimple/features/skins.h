@@ -137,6 +137,8 @@ static const char* weaponnames(const short id)
 		return "specialist_gloves";
 	case GLOVE_HYDRA:
 		return "studded_hydra_gloves";
+	case STUDDED_BROKENFANG_GLOVES:
+		return "studded_brokenfang_gloves";
 	default:
 		return "";
 	}
