@@ -148,6 +148,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 						{
 							for (size_t k = 0; k < MAX_PATCHES; k++)
 							{
+								
 								NULL;
 							}
 						}
