@@ -394,6 +394,8 @@ namespace Hooks {
 			fatshit->SetValue("0.055");
 		}
 
+		static auto r_modelAmbientMin = g_CVar->FindVar("r_modelAmbientMin");
+		r_modelAmbientMin->SetValue(g_Options.modelambience * 0.05f);
 
 		//World Glow
 		static auto mat_ambient_light_r = g_CVar->FindVar("mat_ambient_light_r");

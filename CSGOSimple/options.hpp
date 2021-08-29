@@ -205,6 +205,7 @@ public:
 		// ESP
 		// 
 	//	bool esp_enabled = false;
+	float modelambience = 0;
 	bool rageresolver = false;
 	int fakepingkey = 0;
 	int vangleyaw = 0;

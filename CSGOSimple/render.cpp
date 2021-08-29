@@ -15,6 +15,7 @@ ImFont* g_pDefaultFont;
 ImFont* g_VeloFont;
 ImFont* g_Fuck;
 ImFont* g_SpectatorListFont;
+ImFont* g_NigBalls;
 
 ImDrawListSharedData _data;
 
@@ -65,6 +66,7 @@ void Render::GetFonts() {
 	// font for watermark; just example
 	g_Fuck = ImGui::GetIO().Fonts->AddFontFromFileTTF(u8"C:\\Windows\\Fonts\\Karla-Regular.ttf", 30.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 
+	g_NigBalls = ImGui::GetIO().Fonts->AddFontFromFileTTF(u8"C:\\Windows\\Fonts\\CHOKTOFF.ttf", 60.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 }
 
 void Render::ClearDrawList() {

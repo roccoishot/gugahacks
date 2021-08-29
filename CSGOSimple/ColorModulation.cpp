@@ -3,14 +3,14 @@
 
 void CNightmode::PerformNightmode()
 {
-	static auto r_DrawSpecificStaticProp = g_CVar->FindVar(("r_DrawSpecificStaticProp"));
-	r_DrawSpecificStaticProp->SetValue(g_Options.propmodulate);
-
 	for (MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i))
 	{
 		IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
 
 		if (!pMaterial)
+			continue;
+
+		if (!pMaterial->IsPrecached())
 			continue;
 
 		const char* group = pMaterial->GetTextureGroupName();
@@ -38,7 +38,9 @@ void CNightmode::PerformNightmode()
 		if (g_Options.propmodulate) {
 			if (strstr(group, ("StaticProp")))
 			{
-				pMaterial->ColorModulate(g_Options.propr * 3, g_Options.propg * 3, g_Options.propb * 3);
+				static auto r_DrawSpecificStaticProp = g_CVar->FindVar(("r_DrawSpecificStaticProp"));
+				r_DrawSpecificStaticProp->SetValue(g_Options.propmodulate);
+				pMaterial->ColorModulate(g_Options.propr, g_Options.propg, g_Options.propb);
 				pMaterial->AlphaModulate(g_Options.propalpha);
 			}
 		}

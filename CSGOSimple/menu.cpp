@@ -332,7 +332,7 @@ void Menu::Render()
 					if (settings->autowall.enabled) {
 						ImGui::Spacing();
 						ImGui::SameLine();
-						ImGui::Text("Min Damage");
+						ImGui::Text("XYZ Min Damage");
 						ImGui::Spacing();
 						ImGui::SliderInt("##minDamage", &settings->autowall.min_damage, 1, 100, "%i");
 					}
@@ -473,6 +473,7 @@ void Menu::Render()
 					if (g_Options.chams_player_enabled) {
 						ImGui::Checkbox("Occluded", &g_Options.chams_player_ignorez);
 						ImGui::Checkbox("Team Chams", &g_Options.teamchams);
+						ImGui::SliderFloat("Ambience", &g_Options.modelambience, 0.f, 1500.f);
 					}
 					ImGui::Checkbox("Arms Chams", &g_Options.chams_arms_enabled);
 					if (g_Options.chams_arms_enabled) {
@@ -533,8 +534,6 @@ void Menu::Render()
 					ImGui::Checkbox("Recoil Crosshair", &g_Options.rcross);
 					ImGui::Checkbox("Grenade Prediction", &g_Options.pnade);
 					ImGui::Checkbox("Third Person", &g_Options.misc_thirdperson); ImGui::SameLine(); ImGui::Hotkey("            ", &g_Options.misc_thirdperson_key);
-					ImGui::Spacing();
-					ImGui::SliderInt("Fov", &g_Options.fovchangaaa, 0, 120, "%.f");
 					ImGui::Checkbox("Aspect Ratio", &g_Options.aspectchange);
 					if (g_Options.aspectchange) {
 						ImGui::Spacing();
@@ -550,6 +549,8 @@ void Menu::Render()
 				ImGui::BeginChild("##1", { 166 ,585 });
 				{
 					ImGui::Separator("World");
+					ImGui::Spacing();
+					ImGui::SliderInt("World Fov", &g_Options.fovchangaaa, 0, 120, "%.f");
 					if (ImGui::BeginCombo("##removals", "Removals"))
 					{
 						ImGui::Selectable("Recoil", &g_Options.fatassmf, ImGuiSelectableFlags_DontClosePopups);

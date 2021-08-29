@@ -201,7 +201,7 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 
 				const auto damage = int(Autowall::GetDamage(hitboxPos));
 
-				if (damage <= settings.autowall.min_damage)
+				if (damage >= settings.autowall.min_damage)
 					continue;
 			}
 
@@ -253,7 +253,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 
 	if (GetClosestPlayer(cmd, bestBone, fov, angles))
 	{
-		if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget() && !target->m_iTeamNum()) {
+		if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive()) {
 			if (g_LocalPlayer->m_iShotsFired() < 1)
 				cmd->buttons |= IN_ATTACK;
 		}

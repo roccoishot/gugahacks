@@ -2,17 +2,17 @@
 
 void resolver::Resolve(C_BasePlayer* player, LagRecord record)
 {
-	
+
 	if (player->m_fFlags() & FL_ONGROUND) // no desync in air lmao
 	{
 		int side = 0;
 		float delta = 58.f;
-		
+
 		auto animState = player->GetPlayerAnimState();
 
 		if (!animState)
 			return;
-		
+
 
 		if (player->m_vecVelocity().Length2D() <= 1.1f)
 		{
