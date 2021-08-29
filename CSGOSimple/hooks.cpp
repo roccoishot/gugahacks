@@ -18,6 +18,7 @@
 #include "OldPrediction.h"
 #include "lagcompesnation.h"
 #include "Globals.h"
+#include "ColorModulation.h"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -909,7 +910,7 @@ namespace Hooks {
 				}
 			};
 
-			Visuals::Get().Nightmode();
+			CNightmode::Get().PerformNightmode();
 
 			if (const auto model = getModel(g_LocalPlayer->m_iTeamNum())) {
 				if (stage == FRAME_RENDER_START)
@@ -925,6 +926,7 @@ namespace Hooks {
 		}
 		ofunc(g_CHLClient, edx, stage);
 	}
+
 	//--------------------------------------------------------------------------------
 	void __fastcall hkOverrideView(void* _this, int edx, CViewSetup* vsView)
 	{

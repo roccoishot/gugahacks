@@ -336,7 +336,6 @@ void Menu::Render()
 						ImGui::Spacing();
 						ImGui::SliderInt("##minDamage", &settings->autowall.min_damage, 1, 100, "%i");
 					}
-					ImGui::Checkbox("Auto-pistol", &settings->autopistol);
 					ImGui::Checkbox("RCS##rcs", &settings->rcs.enabled);
 
 					const char* rcs_types[] = {

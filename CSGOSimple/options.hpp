@@ -53,7 +53,6 @@ struct legitbot_s
 
 	bool flash_check = false;
 	bool smoke_check = false;
-	bool autopistol = false;
 	bool backtracking = false;
 
 	float fov = 0.f;
@@ -120,8 +119,6 @@ struct aimbot_settings {
 	bool autofire = false;
 	bool on_key = true;
 	int key = 0;
-	bool deathmatch = false;
-	bool autopistol = false;
 	bool check_smoke = false;
 	bool check_flash = false;
 	bool check_jump = false;

@@ -150,47 +150,6 @@ void Visuals::Player::RenderName(C_BaseEntity* pl)
 	Render::Get().RenderText(info.szName, ctx.bbox.left + (ctx.bbox.right - ctx.bbox.left - sz.x) / 2, (ctx.bbox.top - sz.y - 1), 0.f, Color(g_Options.color_name_player), flPlayerAlpha[pl->EntIndex()]), false;
 }
 
-void Visuals::Nightmode() {
-	if (g_Options.colormodulate) {
-		if (!g_EngineClient->IsInGame() && !g_EngineClient->IsConnected())
-			return;
-
-		for (MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i))
-		{
-			IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
-
-			if (!pMaterial)
-				continue;
-
-			if (!pMaterial->IsPrecached())
-				continue;
-
-			if (strstr(pMaterial->GetTextureGroupName(), "World"))
-			pMaterial->ColorModulate(g_Options.worldr, g_Options.worldg, g_Options.worldb);
-
-		}
-
-		if (g_Options.propmodulate) {
-			for (MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i))
-			{
-				IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
-
-				if (!pMaterial)
-					continue;
-
-				if (!pMaterial->IsPrecached())
-					continue;
-
-				if (strstr(pMaterial->GetTextureGroupName(), "StaticProp"))
-					pMaterial->ColorModulate(g_Options.propr * 2, g_Options.propg * 2, g_Options.propb * 2);
-				if (strstr(pMaterial->GetTextureGroupName(), "StaticProp"))
-					pMaterial->AlphaModulate(g_Options.propalpha);
-			}
-		}
-	}
-}
-
-
 //--------------------------------------------------------------------------------
 void Visuals::Player::RenderHealth(C_BaseEntity* pl)
 {

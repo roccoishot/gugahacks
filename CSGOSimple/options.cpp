@@ -143,8 +143,6 @@ void Options::SetupWeapons()
 			//SetupValue(aimbot->silent, key, "pSilent");
 			SetupValue(aimbot->silent2, key, "Silent");
 
-			SetupValue(aimbot->autopistol, key, "Auto Pistol");
-
 			SetupValue(aimbot->fov, key, "Fov");
 			SetupValue(aimbot->silent_fov, key, "Silent Fov");
 			SetupValue(aimbot->smooth, key, "Smooth");
