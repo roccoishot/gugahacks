@@ -167,6 +167,7 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 		hitboxes.emplace_back(HITBOX_RIGHT_FOOT);
 		hitboxes.emplace_back(HITBOX_LEFT_FOOT);
 	}
+	
 	const Vector eyePos = g_LocalPlayer->GetEyePos();
 
 	for (auto i = 1; i <= g_GlobalVars->maxClients; i++)
@@ -201,7 +202,7 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 
 				const auto damage = int(Autowall::GetDamage(hitboxPos));
 
-				if (damage >= settings.autowall.min_damage)
+				if (damage <= settings.autowall.min_damage)
 					continue;
 			}
 
@@ -253,9 +254,13 @@ void CLegitbot::Run(CUserCmd* cmd)
 
 	if (GetClosestPlayer(cmd, bestBone, fov, angles))
 	{
-		if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive()) {
-			if (g_LocalPlayer->m_iShotsFired() < 1)
-				cmd->buttons |= IN_ATTACK;
+		if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
+			cmd->buttons |= IN_ATTACK;
+			const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
+			const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
+
+			if (next_shot > 0)
+			cmd->buttons &= ~IN_ATTACK;
 		}
 	}
 

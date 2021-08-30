@@ -119,6 +119,8 @@ struct aimbot_settings {
 	bool autofire = false;
 	bool on_key = true;
 	int key = 0;
+	bool deathmatch = false;
+	bool autopistol = false;
 	bool check_smoke = false;
 	bool check_flash = false;
 	bool check_jump = false;
@@ -205,7 +207,6 @@ public:
 		// ESP
 		// 
 	//	bool esp_enabled = false;
-	float modelambience = 0;
 	bool rageresolver = false;
 	int fakepingkey = 0;
 	int vangleyaw = 0;

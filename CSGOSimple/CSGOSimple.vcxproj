@@ -99,7 +99,7 @@
   <ItemGroup>
     <ClCompile Include="backtrack.cpp" />
     <ClCompile Include="BetaAA.cpp" />
-    <ClCompile Include="ColorModulation.cpp" />
+    <ClCompile Include="Colormodulation.cpp" />
     <ClCompile Include="features\aimbot.cpp" />
     <ClCompile Include="features\autowall.cpp" />
     <ClCompile Include="features\bhop.cpp" />
@@ -149,7 +149,7 @@
   <ItemGroup>
     <ClInclude Include="backtrack.h" />
     <ClInclude Include="BetaAA.h" />
-    <ClInclude Include="ColorModulation.h" />
+    <ClInclude Include="Colormodulation.h" />
     <ClInclude Include="features\aimbot.hpp" />
     <ClInclude Include="features\autowall.hpp" />
     <ClInclude Include="features\hitmarker.hpp" />

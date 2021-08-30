@@ -18,7 +18,6 @@ namespace Misc
 	void Triggerbot(CUserCmd* cmd);
 	void Jumpbug(CUserCmd* cmd);
 	void SilentWalk(CUserCmd* cmd);
-	void BlockBot(CUserCmd* cmd);
 	void SlowWalk(CUserCmd* cmd);
 	void ChatSpama(CUserCmd* cmd);
 	void SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd);

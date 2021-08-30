@@ -186,7 +186,6 @@ void Options::SetupWeapons()
 
 void Options::SetupVisuals()
 {
-	SetupValue(modelambience, "Visuals", "Model Ambience");
 	SetupValue(teamesp, "Visuals", "Team ESP");
 	SetupValue(teamchams, "Visuals", "Team Chams");
 	SetupValue(esp_player_boxes, "Visuals", "Boxes");
@@ -282,7 +281,8 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
-	SetupValue(misc_chatspam, "Misc", "Chat Spam");
+	SetupValue(faketest, "Misc", "Chat Spam");
+	SetupValue(faketest, "Test", "Player Trail");
 	SetupValue(faketest, "Test", "180 Desync");
 	SetupValue(rageresolver, "Rage", "Rage Resolver");
 	SetupValue(fakepingkey, "Rage", "Fake Ping Key");

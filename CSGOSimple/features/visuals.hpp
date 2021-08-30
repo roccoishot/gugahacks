@@ -45,6 +45,7 @@ public:
 	void RenderPlantedC4(C_BaseEntity* ent);
 	void RenderItemEsp(C_BaseEntity* ent);
 	void ThirdPerson();
+	void Nightmode();
 public:
 	void AddToDrawList();
 	void Render();

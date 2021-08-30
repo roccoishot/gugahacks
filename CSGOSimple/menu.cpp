@@ -199,143 +199,142 @@ void Menu::Render()
 	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | NULL | NULL | ImGuiWindowFlags_NoCollapse | NULL | NULL | NULL;
 
 
-		//Tabs
-		ImGui::Begin("Edited", nullptr, flags);
-		{
-			ImVec2 p = ImGui::GetWindowPos();
+	//Tabs
+	ImGui::Begin("Edited", nullptr, flags);
+	{
+		ImVec2 p = ImGui::GetWindowPos();
 
-			ImGui::SetCursorPos({ 5 + 5 + 0,17 });
-			if (Tab("ANTIAIM", { 125,35 }, tab == 5))
-				tab = 5;
+		ImGui::SetCursorPos({ 5 + 5 + 0,17 });
+		if (Tab("ANTIAIM", { 125,35 }, tab == 5))
+			tab = 5;
 
-			ImGui::SetCursorPos({ 15 + 115 + 10,17 });
-			if (Tab("AIMBOT", { 125,35 }, tab == 0))
-				tab = 0;
+		ImGui::SetCursorPos({ 15 + 115 + 10,17 });
+		if (Tab("AIMBOT", { 125,35 }, tab == 0))
+			tab = 0;
 
-			ImGui::SetCursorPos({ 15 + 235 + 20,17 });
-			if (Tab("VISUALS", { 125,35 }, tab == 1))
-				tab = 1;
+		ImGui::SetCursorPos({ 15 + 235 + 20,17 });
+		if (Tab("VISUALS", { 125,35 }, tab == 1))
+			tab = 1;
 
-			ImGui::SetCursorPos({ 15 + 355 + 30,17 });
-			if (Tab("WORLD", { 125,35 }, tab == 2))
-				tab = 2;
+		ImGui::SetCursorPos({ 15 + 355 + 30,17 });
+		if (Tab("WORLD", { 125,35 }, tab == 2))
+			tab = 2;
 
-			ImGui::SetCursorPos({ 15 + 475 + 40,17 });
-			if (Tab("MISC", { 125,35 }, tab == 3))
-				tab = 3;
+		ImGui::SetCursorPos({ 15 + 475 + 40,17 });
+		if (Tab("MISC", { 125,35 }, tab == 3))
+			tab = 3;
 
-			ImGui::SetCursorPos({ 15 + 595 + 50,17 });
-			if (Tab("SKINS", { 125,35 }, tab == 4))
-				tab = 4;
+		ImGui::SetCursorPos({ 15 + 595 + 50,17 });
+		if (Tab("SKINS", { 125,35 }, tab == 4))
+			tab = 4;
 
-			if (tab == 5) {
-				ImGui::SetCursorPos({ 21,65 });
-				ImGui::BeginChild("##1", { 255,520 });
-				{
-
-					const char* aa_pitch_list[] = {
-	"None",
-	"Offset",
-	"Down",
-	"Up",
-	"Zero"
-					};
-
-					const char* aa_yaw_list[] = {
-						"None",
-						"Backwards",
-						"Spinbot",
-						"Lowerbody",
-						"Freestanding"
-					};
-
-					ImGui::Text("More Coming Soon!");
-					ImGui::Separator("AntiAim");
-						ImGui::Combo("Pitch", &g_Options.ragebot_antiaim_pitch, aa_pitch_list, IM_ARRAYSIZE(aa_pitch_list));
-						ImGui::Combo("Yaw", &g_Options.ragebot_antiaim_yaw, aa_yaw_list, IM_ARRAYSIZE(aa_yaw_list));
-						ImGui::Checkbox("Desync", &g_Options.ragebot_antiaim_desync);
-						ImGui::Checkbox("Break LBY", &g_Options.breaklby);
-						if (g_Options.ragebot_antiaim_yaw == 2) {
-							ImGui::SliderInt("Spin Speed", &g_Options.spinspeed, 1.f, 10.f, "%.f");
-						}
-						ImGui::Separator("Others");
-						ImGui::Text("Slowwalk Key"); ImGui::SameLine(); ImGui::Hotkey("                                                            ", &g_Options.ragebot_slowwalk_key);
-						ImGui::Spacing();
-						ImGui::SliderInt("Slowwalk Speed", &g_Options.ragebot_slowwalk_amt, 0, 100);
-						ImGui::Spacing();
-					ImGui::Checkbox("Fakelag", &g_Options.fakelag);
-					if (g_Options.fakelag) {
-						ImGui::SliderInt("Ticks", &g_Options.faketicks, 1.f, 62.f, "%.f");
-					}
-					ImGui::Checkbox("Fake Ping", &g_Options.fakeping);
-					if (g_Options.fakeping) {
-						ImGui::SliderInt("Ping", &g_Options.fakepingzzz, 1.f, 1000.f, "%.f");
-						ImGui::Text("On Key"); ImGui::SameLine(); ImGui::Hotkey("                                                                                             ", &g_Options.fakepingkey);
-					}
-					ImGui::Checkbox("Resolver", &g_Options.rageresolver);
-				}
-				ImGui::EndChild();
-			}
-
-			if (tab == 0)
+		if (tab == 5) {
+			ImGui::SetCursorPos({ 21,65 });
+			ImGui::BeginChild("##1", { 255,520 });
 			{
-				static int definition_index = WEAPON_INVALID;
 
-				auto localPlayer = C_BasePlayer::GetPlayerByIndex(g_EngineClient->GetLocalPlayer());
-				if (g_EngineClient->IsInGame() && localPlayer && localPlayer->IsAlive() && localPlayer->m_hActiveWeapon() && localPlayer->m_hActiveWeapon()->IsGun())
-					definition_index = localPlayer->m_hActiveWeapon()->m_Item().m_iItemDefinitionIndex();
-				else
-					definition_index = WEAPON_INVALID;
-				if (definition_index == WEAPON_INVALID)definition_index = WEAPON_DEAGLE;
-				ImGui::SetCursorPos({ 21,65 });
-				ImGui::BeginChild("##1", { 166,520 });
+				const char* aa_pitch_list[] = {
+"None",
+"Offset",
+"Down",
+"Up",
+"Zero"
+				};
+
+				const char* aa_yaw_list[] = {
+					"None",
+					"Backwards",
+					"Spinbot",
+					"Lowerbody",
+					"Freestanding"
+				};
+
+				ImGui::Text("More Coming Soon!");
+				ImGui::Separator("AntiAim");
+				ImGui::Combo("Pitch", &g_Options.ragebot_antiaim_pitch, aa_pitch_list, IM_ARRAYSIZE(aa_pitch_list));
+				ImGui::Combo("Yaw", &g_Options.ragebot_antiaim_yaw, aa_yaw_list, IM_ARRAYSIZE(aa_yaw_list));
+				ImGui::Checkbox("Desync", &g_Options.ragebot_antiaim_desync);
+				ImGui::Checkbox("Break LBY", &g_Options.breaklby);
+				if (g_Options.ragebot_antiaim_yaw == 2) {
+					ImGui::SliderInt("Spin Speed", &g_Options.spinspeed, 1.f, 10.f, "%.f");
+				}
+				ImGui::Separator("Others");
+				ImGui::Text("Slowwalk Key"); ImGui::SameLine(); ImGui::Hotkey("                                                            ", &g_Options.ragebot_slowwalk_key);
+				ImGui::Spacing();
+				ImGui::SliderInt("Slowwalk Speed", &g_Options.ragebot_slowwalk_amt, 0, 100);
+				ImGui::Spacing();
+				ImGui::Checkbox("Fakelag", &g_Options.fakelag);
+				if (g_Options.fakelag) {
+					ImGui::SliderInt("Ticks", &g_Options.faketicks, 1.f, 62.f, "%.f");
+				}
+				ImGui::Checkbox("Fake Ping", &g_Options.fakeping);
+				if (g_Options.fakeping) {
+					ImGui::SliderInt("Ping", &g_Options.fakepingzzz, 1.f, 1000.f, "%.f");
+					ImGui::Text("On Key"); ImGui::SameLine(); ImGui::Hotkey("                                                                                             ", &g_Options.fakepingkey);
+				}
+				ImGui::Checkbox("Resolver", &g_Options.rageresolver);
+			}
+			ImGui::EndChild();
+		}
+
+		if (tab == 0)
+		{
+			static int definition_index = WEAPON_INVALID;
+
+			auto localPlayer = C_BasePlayer::GetPlayerByIndex(g_EngineClient->GetLocalPlayer());
+			if (g_EngineClient->IsInGame() && localPlayer && localPlayer->IsAlive() && localPlayer->m_hActiveWeapon() && localPlayer->m_hActiveWeapon()->IsGun())
+				definition_index = localPlayer->m_hActiveWeapon()->m_Item().m_iItemDefinitionIndex();
+			else
+				definition_index = WEAPON_INVALID;
+			if (definition_index == WEAPON_INVALID)definition_index = WEAPON_DEAGLE;
+			ImGui::SetCursorPos({ 21,65 });
+			ImGui::BeginChild("##1", { 166,520 });
+			{
+				auto settings = &g_Options.weapons[definition_index].legit;
+				float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
+				ImGui::Separator("Legitbot");
+				ImGui::Checkbox("Enabled", &settings->enabled);
+				ImGui::Text("Fov");
+				ImGui::Spacing();
+				ImGui::SliderFloat("##Fov", &settings->fov, 0.f, 20.f, "%.f");
+				ImGui::Spacing();
+				ImGui::Text("Smooth");
+				ImGui::Spacing();
+				ImGui::SliderFloat("##Smooth", &settings->smooth, 1.f, 20.f, "%.f");
+				ImGui::Spacing();
+				if (ImGui::BeginCombo("##hitbox_filter", "Hitboxes"))
 				{
-					auto settings = &g_Options.weapons[definition_index].legit;
-					float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
-					ImGui::Separator("Legitbot");
-					ImGui::Checkbox("Enabled", &settings->enabled);
-					ImGui::Text("Fov");
-					ImGui::Spacing();
-					ImGui::SliderFloat("##Fov", &settings->fov, 0.f, 20.f, "%.f");
-					ImGui::Spacing();
-					ImGui::Text("Smooth");
-					ImGui::Spacing();
-					ImGui::SliderFloat("##Smooth", &settings->smooth, 1.f, 20.f, "%.f");
-					ImGui::Spacing();
-					if (ImGui::BeginCombo("##hitbox_filter", "Hitboxes"))
-					{
-						ImGui::Selectable("Head", &settings->hitboxes.head, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Chest", &settings->hitboxes.chest, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Pelvis", &settings->hitboxes.pelvis, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Arms", &settings->hitboxes.arms, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Hands", &settings->hitboxes.hands, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Legs", &settings->hitboxes.legs, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Feet", &settings->hitboxes.feet, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Head", &settings->hitboxes.head, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Chest", &settings->hitboxes.chest, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Pelvis", &settings->hitboxes.pelvis, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Arms", &settings->hitboxes.arms, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Hands", &settings->hitboxes.hands, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Legs", &settings->hitboxes.legs, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Feet", &settings->hitboxes.feet, ImGuiSelectableFlags_DontClosePopups);
 
-						ImGui::EndCombo();
-					}
+					ImGui::EndCombo();
+				}
 
-					ImGui::Separator("Others");
-					ImGui::Checkbox("Backtrack", &g_Options.misc_backtrack);
-					if (g_Options.misc_backtrack) {
-						ImGui::SliderInt("Ticks", &g_Options.backtix, 0.f, 62.f, "%.f");
-					}
-					ImGui::Checkbox("Silent", &settings->silent2);
-					if (settings->silent2) {
-						ImGui::Text("  Silent fov");
-						ImGui::Spacing();
-						ImGui::SliderFloat("##Silentfov", &settings->silent_fov, 0.f, 360.f, "%.f");
-						ImGui::Spacing();
-					}
-					ImGui::Checkbox("Auto Fire##autofire", &settings->autofire.enabled);
-					ImGui::Checkbox("Autowall##autowall", &settings->autowall.enabled);
-					if (settings->autowall.enabled) {
-						ImGui::Spacing();
-						ImGui::SameLine();
-						ImGui::Text("Min Damage");
-						ImGui::Spacing();
-						ImGui::SliderInt("##minDamage", &settings->autowall.min_damage, 1, 100, "%i");
-					}
+				ImGui::Separator("Others");
+				ImGui::Checkbox("Backtrack", &g_Options.misc_backtrack);
+				if (g_Options.misc_backtrack) {
+					ImGui::SliderInt("Ticks", &g_Options.backtix, 0.f, 62.f, "%.f");
+				}
+				ImGui::Checkbox("Silent", &settings->silent2);
+				if (settings->silent2) {
+					ImGui::Text("  Silent fov");
+					ImGui::Spacing();
+					ImGui::SliderFloat("##Silentfov", &settings->silent_fov, 0.f, 360.f, "%.f");
+					ImGui::Spacing();
+				}
+				ImGui::Checkbox("Auto Fire##autofire", &settings->autofire.enabled);
+				ImGui::Checkbox("Autowall##autowall", &settings->autowall.enabled);
+				if (settings->autowall.enabled) {
+					ImGui::Spacing();
+					ImGui::SameLine();
+					ImGui::Text("Min Damage");
+					ImGui::Spacing();
+					ImGui::SliderInt("##minDamage", &settings->autowall.min_damage, 1, 100, "%i");
 					ImGui::Checkbox("RCS##rcs", &settings->rcs.enabled);
 
 					const char* rcs_types[] = {
@@ -369,12 +368,12 @@ void Menu::Render()
 					float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
 
 					ImGui::Checkbox("Team ESP", &g_Options.teamesp);
-					ImGui::Checkbox("Boxes", &g_Options.esp_player_boxes); 
-					ImGui::Checkbox("Occluded ", &g_Options.esp_player_boxesOccluded); 
-					ImGui::Checkbox("Names", &g_Options.esp_player_names); 
-					ImGui::Checkbox("Health", &g_Options.esp_player_health); 
-					ImGui::Checkbox("Armour", &g_Options.esp_player_armour); 
-					ImGui::Checkbox("Weapons", &g_Options.esp_player_weapons); 
+					ImGui::Checkbox("Boxes", &g_Options.esp_player_boxes);
+					ImGui::Checkbox("Occluded ", &g_Options.esp_player_boxesOccluded);
+					ImGui::Checkbox("Names", &g_Options.esp_player_names);
+					ImGui::Checkbox("Health", &g_Options.esp_player_health);
+					ImGui::Checkbox("Armour", &g_Options.esp_player_armour);
+					ImGui::Checkbox("Weapons", &g_Options.esp_player_weapons);
 					ImGui::Checkbox("Dropped Weapons", &g_Options.esp_dropped_weapons);
 					ImGui::Separator("Viewmodel");
 					ImGui::Spacing();
@@ -446,7 +445,7 @@ void Menu::Render()
 						ImGui::Text("Strap XYZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Strap XYZ", &g_Options.color_chams_strap_occluded);
 					}
 				}
-		ImGui::EndChild();
+				ImGui::EndChild();
 
 				ImGui::SetCursorPos({ 31 + 166,65 });
 				ImGui::BeginChild("##2", { 166,276 });
@@ -473,7 +472,6 @@ void Menu::Render()
 					if (g_Options.chams_player_enabled) {
 						ImGui::Checkbox("Occluded", &g_Options.chams_player_ignorez);
 						ImGui::Checkbox("Team Chams", &g_Options.teamchams);
-						ImGui::SliderFloat("Ambience", &g_Options.modelambience, 0.f, 1500.f);
 					}
 					ImGui::Checkbox("Arms Chams", &g_Options.chams_arms_enabled);
 					if (g_Options.chams_arms_enabled) {
@@ -534,6 +532,8 @@ void Menu::Render()
 					ImGui::Checkbox("Recoil Crosshair", &g_Options.rcross);
 					ImGui::Checkbox("Grenade Prediction", &g_Options.pnade);
 					ImGui::Checkbox("Third Person", &g_Options.misc_thirdperson); ImGui::SameLine(); ImGui::Hotkey("            ", &g_Options.misc_thirdperson_key);
+					ImGui::Spacing();
+					ImGui::SliderInt("Fov", &g_Options.fovchangaaa, 0, 120, "%.f");
 					ImGui::Checkbox("Aspect Ratio", &g_Options.aspectchange);
 					if (g_Options.aspectchange) {
 						ImGui::Spacing();
@@ -549,8 +549,6 @@ void Menu::Render()
 				ImGui::BeginChild("##1", { 166 ,585 });
 				{
 					ImGui::Separator("World");
-					ImGui::Spacing();
-					ImGui::SliderInt("World Fov", &g_Options.fovchangaaa, 0, 120, "%.f");
 					if (ImGui::BeginCombo("##removals", "Removals"))
 					{
 						ImGui::Selectable("Recoil", &g_Options.fatassmf, ImGuiSelectableFlags_DontClosePopups);
@@ -581,7 +579,7 @@ void Menu::Render()
 
 							ImGui::EndCombo();
 						}
-				}
+					}
 					ImGui::Checkbox("Color Modulation", &g_Options.colormodulate);
 					if (g_Options.colormodulate) {
 						ImGui::Spacing();
@@ -615,14 +613,14 @@ void Menu::Render()
 						ImGui::Spacing();
 					}
 
+				}
+				ImGui::EndChild();
 			}
-			ImGui::EndChild();
-		}
 
 			else if (tab == 3)
 			{
-			ImGui::SetCursorPos({ 31 + 188,65 });
-			ImGui::BeginChild("##3", { 166,420 /*nice*/ });
+				ImGui::SetCursorPos({ 31 + 188,65 });
+				ImGui::BeginChild("##3", { 166,420 /*nice*/ });
 				{
 					ImGui::Separator("General");
 
@@ -649,7 +647,7 @@ void Menu::Render()
 
 							ImGui::EndCombo();
 						}
-				}
+					}
 					ImGui::Checkbox("Velocity", &g_Options.Velocity);
 					ImGui::SameLine(group_w - 20);
 					ImGuiEx::ColorEdit4("##Velocity", &g_Options.Velocitycol);
@@ -682,7 +680,7 @@ void Menu::Render()
 								clantag = g_Options.clantag;
 							}
 						}
-					 }
+					}
 					if (ImGui::Button("Change Name")) {
 						//NameChange
 						void NameChange(); {
@@ -1060,7 +1058,7 @@ void Menu::Render()
 					ImGui::Spacing();
 					ImGui::SliderFloat("Wear", &selected_entry.wear, 0.01, 1.00f);
 					ImGui::Spacing();
-					if (ImGui::Button("update skins")) 
+					if (ImGui::Button("update skins"))
 					{
 						//	if (next_enb_time <= g_GlobalVars->curtime)
 						{
@@ -1098,7 +1096,8 @@ void Menu::Render()
 				ImGui::EndChild();
 			}
 		}
-	ImGui::End();
+		ImGui::End();
+	}
 }
 
 

@@ -47,19 +47,19 @@ void LagComp::LagCompensate(C_BasePlayer* player, LagRecord record)
 	}*/
 
 	// simulate animlayers
-	{
+	/* {
 		player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw;
 		player->UpdateClientSideAnimation();
 		memcpy(record.resolver_layers[0], player->GetAnimOverlays(), sizeof(AnimationLayer) * player->GetNumAnimOverlays());
 
-		player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw + 58.f;
+		player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw + 60.f;
 		player->UpdateClientSideAnimation();
 		memcpy(record.resolver_layers[1], player->GetAnimOverlays(), sizeof(AnimationLayer) * player->GetNumAnimOverlays());
 
-		player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw - 58.f;
+		player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw - 60.f;
 		player->UpdateClientSideAnimation();
 		memcpy(record.resolver_layers[2], player->GetAnimOverlays(), sizeof(AnimationLayer) * player->GetNumAnimOverlays());
-	}
+	}*/
 
 	resolver::Get().Resolve(player, record);
 
