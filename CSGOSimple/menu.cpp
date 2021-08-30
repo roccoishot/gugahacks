@@ -17,7 +17,6 @@
 #include "render.hpp"
 #include "./features/item_definitions.h"
 #include "features/skins.h"
-#include "CumBalls.h"
 using namespace std;
 
 void ReadDirectory(const std::string& name, std::vector<std::string>& v)
@@ -333,7 +332,7 @@ void Menu::Render()
 					if (settings->autowall.enabled) {
 						ImGui::Spacing();
 						ImGui::SameLine();
-						ImGui::Text("XYZ Min Damage");
+						ImGui::Text("Min Damage");
 						ImGui::Spacing();
 						ImGui::SliderInt("##minDamage", &settings->autowall.min_damage, 1, 100, "%i");
 					}

@@ -11,8 +11,6 @@ class IClientEntity : public IClientUnknown, public IClientRenderable, public IC
 {
 public:
 	virtual void Release(void) = 0;
-	virtual const Vector& GetAbsOrigin(void) const = 0;
-	virtual const Vector& GetAbsAngles(void) const = 0;
 };
 
 #pragma pack(push, 1)
