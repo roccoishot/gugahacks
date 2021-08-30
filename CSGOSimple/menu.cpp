@@ -17,6 +17,7 @@
 #include "render.hpp"
 #include "./features/item_definitions.h"
 #include "features/skins.h"
+#include "CumBalls.h"
 using namespace std;
 
 void ReadDirectory(const std::string& name, std::vector<std::string>& v)
