@@ -9,6 +9,10 @@ public:
     GlowObjectDefinition_t() { memset(this, 0, sizeof(*this)); }
 
     class IClientEntity* m_pEntity;    //0x0000
+    
+    int32_t m_nNextFreeSlot;
+    C_BaseEntity* m_hEntity;
+    
     union
     {
         Vector m_vGlowColor;           //0x0004
@@ -19,18 +23,24 @@ public:
             float   m_flBlue;          //0x000C
         };
     };
-    float   m_flAlpha;                 //0x0010
-    uint8_t pad_0014[4];               //0x0014
-    float   m_flSomeFloat;             //0x0018
-    uint8_t pad_001C[4];               //0x001C
-    float   m_flAnotherFloat;          //0x0020
+
+    float m_flAlpha;
+
+    
+    bool m_bGlowAlphaCappedByRenderAlpha;
+    float m_flGlowAlphaFunctionOfMaxVelocity;
+
+    float m_flGlowAlphaMax;
+    float m_flGlowPulseOverdrive;
+
     bool    m_bRenderWhenOccluded;     //0x0024
     bool    m_bRenderWhenUnoccluded;   //0x0025
-    bool    m_bFullBloomRender;        //0x0026
-    uint8_t pad_0027[5];               //0x0027
-    int32_t m_nGlowStyle;              //0x002C
-    int32_t m_nSplitScreenSlot;        //0x0030
-    int32_t m_nNextFreeSlot;           //0x0034
+    bool    m_bFullBloomRender;        //0x sex
+    int m_flBloomAmount; // m_nFullBloomStencilTestValue ?
+
+    int32_t m_nGlowType;
+    int32_t m_nSplitScreenSlot;
+   
 
     bool IsUnused() const { return m_nNextFreeSlot != GlowObjectDefinition_t::ENTRY_IN_USE; }
 
