@@ -358,6 +358,7 @@ void Menu::Render()
 				}
 				ImGui::EndChild();
 			}
+		}
 
 			if (tab == 1)
 			{
@@ -1098,7 +1099,6 @@ void Menu::Render()
 		}
 		ImGui::End();
 	}
-}
 
 
 	void Menu::Toggle()
