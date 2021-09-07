@@ -335,6 +335,7 @@ void Menu::Render()
 					ImGui::Text("Min Damage");
 					ImGui::Spacing();
 					ImGui::SliderInt("##minDamage", &settings->autowall.min_damage, 1, 100, "%i");
+				}
 					ImGui::Checkbox("RCS##rcs", &settings->rcs.enabled);
 
 					const char* rcs_types[] = {
@@ -358,7 +359,6 @@ void Menu::Render()
 				}
 				ImGui::EndChild();
 			}
-		}
 
 			if (tab == 1)
 			{
@@ -735,6 +735,7 @@ void Menu::Render()
 					ImGui::Separator("Test");
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
 					if (g_Options.enablebeta) {
+						ImGui::Checkbox("Spectator List", &g_Options.spectatorlist);
 						ImGui::Checkbox("180 Desync", &g_Options.faketest);
 					}
 					ImGui::EndChild();
