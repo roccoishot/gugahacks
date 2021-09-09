@@ -258,6 +258,7 @@ void Menu::Render()
 				if (g_Options.ragebot_antiaim_yaw == 2) {
 					ImGui::SliderInt("Spin Speed", &g_Options.spinspeed, 1.f, 10.f, "%.f");
 				}
+				Color::White;
 				ImGui::Separator("Others");
 				ImGui::Text("Slowwalk Key"); ImGui::SameLine(); ImGui::Hotkey("                                                            ", &g_Options.ragebot_slowwalk_key);
 				ImGui::Spacing();
@@ -735,7 +736,6 @@ void Menu::Render()
 					ImGui::Separator("Test");
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
 					if (g_Options.enablebeta) {
-						ImGui::Checkbox("Spectator List", &g_Options.spectatorlist);
 						ImGui::Checkbox("180 Desync", &g_Options.faketest);
 					}
 					ImGui::EndChild();

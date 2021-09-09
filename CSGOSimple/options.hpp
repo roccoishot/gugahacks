@@ -207,7 +207,7 @@ public:
 		// ESP
 		// 
 	//	bool esp_enabled = false;
-	bool spectatorlist = false;
+	bool slidewalk = false;
 	bool rageresolver = false;
 	int fakepingkey = 0;
 	int vangleyaw = 0;
