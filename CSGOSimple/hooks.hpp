@@ -51,6 +51,7 @@ namespace Hooks
 	using FireEvent = bool(__thiscall*)(IGameEventManager2*, IGameEvent* pEvent);
     long __stdcall hkEndScene(IDirect3DDevice9* device);
     long __stdcall hkReset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters);
+	void __fastcall Hooked_GetRemoteFramerate(void* ecx, void* edx, float* pflFrameTime, float* pflFrameTimeStdDeviation);
     void __stdcall hkCreateMove(int sequence_number, float input_sample_frametime, bool active, bool& bSendPacket);
 	void __fastcall hkCreateMove_Proxy(void* _this, int, int sequence_number, float input_sample_frametime, bool active);
 	void __fastcall hkPaintTraverse(void* _this, int edx, vgui::VPANEL panel, bool forceRepaint, bool allowForce);

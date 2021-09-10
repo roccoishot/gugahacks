@@ -232,18 +232,15 @@ void Options::SetupVisuals()
 	SetupValue(misc_thirdperson_key, "Visuals", "Thirdperson Key");
 	SetupValue(carlosfatcock, "Visuals", "Hand Side");
 	SetupValue(shine_oc, "Visuals", "Shine Occluded");
-	SetupValue(worldb, "Visuals", "World Blue");
-	SetupValue(worldg, "Visuals", "World Green");
-	SetupValue(worldr, "Visuals", "World Red");
+	SetupColor(colormodulation, "World Color");
 	SetupValue(worldglowb, "Visuals", "World Glow Blue");
 	SetupValue(worldglowg, "Visuals", "World Glow Green");
 	SetupValue(worldglowr, "Visuals", "World Glow Red");
-	SetupValue(propb, "Visuals", "Prop Blue");
-	SetupValue(propg, "Visuals", "Prop Green");
-	SetupValue(propr, "Visuals", "Prop Red");
+	SetupColor(proprmodulation, "Prop Color");
 	SetupValue(fullbright, "Visuals", "Fullbright");
 	SetupValue(colormodulate, "Visuals", "World Modulation");
 	SetupValue(propmodulate, "Visuals", "Prop Modulation");
+	SetupValue(propalpha, "Visuals", "Prop Alpha");
 	SetupValue(fovchangaaa, "Visuals", "World Fov");
 	SetupValue(aspectchange, "Visuals", "Aspect Ratio");
 	SetupValue(aspectratio, "Visuals", "Ratio");
@@ -267,8 +264,6 @@ void Options::SetupVisuals()
 	SetupValue(daylight, "Visuals", "Day");
 	SetupValue(cloudy1, "Visuals", "Cloudy");
 	SetupValue(skydust, "Visuals", "Dust");
-	SetupValue(misc_nightmode, "Visuals", "Nightmode");
-	SetupValue(propalpha, "Visuals", "Prop Alpha");
 	SetupValue(enablechanger, "Visuals", "Viewmodel Changer");
 	SetupValue(viewmodel_fov, "Visuals", "FOV");
 	SetupValue(viewmodel_offset_x, "Visuals", "X");
@@ -305,6 +300,7 @@ void Options::SetupMisc()
 	SetupValue(lastjump, "Misc", "Last jump");
 	SetupValue(lastjumpoutline, "Misc", "Last jump outline");
 	SetupValue(autoaccept, "Misc", "Auto accept");
+	SetupValue(misc_showranks, "Misc", "Rank Reveal");
 	SetupValue(no_flash, "Misc", "No flash");
 	SetupValue(no_smoke, "Misc", "Filter smoke");
 	SetupValue(misc_bhop, "Misc", "Bunny hop");

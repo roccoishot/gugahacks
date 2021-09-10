@@ -234,13 +234,6 @@ public:
 		bool esp_items = false;
 		bool aspectchange = false;
 		float aspectratio = 0;
-		float worldr = 0.7f;
-		float worldg = 0.7f;
-		float worldb = 0.7f;
-		float propr = 0.7f;
-		float propg = 0.7f;
-		float propb = 0.7f;
-		float propalpha = 1.f;
 		float worldglowr = 0;
 		float worldglowg = 0;
 		float worldglowb = 0;
@@ -290,6 +283,7 @@ public:
 		//
 		// MISC
 		//
+		float propalpha = 1;
 		bool ducknair = false;
 		bool fullbright = false;
 		bool misc_chatspam = false;
@@ -442,6 +436,8 @@ public:
 		Color color_chams_sleeve_occluded = { 0, 0, 0 };
 		Color color_watermark= {0, 0, 0}; // no menu config cuz its useless
 		Color player_enemy_visible_shine = { 255, 255, 255 };
+		Color colormodulation = { 0, 0, 0, 255 };
+		Color proprmodulation = { 0, 0, 0, 255 };
 
 protected:
 	//std::vector<ConfigValue<char>*> chars;

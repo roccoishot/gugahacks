@@ -489,6 +489,14 @@ namespace Hooks {
 
 		//Desync
 
+		if (g_Options.clantag) {
+			Misc::ClanTag();
+		}
+		else
+		{
+
+		}
+
 		if (!cmd || !cmd->command_number)
 			return;
 		QAngle oldAngle = cmd->viewangles;

@@ -584,13 +584,13 @@ void Menu::Render()
 					}
 					ImGui::Checkbox("Color Modulation", &g_Options.colormodulate);
 					if (g_Options.colormodulate) {
-						ImGui::Spacing();
-						ImGui::SliderFloat("R", &g_Options.worldr, 0.025, 0.7);
-						ImGui::Spacing();
-						ImGui::SliderFloat("G", &g_Options.worldg, 0.025, 0.7);
-						ImGui::Spacing();
-						ImGui::SliderFloat("B", &g_Options.worldb, 0.025, 0.7);;
-						ImGui::Spacing();
+						ImGui::Text("World Color"); ImGui::SameLine(); ImGuiEx::ColorEdit4("World Color", &g_Options.colormodulation);
+						ImGui::Checkbox("Prop Modulation", &g_Options.propmodulate);
+						if (g_Options.propmodulate) {
+							ImGui::Text("Prop Color"); ImGui::SameLine(); ImGuiEx::ColorEdit4("Prop Color", &g_Options.proprmodulation);
+							ImGui::Text("Prop Alpha"); 
+							ImGui::SliderFloat("", &g_Options.propalpha, 0, 1);;
+						}
 					}
 					ImGui::Separator("Glow");
 					ImGui::Spacing();
@@ -602,18 +602,6 @@ void Menu::Render()
 					ImGui::EndChild();
 					ImGui::SetCursorPos({ 31 + 188,65 });
 					ImGui::BeginChild("##3", { 166,316 });
-					ImGui::Separator("Props");
-					ImGui::Checkbox("Prop Modulation", &g_Options.propmodulate);
-					if (g_Options.propmodulate) {
-						ImGui::SliderFloat("Prop R", &g_Options.propr, 0.025, 0.7);
-						ImGui::Spacing();
-						ImGui::SliderFloat("Prop G", &g_Options.propg, 0.025, 0.7);
-						ImGui::Spacing();
-						ImGui::SliderFloat("Prop B", &g_Options.propb, 0.025, 0.7);;
-						ImGui::Spacing();
-						ImGui::SliderFloat("Alpha", &g_Options.propalpha, 0, 1);;
-						ImGui::Spacing();
-					}
 
 				}
 				ImGui::EndChild();
@@ -663,26 +651,7 @@ void Menu::Render()
 					}
 
 					//Misc Man Shit FRFR
-					if (ImGui::Checkbox("Clantag", &g_Options.clantag)) {
-						//Clantag
-						void ClantagChange(); {
-							static bool changed_clan = false;
-							static int clantag = 0;
-							if (g_Options.clantag != clantag) {
-								changed_clan = false;
-							}
-							if (!changed_clan) {
-								if (g_Options.clantag == true) {
-									Utils::SetClantag("GUGAHACKS");
-								}
-								if (g_Options.clantag == false) {
-									Utils::SetClantag("");
-								}
-								changed_clan = true;
-								clantag = g_Options.clantag;
-							}
-						}
-					}
+					ImGui::Checkbox("Clantag", &g_Options.clantag);
 					if (ImGui::Button("Change Name")) {
 						//NameChange
 						void NameChange(); {
@@ -733,6 +702,8 @@ void Menu::Render()
 					ImGui::Checkbox("Duck In Air", &g_Options.ducknair);
 					ImGui::Checkbox("Bowl's Fat Cock", &g_Options.bowlsfreshcut);
 					ImGui::Checkbox("Chat Spam", &g_Options.misc_chatspam);
+					ImGui::Checkbox("Rank Reveal", &g_Options.autoaccept);
+					ImGui::Checkbox("Auto Accept", &g_Options.misc_showranks);
 					ImGui::Separator("Test");
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
 					if (g_Options.enablebeta) {

@@ -2,6 +2,27 @@
 #include <algorithm>
 #include "BetaAA.h"
 
+std::string clantag_ = (("GUGAHACKS.SU  "));
+std::string fart_ = ((" "));
+
+void Misc::ClanTag()
+{
+    if (!g_EngineClient->IsInGame())
+        return;
+
+        static size_t lastTime = 0;
+
+        if (GetTickCount() > lastTime)
+        {
+            clantag_ += clantag_.at(0);
+            clantag_.erase(0, 1);
+
+            Utils::SetClantag(clantag_.c_str());
+
+            lastTime = GetTickCount() + 650;
+        }
+    }
+
 bool break_lby = false;
 float next_update = 0;
 void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {

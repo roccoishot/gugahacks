@@ -14,6 +14,7 @@ namespace Misc
 	void Fakelag(CUserCmd* cmd, bool& bSendPacket);
 	void UpdateLBY(CUserCmd* cmd, bool& bSendPacket);
 	void Bhop(CUserCmd* cmd);
+	void ClanTag();
 	void RCS(CUserCmd* cmd);
 	void Triggerbot(CUserCmd* cmd);
 	void Jumpbug(CUserCmd* cmd);

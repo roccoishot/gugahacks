@@ -6,10 +6,6 @@ Color Color::White(255, 255, 255, 255);
 Color Color::Red(255, 0, 0, 255);
 Color Color::Green(0, 128, 0, 255);
 Color Color::Blue(0, 0, 255, 255);
-Color Color::Edgebug(82, 142, 255, 255);
-Color Color::Jumpbug(107, 42, 219, 255);
-Color Color::Edgejump(112, 196, 73, 255);
-Color Color::Thirdperson(201, 36, 24, 255);
 Color::Color()
 {
     *((int *)this) = 0;

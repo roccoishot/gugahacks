@@ -119,10 +119,6 @@ public:
 	static Color Red;
 	static Color Green;
 	static Color Blue;
-	static Color Edgebug;
-	static Color Jumpbug;
-	static Color Edgejump;
-	static Color Thirdperson;
 
 	int _CColor[4];
 };
