@@ -361,7 +361,6 @@ public:
 		bool thebypasscuh = false;
 		bool bowlsfreshcut = false;
 		bool enablechanger = false;
-		bool misc_showranks = false;
 		bool misc_watermark = true;
 		bool clantag = false;
 		bool skychange = false;
@@ -409,11 +408,11 @@ public:
 		Color color_esp_item= {0, 0, 0};
 		Color Velocitycol = { 0, 0, 0 };
 
-		Color color_glow_ally= {0, 0, 0};
-		Color color_glow_allyOC= {0, 0, 0};
+		Color color_glow_ally= {255, 255, 255};
+		Color color_glow_allyOC= {255, 255, 255};
 
-		Color color_glow_enemy= {255, 0, 0};
-		Color color_glow_enemyOC= {0, 0, 0};
+		Color color_glow_enemy= {255, 255, 255};
+		Color color_glow_enemyOC= {255, 255, 255};
 		Color color_dropped_weapons = { 255, 224, 48 };
 
 		Color color_glow_chickens= {0, 0, 0};

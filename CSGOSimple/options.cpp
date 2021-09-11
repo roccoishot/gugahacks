@@ -300,7 +300,6 @@ void Options::SetupMisc()
 	SetupValue(lastjump, "Misc", "Last jump");
 	SetupValue(lastjumpoutline, "Misc", "Last jump outline");
 	SetupValue(autoaccept, "Misc", "Auto accept");
-	SetupValue(misc_showranks, "Misc", "Rank Reveal");
 	SetupValue(no_flash, "Misc", "No flash");
 	SetupValue(no_smoke, "Misc", "Filter smoke");
 	SetupValue(misc_bhop, "Misc", "Bunny hop");

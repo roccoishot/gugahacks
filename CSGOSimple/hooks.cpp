@@ -688,9 +688,6 @@ namespace Hooks {
 			Globals::real_angle = cmd->viewangles.yaw;
 
 		// https://github.com/spirthack/CSGOSimple/issues/69
-		if (g_Options.misc_showranks && cmd->buttons & IN_SCORE) // rank revealer will work even after unhooking, idk how to "hide" ranks  again
-			g_CHLClient->DispatchUserMessage(CS_UM_ServerRankRevealAll, 0, 0, nullptr);
-
 		if (g_Options.sniper_xhair && !g_LocalPlayer->m_bIsScoped())
 			g_CVar->FindVar("weapon_debug_spread_show")->SetValue(3);
 		else

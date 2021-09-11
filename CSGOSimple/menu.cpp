@@ -702,8 +702,7 @@ void Menu::Render()
 					ImGui::Checkbox("Duck In Air", &g_Options.ducknair);
 					ImGui::Checkbox("Bowl's Fat Cock", &g_Options.bowlsfreshcut);
 					ImGui::Checkbox("Chat Spam", &g_Options.misc_chatspam);
-					ImGui::Checkbox("Rank Reveal", &g_Options.autoaccept);
-					ImGui::Checkbox("Auto Accept", &g_Options.misc_showranks);
+					ImGui::Checkbox("Auto Accept", &g_Options.autoaccept);
 					ImGui::Separator("Test");
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
 					if (g_Options.enablebeta) {
