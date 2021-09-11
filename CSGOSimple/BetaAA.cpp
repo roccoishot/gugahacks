@@ -74,17 +74,35 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 		static QAngle LastRealAngle = QAngle(0, 0, 0);
 
 		if (g_Options.faketest == true) {
-			if (!bSendPacket && !(cmd->buttons & IN_ATTACK))
-			{
-				static bool bFlip = false;
-				cmd->viewangles.yaw += bFlip ? 180.f : -180.f;
+			if (GetKeyState(g_Options.invertaakey)) {
+				if (!bSendPacket && !(cmd->buttons & IN_ATTACK))
+				{
+					static bool bFlip = true;
+					cmd->viewangles.yaw += bFlip ? 175.f : -175.f;
+				}
+			}
+			if (!GetKeyState(g_Options.invertaakey)) {
+				if (!bSendPacket && !(cmd->buttons & IN_ATTACK))
+				{
+					static bool bFlip = false;
+					cmd->viewangles.yaw += bFlip ? 175.f : -175.f;
+				}
 			}
 		}
 		if (g_Options.faketest == false) {
-			if (!bSendPacket && !(cmd->buttons & IN_ATTACK))
-			{
-				static bool bFlip = false;
-				cmd->viewangles.yaw += bFlip ? 58.f : -58.f;
+			if (GetKeyState(g_Options.invertaakey)) {
+				if (!bSendPacket && !(cmd->buttons & IN_ATTACK))
+				{
+					static bool bFlip = true;
+					cmd->viewangles.yaw += bFlip ? 58.f : -58.f;
+				}
+			}
+			if (!GetKeyState(g_Options.invertaakey)) {
+				if (!bSendPacket && !(cmd->buttons & IN_ATTACK))
+				{
+					static bool bFlip = false;
+					cmd->viewangles.yaw += bFlip ? 58.f : -58.f;
+				}
 			}
 		}
 

@@ -192,6 +192,7 @@ void Options::SetupVisuals()
 	SetupValue(esp_player_boxesOccluded, "ESP", "Occluded");
 	SetupValue(esp_player_names, "Visuals", "Names");
 	SetupValue(esp_player_health, "Visuals", "Health");
+	SetupValue(esp_player_armour, "Visuals", "Armour");
 	SetupValue(esp_player_weapons, "Visuals", "Weapon");
 	SetupValue(esp_dropped_weapons, "Visuals", "Dropped Weapons");
 	SetupValue(chams_player_enabled, "Visuals", "Chams Vis");
@@ -276,9 +277,9 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
-	SetupValue(faketest, "Misc", "Chat Spam");
-	SetupValue(faketest, "Test", "Player Trail");
+	SetupValue(misc_chatspam, "Misc", "Chat Spam");
 	SetupValue(faketest, "Test", "180 Desync");
+	SetupValue(invertaakey, "Rage", "Invert AA Key");
 	SetupValue(rageresolver, "Rage", "Rage Resolver");
 	SetupValue(fakepingkey, "Rage", "Fake Ping Key");
 	SetupValue(ragebot_antiaim_pitch, "Rage", "AntiAim Pitch");

@@ -283,6 +283,7 @@ public:
 		//
 		// MISC
 		//
+		int invertaakey = 0;
 		float propalpha = 1;
 		bool ducknair = false;
 		bool fullbright = false;

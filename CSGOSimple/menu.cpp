@@ -254,6 +254,7 @@ void Menu::Render()
 				ImGui::Combo("Pitch", &g_Options.ragebot_antiaim_pitch, aa_pitch_list, IM_ARRAYSIZE(aa_pitch_list));
 				ImGui::Combo("Yaw", &g_Options.ragebot_antiaim_yaw, aa_yaw_list, IM_ARRAYSIZE(aa_yaw_list));
 				ImGui::Checkbox("Desync", &g_Options.ragebot_antiaim_desync);
+				ImGui::Text("Invert AA"); ImGui::SameLine(); ImGui::Hotkey("                                                                                                                      ", &g_Options.invertaakey);
 				ImGui::Checkbox("Break LBY", &g_Options.breaklby);
 				if (g_Options.ragebot_antiaim_yaw == 2) {
 					ImGui::SliderInt("Spin Speed", &g_Options.spinspeed, 1.f, 10.f, "%.f");
