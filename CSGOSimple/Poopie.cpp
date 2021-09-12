@@ -1,6 +1,7 @@
 ﻿#include "./features/Misc.hpp"
 #include <algorithm>
 #include "BetaAA.h"
+#include "crypt_str.h"
 
 std::string clantag_ = (("GUGAHACKS.SU  "));
 std::string fart_ = ((" "));
@@ -214,25 +215,33 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd)
 
 void Misc::ChatSpama(CUserCmd* cmd) {
     {
-        static float old_curtime = g_GlobalVars->curtime;
-        if (g_Options.misc_chatspam) {
-            if (g_GlobalVars->curtime > old_curtime + 2.f) {
-                int bighack;
-                bighack = rand() % 10 + 1;
-                switch (bighack) {
-                case 1: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | Probably Doin' You're Mother Currently"); break;
-                case 2: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | eat my penris"); break;
-                case 3: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | Me > You"); break;
-                case 4: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | Your IQ must be lower than your GPA"); break;
-                case 5: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | femboy fucked!!"); break;
-                case 6: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | Farting IS NOT Cumming"); break;
-                case 7: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | When I shit... I SHIT"); break;
-                case 8: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | Gugahacks > ALL"); break;
-                case 9: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | discord.gg/qukzNNda75"); break;
-                case 10: g_EngineClient->ExecuteClientCmd("say GUGAHACKS.SU | i.imgur.com/mucKbbq.gif"); break;
-                    old_curtime = g_GlobalVars->curtime;
-                }
-            }
+        if (!g_Options.misc_chatspam)
+            return;
+
+        static std::string chatspam[] =
+        {
+            crypt_str("GUGAHACKS.SU | Probably Doin' You're Mother Currently."),
+            crypt_str("GUGAHACKS.SU | eat my penris"),
+            crypt_str("GUGAHACKS.SU | Me > You"),
+            crypt_str("GUGAHACKS.SU | Your IQ must be lower than your GPA"),
+            crypt_str("GUGAHACKS.SU | femboy fucked!!."),
+            crypt_str("GUGAHACKS.SU | Farting IS NOT Cumming"),
+            crypt_str("GUGAHACKS.SU | When I shit... I SHIT"),
+            crypt_str("GUGAHACKS.SU | Gugahacks > ALL"),
+            crypt_str("GUGAHACKS.SU | discord.gg/qukzNNda75"),
+            crypt_str("GUGAHACKS.SU | i.imgur.com/mucKbbq.gif"),
+        };
+
+        static auto lastspammed = 0;
+
+        if (GetTickCount() - lastspammed > 800)
+        {
+            lastspammed = GetTickCount();
+
+            srand(GetTickCount());
+            std::string msg = crypt_str("say ") + chatspam[rand() % 10];
+
+            g_EngineClient->ExecuteClientCmd(msg.c_str());
         }
     }
 }

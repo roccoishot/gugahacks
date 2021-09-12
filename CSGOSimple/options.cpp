@@ -330,9 +330,7 @@ void Options::SetupMisc()
 	SetupValue(hitfoundgame, "Misc", "FoundGame");
 	SetupValue(breaklby, "Misc", "Break LBY");
 	SetupValue(removeblur, "Misc", "Reduce Blur");
-	SetupValue(menur, "Misc", "Accent Red");
-	SetupValue(menug, "Misc", "Accent Green");
-	SetupValue(menub, "Misc", "Accent Blue");
+	SetupColor(menucolor, "Menu Accents");
 	SetupValue(fakelag, "Misc", "Fakelag");
 	SetupValue(enablebeta, "Misc", "Beta");
 	SetupValue(faketicks, "Misc", "FL Ticks");

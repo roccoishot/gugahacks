@@ -180,8 +180,8 @@ void Menu::Render()
 	Style->GrabRounding = 0;
 	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
 	Style->Colors[ImGuiCol_TitleBg] = ImColor(0, 0, 0); //Titlebg = title bg theme
-	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menur, g_Options.menug, g_Options.menub, 255);
-	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menur, g_Options.menug, g_Options.menub, 255);
+	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
 	Style->Colors[ImGuiCol_WindowBg] = ImColor(22, 22, 22);
 	Style->Colors[ImGuiCol_ChildBg] = ImColor(22, 22, 22);
 	Style->Colors[ImGuiCol_FrameBg] = ImColor(33, 33, 33);
@@ -676,11 +676,7 @@ void Menu::Render()
 					ImGui::Spacing();
 					ImGui::Separator("Accents");
 					ImGui::Spacing();
-					ImGui::SliderInt("Red", &g_Options.menur, 0.f, 255.f, "%.f");
-					ImGui::Spacing();
-					ImGui::SliderInt("Green", &g_Options.menug, 0.f, 255.f, "%.f");
-					ImGui::Spacing();
-					ImGui::SliderInt("Blue", &g_Options.menub, 0.f, 255.f, "%.f");
+					ImGui::Text("Menu Accents"); ImGui::SameLine(); ImGuiEx::ColorEdit4("Menu Accents", &g_Options.menucolor);
 
 				}
 				ImGui::EndChild();
@@ -1108,9 +1104,9 @@ void Menu::Render()
 		ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.400000f, 0.400000f, 0.400000f, 0.450000f));
 		ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.400000f, 0.400000f, 0.400000f, 0.800000f));
 		ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.400000f, 0.400000f, 0.400000f, 0.800000f));
-		ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(g_Options.menur, g_Options.menug, g_Options.menub, 255));
-		ImGui::PushStyleColor(ImGuiCol_SeparatorHovered, ImVec4(g_Options.menur, g_Options.menug, g_Options.menub, 255));
-		ImGui::PushStyleColor(ImGuiCol_SeparatorActive, ImVec4(g_Options.menur, g_Options.menug, g_Options.menub, 255));
+		ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255));
+		ImGui::PushStyleColor(ImGuiCol_SeparatorHovered, ImVec4(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255));
+		ImGui::PushStyleColor(ImGuiCol_SeparatorActive, ImVec4(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255));
 		ImGui::PushStyleColor(ImGuiCol_ResizeGrip, ImVec4(1.000000f, 1.000000f, 1.000000f, 0.160000f));
 		ImGui::PushStyleColor(ImGuiCol_ResizeGripHovered, ImVec4(0.780000f, 0.820000f, 1.000000f, 0.600000f));
 		ImGui::PushStyleColor(ImGuiCol_ResizeGripActive, ImVec4(0.780000f, 0.820000f, 1.000000f, 0.900000f));

@@ -217,9 +217,6 @@ public:
 		bool esp_enemies_only = false;
 		bool colormodulate = false;
 		bool propmodulate = false;
-		int menur = 255.f;
-		int menug = 255.f;
-		int menub = 255.f;
 		bool disablepro = false;
 		bool esp_player_boxes = false;
 		bool esp_player_boxesOccluded = false;
@@ -438,6 +435,7 @@ public:
 		Color player_enemy_visible_shine = { 255, 255, 255 };
 		Color colormodulation = { 0, 0, 0, 255 };
 		Color proprmodulation = { 0, 0, 0, 255 };
+		Color menucolor = { 255,255,255,255 };
 
 protected:
 	//std::vector<ConfigValue<char>*> chars;

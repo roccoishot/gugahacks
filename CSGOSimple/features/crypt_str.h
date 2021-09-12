@@ -1,7 +1,7 @@
 #pragma once
 #pragma optimize ("", off)
 
-#include "version2.h"
+#include "..\version.h"
 #include <array>
 
 constexpr auto _time = __TIME__;
