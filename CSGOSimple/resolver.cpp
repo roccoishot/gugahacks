@@ -2,17 +2,17 @@
 
 void resolver::Resolve(C_BasePlayer* player, LagRecord record)
 {
-	
+
 	if (player->m_fFlags() & FL_ONGROUND) // no desync in air lmao
 	{
 		int side = 0;
 		float delta = 58.f;
-		
+
 		auto animState = player->GetPlayerAnimState();
 
 		if (!animState)
 			return;
-		
+
 
 		if (player->m_vecVelocity().Length2D() <= 1.1f)
 		{
@@ -20,9 +20,10 @@ void resolver::Resolve(C_BasePlayer* player, LagRecord record)
 		}
 		else // a little special something from sopmek
 		{
-			if (record.server_layers[6].m_flWeight > 0.1f && !(record.server_layers[12].m_flCycle * 1000)) // make sure that they are animating
+			//if (record.server_layers[6].m_flWeight > 0.1f
+			//	&& !(record.server_layers[12].m_flCycle * 1000)) // make sure that they are animating
 			{
-				float nildelta = abs(record.server_layers[6].m_flPlaybackRate - record.resolver_layers[0][6].m_flPlaybackRate);
+				/*float nildelta = abs(record.server_layers[6].m_flPlaybackRate - record.resolver_layers[0][6].m_flPlaybackRate);
 				float delta1 = abs(record.server_layers[6].m_flPlaybackRate - record.resolver_layers[1][6].m_flPlaybackRate);
 				float delta2 = abs(record.server_layers[6].m_flPlaybackRate - record.resolver_layers[2][6].m_flPlaybackRate);
 
@@ -32,7 +33,7 @@ void resolver::Resolve(C_BasePlayer* player, LagRecord record)
 						side = 1;
 					else
 						side = -1;
-				}
+				}*/
 
 				side = player->m_flPoseParameter()[7] > 0.5 ? 1 : -1;
 			}
