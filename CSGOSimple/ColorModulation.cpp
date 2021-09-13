@@ -16,6 +16,16 @@ void CNightmode::PerformNightmode()
 		const char* group = pMaterial->GetTextureGroupName();
 		const char* name = pMaterial->GetName();
 
+		if (strstr(name, ("models/props/de_nuke/hr_nuke/nuke_skydome_001/nuke_skydome_001")))
+		{
+			pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		}
+
+		if (strstr(name, ("models/props/de_inferno/hr_i/inferno_skybox")))
+		{
+			pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		}
+
 		if (g_Options.colormodulate) {
 			if (strstr(group, ("World textures")))
 			{
