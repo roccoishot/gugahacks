@@ -49,6 +49,24 @@ void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {
         cmd->viewangles.yaw += g_LocalPlayer->m_flLowerBodyYawTarget();//120.f;
     }
 }
+
+void Misc::SilentWalk(CUserCmd* cmd)
+{
+    Vector moveDir = Vector(0.f, 0.f, 0.f);
+    float maxSpeed = 130.f;
+    int movetype = g_LocalPlayer->m_nMoveType();
+    bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
+    if (movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || InAir || cmd->buttons & IN_DUCK || !(cmd->buttons & IN_SPEED))
+        return;
+    moveDir.x = cmd->sidemove;
+    moveDir.y = cmd->forwardmove;
+    moveDir = Math::ClampMagnitude(moveDir, maxSpeed);
+    cmd->sidemove = moveDir.x;
+    cmd->forwardmove = moveDir.y;
+    if (!(g_LocalPlayer->m_vecVelocity().Length2D() > maxSpeed + 1))
+        cmd->buttons &= ~IN_SPEED;
+}
+
 //--------------------------------------------------------------------------------
 void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
     if (g_EngineClient->IsVoiceRecording())
@@ -215,6 +233,7 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd)
 
 void Misc::ChatSpama(CUserCmd* cmd) {
     {
+
         if (!g_Options.misc_chatspam)
             return;
 

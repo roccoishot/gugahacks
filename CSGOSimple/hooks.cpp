@@ -517,6 +517,9 @@ namespace Hooks {
 			Misc::Fakelag(cmd, bSendPacket);
 		}
 
+		if (g_Options.slidewalk)
+			Misc::SilentWalk(cmd);
+
 		QAngle LastAngle = QAngle(0, 0, 0);
 		Math::Normalize3(cmd->viewangles);
 		Math::ClampAngles(cmd->viewangles);

@@ -50,7 +50,8 @@ struct legitbot_s
 	bool silent = false;
 	bool silent2 = false;
 	bool hsilent = false;
-
+	bool enablehc = false;
+	int hitchance = 0;
 	bool flash_check = false;
 	bool smoke_check = false;
 	bool backtracking = false;
@@ -280,6 +281,7 @@ public:
 		//
 		// MISC
 		//
+		bool removescope = true;
 		int invertaakey = 0;
 		float propalpha = 1;
 		bool ducknair = false;
@@ -401,8 +403,8 @@ public:
 		Color color_esp_ally_occluded= {0, 0, 0};
 		Color color_esp_enemy_occluded= { 24, 104, 173 };
 		Color color_esp_weapons= {255, 255, 255};
-		Color color_esp_defuse= {0, 0, 0};
-		Color color_esp_c4= {0, 0, 0};
+		Color color_esp_defuse= {100, 100, 255};
+		Color color_esp_c4= {255, 0, 0};
 		Color color_esp_item= {0, 0, 0};
 		Color Velocitycol = { 0, 0, 0 };
 

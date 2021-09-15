@@ -165,6 +165,8 @@ void Options::SetupWeapons()
 
 			SetupValue(aimbot->autofire.enabled, key, "AutoFire Enabled");
 			SetupValue(aimbot->autofire.hotkey, key, "AutoFire Hotkey");
+			SetupValue(aimbot->enablehc, "Aimbot", "Hitchance Enable");
+			SetupValue(aimbot->hitchance, "Aimbot", "Hitchance Value");
 
 		}
 	}
@@ -277,6 +279,7 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
+	SetupValue(slidewalk, "Test", "Fast Shiftwalk");
 	SetupValue(misc_chatspam, "Misc", "Chat Spam");
 	SetupValue(faketest, "Test", "180 Desync");
 	SetupValue(invertaakey, "Rage", "Invert AA Key");

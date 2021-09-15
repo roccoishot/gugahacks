@@ -120,9 +120,10 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 	std::vector<int> hitboxes;
 
 	//I be getting mad head :weary:
-	if (settings.hitboxes.head)
+	if (settings.hitboxes.head) {
 		hitboxes.emplace_back(HITBOX_HEAD);
 		hitboxes.emplace_back(HITBOX_NECK);
+	}
 
 	if (settings.hitboxes.chest)
 	{
@@ -254,13 +255,27 @@ void CLegitbot::Run(CUserCmd* cmd)
 
 	if (GetClosestPlayer(cmd, bestBone, fov, angles))
 	{
-		if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
-			cmd->buttons |= IN_ATTACK;
-			const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
-			const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
 
-			if (next_shot > 0)
-			cmd->buttons &= ~IN_ATTACK;
+		if (settings.enablehc && (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread()) < settings.hitchance) {
+			if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
+				cmd->buttons |= IN_ATTACK;
+				const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
+				const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
+
+				if (next_shot > 0)
+					cmd->buttons &= ~IN_ATTACK;
+			}
+		}
+		if (!settings.enablehc)
+		{
+			if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
+				cmd->buttons |= IN_ATTACK;
+				const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
+				const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
+
+				if (next_shot > 0)
+					cmd->buttons &= ~IN_ATTACK;
+			}
 		}
 	}
 
