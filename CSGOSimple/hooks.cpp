@@ -213,6 +213,10 @@ namespace Hooks {
 		static auto carlosbigpenis(g_CVar->FindVar("cl_righthand"));
 		carlosbigpenis->SetValue(g_Options.carlosfatcock);
 
+		static auto r_modelAmbientMin = g_CVar->FindVar("r_modelAmbientMin");
+		if (g_Options.amibence && r_modelAmbientMin->GetFloat() != g_Options.amibence * 0.05f) //-V550
+			r_modelAmbientMin->SetValue(g_Options.amibence * 0.05f);
+
 		//Shot Info
 		if (g_Options.shotinfo == false) {
 			static auto shotinfo = g_CVar->FindVar("cl_weapon_debug_show_accuracy");

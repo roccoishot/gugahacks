@@ -241,6 +241,7 @@ void Options::SetupVisuals()
 	SetupValue(worldglowr, "Visuals", "World Glow Red");
 	SetupColor(proprmodulation, "Prop Color");
 	SetupValue(fullbright, "Visuals", "Fullbright");
+	SetupValue(amibence, "Visuals", "Model Ambience");
 	SetupValue(colormodulate, "Visuals", "World Modulation");
 	SetupValue(propmodulate, "Visuals", "Prop Modulation");
 	SetupValue(propalpha, "Visuals", "Prop Alpha");

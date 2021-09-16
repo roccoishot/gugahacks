@@ -208,6 +208,7 @@ public:
 		// ESP
 		// 
 	//	bool esp_enabled = false;
+	float amibence = 0;
 	bool slidewalk = false;
 	bool rageresolver = false;
 	int fakepingkey = 0;

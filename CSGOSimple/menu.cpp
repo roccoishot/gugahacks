@@ -583,6 +583,8 @@ void Menu::Render()
 					if (g_Options.sky_changer) {
 						ImGui::Combo("Sky", &g_Options.skyshitsssss, SkyList, IM_ARRAYSIZE(SkyList));
 					}
+					ImGui::Text("Model Ambience");
+					ImGui::SliderFloat("  ", &g_Options.amibence, 0, 1500);
 					ImGui::Checkbox("Color Modulation", &g_Options.colormodulate);
 					if (g_Options.colormodulate) {
 						ImGui::Text("World Color"); ImGui::SameLine(); ImGuiEx::ColorEdit4("World Color", &g_Options.colormodulation);
