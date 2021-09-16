@@ -13,51 +13,35 @@ void HitMarkerEvent::FireGameEvent(IGameEvent* event)
 		if (g_EngineClient->GetPlayerForUserID(event->GetInt("attacker")) == g_EngineClient->GetLocalPlayer() &&
 			g_EngineClient->GetPlayerForUserID(event->GetInt("userid")) != g_EngineClient->GetLocalPlayer())
 		{
-			if (g_Options.hitmetallic) {
+			if (g_Options.hitmarkersound == 0) {
 				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
 				g_EngineClient->ExecuteClientCmd("playvol buttons/arena_switch_press_02 0.6");
 			}
-			if (g_Options.hitchicken) {
-				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
-				g_EngineClient->ExecuteClientCmd("playvol ambient/creatures/chicken_death_01 0.6");
-			}
-			if (g_Options.hitdog) {
-				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
-				g_EngineClient->ExecuteClientCmd("playvol ambient/creatures/dog_bark_close_04 0.6");
-			}
-			if (g_Options.hitspark) {
-				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
-				g_EngineClient->ExecuteClientCmd("playvol ambient/energy/spark5 0.6");
-			}
-			if (g_Options.hitfranz) {
-				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
-				g_EngineClient->ExecuteClientCmd("playvol buttons/blip1 0.6");
-			}
-			if (g_Options.hitfail) {
-				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
-				g_EngineClient->ExecuteClientCmd("playvol buttons/button10 0.6");
-			}
-			if (g_Options.hitbeep) {
-				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
-				g_EngineClient->ExecuteClientCmd("playvol common/beep 0.6");
-			}
-			if (g_Options.hithurt) {
-				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
-				g_EngineClient->ExecuteClientCmd("playvol player/damage3 0.6");
-			}
-			if (g_Options.hitsnap) {
-				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
-				g_EngineClient->ExecuteClientCmd("playvol player/neck_snap_01 0.6");
-			}
-			if (g_Options.hitdisagree) {
-				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
-				g_EngineClient->ExecuteClientCmd("playvol player/vo/balkan/disagree01 0.6");
-			}
-			if (g_Options.hitagree) {
+			if (g_Options.hitmarkersound == 1) {
 				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
 				g_EngineClient->ExecuteClientCmd("playvol player/vo/balkan/thanks03 0.6");
 			}
-			if (g_Options.hitfoundgame) {
+			if (g_Options.hitmarkersound == 2) {
+				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
+				g_EngineClient->ExecuteClientCmd("playvol player/vo/balkan/disagree01 0.6");
+			}
+			if (g_Options.hitmarkersound == 3) {
+				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
+				g_EngineClient->ExecuteClientCmd("playvol ambient/energy/spark5 0.6");
+			}
+			if (g_Options.hitmarkersound == 4) {
+				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
+				g_EngineClient->ExecuteClientCmd("playvol buttons/blip1 0.6");
+			}
+			if (g_Options.hitmarkersound == 5) {
+				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
+				g_EngineClient->ExecuteClientCmd("playvol buttons/button10 0.6");
+			}
+			if (g_Options.hitmarkersound == 6) {
+				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
+				g_EngineClient->ExecuteClientCmd("playvol common/beep 0.6");
+			}
+			if (g_Options.hitmarkersound == 7) {
 				hitMarkerInfo.push_back({ g_GlobalVars->curtime + 0.8f, event->GetInt("dmg_health") });
 				g_EngineClient->ExecuteClientCmd("playvol weapons/hegrenade/beep 0.6");
 			}

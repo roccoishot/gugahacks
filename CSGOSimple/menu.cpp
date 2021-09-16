@@ -566,24 +566,22 @@ void Menu::Render()
 					ImGui::Checkbox("Metallic Mode", &g_Options.metallica);
 					ImGui::Checkbox("Fullbright", &g_Options.fullbright);
 					ImGui::Checkbox("Sky Changer", &g_Options.sky_changer);
+					const char* SkyList[] = {
+	"Night",
+	"Baggage",
+	"Tibet",
+	"Vietnam",
+	"Lunacy",
+	"Embassy",
+	"Italy",
+	"Jungle",
+	"Office",
+	"Day",
+	"Cloudy",
+	"Dust"
+					};
 					if (g_Options.sky_changer) {
-						if (ImGui::BeginCombo("##skynames", "Sky"))
-						{
-							ImGui::Selectable("Night", &g_Options.night2);
-							ImGui::Selectable("Baggage", &g_Options.baggage);
-							ImGui::Selectable("Tibet", &g_Options.tibet);
-							ImGui::Selectable("Vietnam", &g_Options.vietnam);
-							ImGui::Selectable("Lunacy", &g_Options.sky_lunacy);
-							ImGui::Selectable("Embassy", &g_Options.embassy);
-							ImGui::Selectable("Italy", &g_Options.italy);
-							ImGui::Selectable("Jungle", &g_Options.jungle);
-							ImGui::Selectable("Office", &g_Options.office);
-							ImGui::Selectable("Day", &g_Options.daylight);
-							ImGui::Selectable("Cloudy", &g_Options.cloudy1);
-							ImGui::Selectable("Dust", &g_Options.skydust);
-
-							ImGui::EndCombo();
-						}
+						ImGui::Combo("Sky", &g_Options.skyshitsssss, SkyList, IM_ARRAYSIZE(SkyList));
 					}
 					ImGui::Checkbox("Color Modulation", &g_Options.colormodulate);
 					if (g_Options.colormodulate) {
@@ -619,27 +617,23 @@ void Menu::Render()
 
 					float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
 					static char newname[64];
-					static char skyass[64];
 					//Ha penis
 					ImGui::Checkbox("Watermark##hc", &g_Options.misc_watermark);
 					//Fast Shit Doe
 					ImGui::Checkbox("Anti OBS", &g_Options.antiobs);
 					ImGui::Checkbox("Hitsounds", &g_Options.misc_hitmarker);
+					const char* HitList[] = {
+	"Metallic",
+		"Agree",
+		"Disagree",
+		"Spark",
+		"FranzJ",
+		"Spark",
+		"Gmod",
+		"Found Game",
+					};
 					if (g_Options.misc_hitmarker) {
-						if (ImGui::BeginCombo("##hitsoundscuh", "Hitsounds"))
-						{
-							ImGui::Selectable("Metallic", &g_Options.hitmetallic);
-							ImGui::Selectable("Agree", &g_Options.hitagree);
-							ImGui::Selectable("Disagree", &g_Options.hitdisagree);
-							ImGui::Selectable("Spark", &g_Options.hitspark);
-							ImGui::Selectable("FranzJ", &g_Options.hitfranz);
-							ImGui::Selectable("Fail", &g_Options.hitfail);
-							ImGui::Selectable("Beep", &g_Options.hitbeep);
-							ImGui::Selectable("Snap", &g_Options.hitsnap);
-							ImGui::Selectable("Found Game", &g_Options.hitfoundgame);
-
-							ImGui::EndCombo();
-						}
+						ImGui::Combo("Sound", &g_Options.hitmarkersound, HitList, IM_ARRAYSIZE(HitList));
 					}
 					ImGui::Checkbox("Velocity", &g_Options.Velocity);
 					ImGui::SameLine(group_w - 20);

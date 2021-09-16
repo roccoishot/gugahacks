@@ -211,8 +211,6 @@ public:
 	bool slidewalk = false;
 	bool rageresolver = false;
 	int fakepingkey = 0;
-	int vangleyaw = 0;
-	int vanglepitch = 0;
 	bool teamesp = false;
 	bool teamchams = false;
 		bool esp_enemies_only = false;
@@ -235,7 +233,6 @@ public:
 		float worldglowr = 0;
 		float worldglowg = 0;
 		float worldglowb = 0;
-		bool propfix = false;
 
 		// 
 		// GLOW
@@ -281,7 +278,6 @@ public:
 		//
 		// MISC
 		//
-		bool removescope = true;
 		int invertaakey = 0;
 		float propalpha = 1;
 		bool ducknair = false;
@@ -296,43 +292,12 @@ public:
 		int ragebot_slowwalk_key = 0;
 
 		bool antiobs = false;
-		bool yawaafoward = false;
-		bool yawaaback = false;
-		bool pitchaaup = false;
-		bool pitchaadown = false;
-		bool pitchaanone = false;
 		bool drawfov = false;
 		int backtix = 0;
-		bool hitmetallic = false;
-		bool hitchicken = false;
-		bool hitdog = false;
-		bool hitspark = false;
-		bool hitfranz = false;
-		bool hitfail = false;
-		bool hitbeep = false;
-		bool hithurt = false;
-		bool hitsnap = false;
-		bool hitdisagree = false;
-		bool hitagree = false;
-		bool hitfoundgame = false;
-
-			bool night2 = false;
-			bool baggage = false;
-			bool tibet = false;
-			bool vietnam = false;
-			bool sky_lunacy = false;
-			bool embassy = false;
-			bool italy = false;
-			bool jungle = false;
-			bool office = false;
-			bool daylight = false;
-			bool cloudy1 = false;
-			bool skydust = false;
-			bool pitchshit = false;
+		int hitmarkersound = 0;
 		bool misc_backtrack = false;
 		bool misc_hitmarker = false;
 		bool breaklby = false;
-		const char* skyname;
 		bool shotinfo = false;
 		bool rcross = false;
 		int misc_thirdperson_key = 0;
@@ -344,6 +309,7 @@ public:
 		int spinspeed = 1;
 		bool shine_oc = false;
 		bool sky_changer = false;
+		int skyshitsssss = 0;
 		float misc_nightmode = 1.0f;
 		bool removeblur = false;
 		bool misc_bhop = false;
@@ -358,7 +324,6 @@ public:
 		bool metallica = false;
 		bool ragfloat = false;
 		bool matrix = false;
-		bool thebypasscuh = false;
 		bool bowlsfreshcut = false;
 		bool enablechanger = false;
 		bool misc_watermark = true;
@@ -372,15 +337,12 @@ public:
 		bool autoaccept = false;
 		bool no_flash = false;
 		bool no_smoke = false;
-		bool spectator_list = false;
 		int AutoStafe_key;
 		bool autostrafe = false;
-		int desync_hotkey = 0;
 		int faketicks = 0;
 		bool fakelag = false;
 		bool fakeping = false;
 		int fakepingzzz = 0;
-		bool menurescale = false;
 		bool enablebeta = false;
 		struct
 		{

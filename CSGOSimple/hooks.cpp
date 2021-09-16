@@ -315,51 +315,51 @@ namespace Hooks {
 
 		//Sky Changer
 		if (g_Options.sky_changer) {
-			if (g_Options.night2) {
+			if (g_Options.skyshitsssss == 0) {
 				static auto buttsex = g_CVar->FindVar("sv_skyname");
 				buttsex->SetValue("sky_csgo_night02");
 			}
-			if (g_Options.baggage) {
+			if (g_Options.skyshitsssss == 1) {
 				static auto buttsex = g_CVar->FindVar("sv_skyname");
 				buttsex->SetValue("cs_baggage_skybox_");
 			}
-			if (g_Options.tibet) {
+			if (g_Options.skyshitsssss == 2) {
 				static auto buttsex = g_CVar->FindVar("sv_skyname");
 				buttsex->SetValue("cs_tibet");
 			}
-			if (g_Options.vietnam) {
+			if (g_Options.skyshitsssss == 3) {
 				static auto buttsex = g_CVar->FindVar("sv_skyname");
 				buttsex->SetValue("vietnam");
 			}
-			if (g_Options.sky_lunacy) {
+			if (g_Options.skyshitsssss == 4) {
 				static auto buttsex = g_CVar->FindVar("sv_skyname");
 				buttsex->SetValue("sky_lunacy");
 			}
-			if (g_Options.embassy) {
+			if (g_Options.skyshitsssss == 5) {
 				static auto buttsex = g_CVar->FindVar("sv_skyname");
 				buttsex->SetValue("embassy");
 			}
-			if (g_Options.italy) {
+			if (g_Options.skyshitsssss == 6) {
 				static auto buttsex = g_CVar->FindVar("sv_skyname");
 				buttsex->SetValue("italy");
 			}
-			if (g_Options.jungle) {
+			if (g_Options.skyshitsssss == 7) {
 				static auto buttsex = g_CVar->FindVar("sv_skyname");
 				buttsex->SetValue("italy");
 			}
-			if (g_Options.office) {
+			if (g_Options.skyshitsssss == 8) {
 				static auto buttsex = g_CVar->FindVar("sv_skyname");
 				buttsex->SetValue("office");
 			}
-			if (g_Options.daylight) {
+			if (g_Options.skyshitsssss == 9) {
 				static auto buttsex = g_CVar->FindVar("sv_skyname");
 				buttsex->SetValue("sky_cs15_daylight02_hdr");
 			}
-			if (g_Options.cloudy1) {
+			if (g_Options.skyshitsssss == 10) {
 				static auto buttsex = g_CVar->FindVar("sv_skyname");
 				buttsex->SetValue("sky_csgo_cloudy01");
 			}
-			if (g_Options.skydust) {
+			if (g_Options.skyshitsssss == 11) {
 				static auto buttsex = g_CVar->FindVar("sv_skyname");
 				buttsex->SetValue("sky_dust");
 			}

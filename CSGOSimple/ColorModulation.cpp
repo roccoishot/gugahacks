@@ -16,7 +16,7 @@ void CNightmode::PerformNightmode()
 		const char* group = pMaterial->GetTextureGroupName();
 		const char* name = pMaterial->GetName();
 
-		if (strstr(name, ("models/props/de_nuke/hr_nuke/nuke_skydome_001/nuke_skydome_001")))
+		if (strstr(name, ("models/props/de_nuke/hr_nuke/nuke_skydome_001")))
 		{
 			pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
 		}
