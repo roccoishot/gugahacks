@@ -208,6 +208,7 @@ public:
 		// ESP
 		// 
 	//	bool esp_enabled = false;
+	bool autoscope = false;
 	float amibence = 0;
 	bool slidewalk = false;
 	bool rageresolver = false;
@@ -306,7 +307,6 @@ public:
 		float misc_thirdperson_dist = 50.f;
 		bool pnade = false;
 		bool fatassmf = false;
-		bool carlosfatcock = true;
 		int spinspeed = 1;
 		bool shine_oc = false;
 		bool sky_changer = false;

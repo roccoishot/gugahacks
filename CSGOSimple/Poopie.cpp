@@ -8,6 +8,9 @@ std::string fart_ = ((" "));
 
 void Misc::ClanTag()
 {
+    if (!g_Options.clantag)
+        return;
+
     if (!g_EngineClient->IsInGame())
         return;
 
@@ -48,6 +51,50 @@ void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {
         bSendPacket = false;
         cmd->viewangles.yaw += g_LocalPlayer->m_flLowerBodyYawTarget();//120.f;
     }
+}
+
+void Misc::AutoStop(CUserCmd* cmd) {
+    /*Vector velocity = g_LocalPlayer->m_vecVelocity();
+    QAngle direction;
+    Math::VectorAngles(velocity, direction);
+    float speed = velocity.Length2D();
+
+    direction.yaw = cmd->viewangles.yaw - direction.yaw;
+
+    Vector forward;
+    Math::AngleVectors(direction, forward);
+
+    Vector right = (forward + 0.217812) * -speed;
+    Vector left =  (forward + -0.217812) * -speed;
+
+    Vector move_forward = (forward + 0.217812) * -speed;
+    Vector move_backward = (forward + -0.217812) * -speed;
+
+    if (!(cmd->buttons & IN_MOVELEFT))
+    {
+        cmd->sidemove += +left.y;
+    }
+
+    if (!(cmd->buttons & IN_MOVERIGHT))
+    {
+        cmd->sidemove -= -right.y;
+    }
+
+    if (!(cmd->buttons & IN_FORWARD))
+    {
+        if (cmd->buttons & IN_MOVELEFT || cmd->buttons & IN_MOVERIGHT || GetAsyncKeyState(g_Options.AutoStafe_key)) //insert here your bool for auto strafe
+            return;
+
+        cmd->forwardmove += +move_forward.x;
+    }
+
+    if (!(cmd->buttons & IN_BACK))
+    {
+        if (cmd->buttons & IN_MOVELEFT || cmd->buttons & IN_MOVERIGHT || GetAsyncKeyState(g_Options.AutoStafe_key)) //insert here your bool for auto strafe
+            return;
+
+        cmd->forwardmove -= -move_backward.x;
+    }*/
 }
 
 void Misc::SilentWalk(CUserCmd* cmd)

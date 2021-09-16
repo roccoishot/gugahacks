@@ -15,6 +15,7 @@ namespace Misc
 	void UpdateLBY(CUserCmd* cmd, bool& bSendPacket);
 	void ClanTag();
 	void SilentWalk(CUserCmd* cmd);
+	void AutoStop(CUserCmd* cmd);
 	void SlowWalk(CUserCmd* cmd);
 	void ChatSpama(CUserCmd* cmd);
 	void SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd);

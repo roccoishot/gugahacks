@@ -233,7 +233,6 @@ void Options::SetupVisuals()
 	SetupValue(misc_thirdperson, "Visuals", "Thirdperson");
 	SetupValue(misc_thirdperson_dist, "Visuals", "Thirdperson Distance");
 	SetupValue(misc_thirdperson_key, "Visuals", "Thirdperson Key");
-	SetupValue(carlosfatcock, "Visuals", "Hand Side");
 	SetupValue(shine_oc, "Visuals", "Shine Occluded");
 	SetupColor(colormodulation, "World Color");
 	SetupValue(worldglowb, "Visuals", "World Glow Blue");
@@ -270,6 +269,7 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
+	SetupValue(autoscope, "Aimbot", "Auto Scope");
 	SetupValue(slidewalk, "Test", "Fast Shiftwalk");
 	SetupValue(misc_chatspam, "Misc", "Chat Spam");
 	SetupValue(faketest, "Test", "180 Desync");

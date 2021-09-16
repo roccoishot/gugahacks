@@ -331,6 +331,7 @@ void Menu::Render()
 					ImGui::SliderFloat("##Silentfov", &settings->silent_fov, 0.f, 360.f, "%.f");
 					ImGui::Spacing();
 				}
+				ImGui::Checkbox("AutoScope", &g_Options.autoscope);
 				ImGui::Checkbox("Auto Fire##autofire", &settings->autofire.enabled);
 				ImGui::Checkbox("Autowall##autowall", &settings->autowall.enabled);
 				if (settings->autowall.enabled) {
@@ -392,7 +393,6 @@ void Menu::Render()
 						ImGui::SliderInt("Y", &g_Options.viewmodel_offset_y, -20, 20, "%.f");
 						ImGui::Spacing();
 						ImGui::SliderInt("Z", &g_Options.viewmodel_offset_z, -20, 20, "%.f");
-						ImGui::Checkbox("Right Hand", &g_Options.carlosfatcock);
 					};
 
 				}
@@ -702,7 +702,7 @@ void Menu::Render()
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
 					if (g_Options.enablebeta) {
 						ImGui::Checkbox("180 Desync", &g_Options.faketest);
-						ImGui::Checkbox("Fast Shiftwalk", &g_Options.slidewalk);
+						ImGui::Checkbox("Fast Shiftwalk Charge", &g_Options.slidewalk);
 					}
 					ImGui::EndChild();
 				}

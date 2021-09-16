@@ -210,8 +210,6 @@ namespace Hooks {
 		}
 
 		//Carlos Has one big ass penis no cap on the dead homies
-		static auto carlosbigpenis(g_CVar->FindVar("cl_righthand"));
-		carlosbigpenis->SetValue(g_Options.carlosfatcock);
 
 		static auto r_modelAmbientMin = g_CVar->FindVar("r_modelAmbientMin");
 		if (g_Options.amibence && r_modelAmbientMin->GetFloat() != g_Options.amibence * 0.05f) //-V550
@@ -492,14 +490,7 @@ namespace Hooks {
 		auto verified = g_Input->GetVerifiedCmd(sequence_number);
 
 		//Desync
-
-		if (g_Options.clantag) {
-			Misc::ClanTag();
-		}
-		else
-		{
-
-		}
+		Misc::ClanTag();
 
 		if (!cmd || !cmd->command_number)
 			return;

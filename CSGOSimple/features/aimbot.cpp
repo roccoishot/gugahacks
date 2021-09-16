@@ -256,6 +256,15 @@ void CLegitbot::Run(CUserCmd* cmd)
 	if (GetClosestPlayer(cmd, bestBone, fov, angles))
 	{
 
+		if (g_Options.autoscope)
+		{
+			if (!g_LocalPlayer->m_bIsScoped() && !g_LocalPlayer->m_hActiveWeapon()->IsPistol() && g_LocalPlayer->m_hActiveWeapon()->IsSniper())
+			{
+				cmd->buttons |= IN_ZOOM;
+			}
+
+		}
+
 		if (settings.enablehc && (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread()) < settings.hitchance) {
 			if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
 				cmd->buttons |= IN_ATTACK;
