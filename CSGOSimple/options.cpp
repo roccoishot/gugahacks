@@ -319,6 +319,7 @@ void Options::SetupMisc()
 	SetupValue(fakeping, "Misc", "Fake Ping");
 	SetupValue(fakepingzzz, "Misc", "Fake Ping Tix");
 	SetupValue(backtix, "Misc", "Backtrack Ticks");
+	SetupValue(gugawalk, "Misc", "GugaWALK");
 }
 
 void Options::Initialize()

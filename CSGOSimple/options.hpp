@@ -296,6 +296,7 @@ public:
 		bool antiobs = false;
 		bool drawfov = false;
 		int backtix = 0;
+		bool gugawalk = false;
 		int hitmarkersound = 0;
 		bool misc_backtrack = false;
 		bool misc_hitmarker = false;
