@@ -27,11 +27,6 @@ public:
     uint32_t      GetOffset(const std::string& tableName, const std::string& propName);
     RecvProp*     GetNetvarProp(const std::string& tableName, const std::string& propName);
 
-    template<typename ...Args>
-    uint32_t GetOffset(const std::string& szTableName, Args&&... args) {
-        return GetOffset(szTableName, { std::forward<Args>(args)... });
-    }
-
 private:
     static netvar_table  LoadTable(RecvTable* clientClass);
     static void          DumpTable(std::ostream& stream, const netvar_table& table, uint32_t indentation);

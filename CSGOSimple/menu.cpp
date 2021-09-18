@@ -274,8 +274,6 @@ void Menu::Render()
 					ImGui::Text("On Key"); ImGui::SameLine(); ImGui::Hotkey("                                                                                             ", &g_Options.fakepingkey);
 				}
 				ImGui::Checkbox("Resolver", &g_Options.rageresolver);
-				//gugawalk
-				ImGui::Checkbox("Guga Walk", &g_Options.gugawalk);
 			}
 			ImGui::EndChild();
 		}

@@ -40,7 +40,6 @@
 #include "interfaces/IRefCounted.hpp"
 #include "Interfaces/IGameTypes.hpp"
 #include "Interfaces/IStudioRender.hpp"
-#include "../IMemAlloc.h"
 
 #include "Misc/Convar.hpp"
 #include "Misc/CUserCmd.hpp"
@@ -56,7 +55,6 @@ namespace Interfaces
     void Initialize();
     void Dump();
 }
-inline IMemAlloc* g_pMemAlloc;
 
 inline IVEngineClient*       g_EngineClient   = nullptr;
 inline IBaseClientDLL*       g_CHLClient      = nullptr;

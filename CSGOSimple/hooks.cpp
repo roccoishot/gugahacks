@@ -19,7 +19,6 @@
 #include "lagcompesnation.h"
 #include "Globals.h"
 #include "Colormodulation.h"
-#include "AnimFix.h"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -59,8 +58,6 @@ namespace Hooks {
 		sv_cheats.hook_index(index::SvCheatsGetBool, hkSvCheatsGetBool);
 		stdrender_hook.hook_index(index::DrawModelExecute2, hkDrawModelExecute2);
 		viewrender_hook.hook_index(index::RenderSmokeOverlay, RenderSmokeOverlay);
-
-		hlclient_hook.hook_index(index::FuckDaWriteUserCommandHook, FuckThisStupidAssShit);
 
 		sequence_hook = new recv_prop_hook(C_BaseViewModel::m_nSequence(), RecvProxy);
 	}
@@ -115,15 +112,6 @@ namespace Hooks {
 				Hooks::hk_netchannel.hook_index(index, send_net_msg);
 			}
 		}
-		
-		// rocco is fucking retarded
-		/*if (!strcmp(szEventName, "cs_game_disconnected"))
-		{
-			if (hk_netchannel.is_hooked())
-			{
-				hk_netchannel.unhook_all();
-			}
-		}*/
 
 		return oFireEvent(g_GameEvents, pEvent);
 	}
@@ -487,42 +475,6 @@ namespace Hooks {
 		return hr;
 	}
 	//--------------------------------------------------------------------------------
-
-	bool __fastcall FuckThisStupidAssShit(void* ecx, void* edx, int slot, bf_write* buf, int from, int to, bool is_new_command)
-	{
-
-		static auto oFuckingStupid = hlclient_hook.get_original<decltype(&FuckThisStupidAssShit)>(index::FuckDaWriteUserCommandHook); // fat shit
-
-		static int obesity_amount = 0;
-
-		if (!g_Options.gugawalk)
-			return oFuckingStupid(ecx, edx, slot, buf, from, to, is_new_command);
-
-		if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
-			return oFuckingStupid(ecx, edx, slot, buf, from, to, is_new_command);
-
-		// LOVE SEX!
-		auto tocmd = g_Input->GetUserCmd(to);
-
-		if (obesity_amount < 16)
-		{
-			tocmd->tick_count = INT_MAX;
-			obesity_amount++;
-
-			return oFuckingStupid(ecx, edx, slot, buf, from, to, is_new_command);
-		}
-
-		while (obesity_amount > 0) {
-			tocmd->tick_count += 200;
-
-			oFuckingStupid(ecx, edx, slot, buf, from, to, false);
-			--obesity_amount;
-		}
-
-		return true;
-	}
-	//--------------------------------------------------------------------------------
-
 	void __stdcall hkCreateMove(int sequence_number, float input_sample_frametime, bool active, bool& bSendPacket)
 	{
 		static auto oCreateMove = hlclient_hook.get_original<decltype(&hkCreateMove_Proxy)>(index::CreateMove);
@@ -543,7 +495,9 @@ namespace Hooks {
 
 		Globals::m_cmd = cmd;
 
-		if (g_Options.misc_backtrack) TimeWarp::Get().CreateMove(cmd);
+		if (g_Options.misc_backtrack) {
+			TimeWarp().Get().CreateMove(cmd);
+		}
 
 		if (g_Options.misc_chatspam) {
 			Misc::ChatSpama(cmd);
@@ -832,23 +786,6 @@ namespace Hooks {
 				skins::on_frame_stage_notify(false);
 			else if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_END)
 				skins::on_frame_stage_notify(true);
-			else if (stage == FRAME_NET_UPDATE_END)
-			{
-				//g_Animfix->ApplyLocalPlayer();
-				if (g_LocalPlayer && g_LocalPlayer->IsAlive())
-				{
-					auto state = g_LocalPlayer->GetPlayerAnimState();
-					if (state)
-					{
-						float delta = Globals::real_angle - state->m_flEyeYaw;
-
-						if (fabs(delta) > 28.f)
-							state->m_flGoalFeetYaw += delta;
-
-						g_LocalPlayer->UpdateClientSideAnimation();
-					}
-				}
-			}
 
 			static int originalIdx = 0;
 

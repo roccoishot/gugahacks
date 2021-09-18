@@ -24,7 +24,7 @@ namespace index
 	constexpr auto LockCursor               = 67;
 	constexpr auto RenderSmokeOverlay       = 41;
 	constexpr auto FireEvent                = 9;
-	constexpr auto FuckDaWriteUserCommandHook = 24;
+
 }
 
 namespace Hooks
@@ -66,10 +66,6 @@ namespace Hooks
 	void __fastcall RenderSmokeOverlay(void* _this, int, const bool unk);
 	bool _fastcall send_net_msg(void* ecx, void* edx, INetMessage* msg, bool reliable, bool voice);
 	bool __stdcall hkFireEvent(IGameEvent* pEvent);
-	bool __fastcall FuckThisStupidAssShit(void* ecx, void* edx, int slot, bf_write* buf, int from, int to, bool is_new_command);
-
 
 	void RecvProxy(const CRecvProxyData* pData, void* entity, void* output);
-
-	
 }

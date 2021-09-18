@@ -2,7 +2,6 @@
 #include <algorithm>
 #include "BetaAA.h"
 #include "crypt_str.h"
-#include "Globals.h"
 
 std::string clantag_ = (("GUGAHACKS.SU  "));
 std::string fart_ = ((" "));
@@ -278,7 +277,7 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd)
             if (g_EngineClient->IsInGame() && g_LocalPlayer)
             {
                 if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
-                    g_LocalPlayer->SetVAngles(cmd->viewangles); // cmd->viewangles
+                    g_LocalPlayer->SetVAngles(cmd->viewangles);
             }
     }
 
