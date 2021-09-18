@@ -274,6 +274,10 @@ void CLegitbot::Run(CUserCmd* cmd)
 					cmd->buttons &= ~IN_ATTACK;
 			}
 		}
+		else
+		{
+			return;
+		}
 		if (!settings.enablehc)
 		{
 			if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
