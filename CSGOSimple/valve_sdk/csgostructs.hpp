@@ -3,6 +3,7 @@
 #include "sdk.hpp"
 #include <array>
 #include "../helpers/utils.hpp"
+#include "netvars.hpp"
 
 #define NETVAR(type, name, table, netvar)                           \
     type& name##() const {                                          \
@@ -21,6 +22,8 @@
 	static auto prop_ptr = NetvarSys::Get().GetNetvarProp(table,netvar); \
 	return prop_ptr; \
 }
+
+
 
 struct datamap_t;
 class AnimationLayer;
@@ -223,6 +226,12 @@ public:
 		return static_cast<C_BasePlayer*>(GetEntityByIndex(i));
 	}
 
+	template<class T>
+	T GetValue14(const int offset)
+	{
+		return *reinterpret_cast<T*>(reinterpret_cast<std::uintptr_t>(this) + offset);
+	}
+
 	NETVAR(bool, m_bHasDefuser, "DT_CSPlayer", "m_bHasDefuser");
 	NETVAR(bool, m_bGunGameImmunity, "DT_CSPlayer", "m_bGunGameImmunity");
 	NETVAR(int32_t, m_iShotsFired, "DT_CSPlayer", "m_iShotsFired");
@@ -254,8 +263,33 @@ public:
 	NETVAR(int, m_nSequence, "DT_BaseViewModel", "m_nSequence");
 	NETVAR(float, m_flNextAttack, "DT_BaseCombatCharacter", "m_flNextAttack");
 	NETVAR(int32_t, m_nSurvivalTeam, "DT_CSPlayer", "m_nSurvivalTeam");
+	NETVAR(bool, client_side_animation, "DT_BaseAnimating", "m_bClientSideAnimation");
 
 	//NETVAR(int, m_iAccount, "DT_CSPlayer", "m_iAccount");
+
+	Vector& GetAbsVelocity()
+	{
+		static unsigned int offset = Utils::FindInDataMap(GetPredDescMap(), "m_vecAbsVelocity");
+		return *(Vector*)((uintptr_t)this + offset);
+	}
+
+	Vector GetVelocity()
+	{
+		static int m_vecVelocity = NetvarSys::Get().GetOffset("DT_BasePlayer", "localdata", "m_vecVelocity[0]");
+		return GetValue14<Vector>(m_vecVelocity);
+	}
+
+	int& GetEffects()
+	{
+		static unsigned int offset = Utils::FindInDataMap(GetPredDescMap(), "m_fEffects");
+		return *(int*)((uintptr_t)this + offset);
+	}
+
+	int& GetEFlags()
+	{
+		static unsigned int offset = Utils::FindInDataMap(GetPredDescMap(), "m_iEFlags");
+		return *(int*)((uintptr_t)this + offset);
+	}
 
 	void SetAbsAngles(const Vector& angle)
 	{
