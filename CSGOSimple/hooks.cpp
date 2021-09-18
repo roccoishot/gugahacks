@@ -113,14 +113,6 @@ namespace Hooks {
 			}
 		}
 
-		if (!strcmp(szEventName, "cs_game_disconnected"))
-		{
-			if (hk_netchannel.is_hooked())
-			{
-				hk_netchannel.unhook_all();
-			}
-		}
-
 		return oFireEvent(g_GameEvents, pEvent);
 	}
 	//--------------------------------------------------------------------------------

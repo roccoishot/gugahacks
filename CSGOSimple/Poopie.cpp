@@ -116,12 +116,12 @@ void Misc::SilentWalk(CUserCmd* cmd)
 
 //--------------------------------------------------------------------------------
 void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
-    if (g_EngineClient->IsVoiceRecording())
-        return;
+    int chockepack = 0;
     if (!g_LocalPlayer)
         return;
+    if (g_EngineClient->IsVoiceRecording())
+        chockepack = 1;
 
-    int chockepack = 0;
     auto NetChannel = g_EngineClient->GetNetChannel();
     if (!NetChannel)
         return;
