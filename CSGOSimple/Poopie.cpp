@@ -121,6 +121,8 @@ void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
         return;
     if (g_EngineClient->IsVoiceRecording())
         chockepack = 1;
+    if (!g_EngineClient->IsVoiceRecording())
+        chockepack = g_Options.faketicks;
 
     auto NetChannel = g_EngineClient->GetNetChannel();
     if (!NetChannel)
