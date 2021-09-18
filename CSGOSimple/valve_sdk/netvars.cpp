@@ -5,6 +5,8 @@
 
 #include "sdk.hpp"
 
+using namespace std;
+
 void NetvarSys::Initialize()
 {
     database.clear();
