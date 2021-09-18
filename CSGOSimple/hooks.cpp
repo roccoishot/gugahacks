@@ -115,7 +115,7 @@ namespace Hooks {
 				Hooks::hk_netchannel.hook_index(index, send_net_msg);
 			}
 		}
-
+		
 		// rocco is fucking retarded
 		/*if (!strcmp(szEventName, "cs_game_disconnected"))
 		{
@@ -218,6 +218,9 @@ namespace Hooks {
 		static auto r_modelAmbientMin = g_CVar->FindVar("r_modelAmbientMin");
 		if (g_Options.amibence && r_modelAmbientMin->GetFloat() != g_Options.amibence * 0.05f) //-V550
 			r_modelAmbientMin->SetValue(g_Options.amibence * 0.05f);
+		else if ((g_Options.amibence < 2.f) && r_modelAmbientMin->GetFloat())
+			r_modelAmbientMin->SetValue(0.0f);
+
 
 		//Shot Info
 		if (g_Options.shotinfo == false) {

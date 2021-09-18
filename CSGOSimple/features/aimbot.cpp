@@ -122,7 +122,6 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 	//I be getting mad head :weary:
 	if (settings.hitboxes.head) {
 		hitboxes.emplace_back(HITBOX_HEAD);
-		hitboxes.emplace_back(HITBOX_NECK);
 	}
 
 	if (settings.hitboxes.chest)
@@ -175,7 +174,7 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 	{
 		C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(i);
 
-		if (!player || !player->IsAlive() || !player->IsPlayer() || player->m_bGunGameImmunity())
+		if (!player || !player->IsAlive() || !player->IsPlayer() || player->m_bGunGameImmunity() || player->IsNotTarget())
 			continue;
 
 		if (!player->IsEnemy())
@@ -274,6 +273,10 @@ void CLegitbot::Run(CUserCmd* cmd)
 				if (next_shot > 0)
 					cmd->buttons &= ~IN_ATTACK;
 			}
+		}
+		else
+		{
+			return;
 		}
 		if (!settings.enablehc)
 		{

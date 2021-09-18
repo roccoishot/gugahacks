@@ -29,7 +29,7 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		return;
 	}
 
-	if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (cmd->buttons & IN_ATTACK || cmd->buttons & IN_ATTACK2))
+	if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (cmd->buttons & IN_ATTACK))
 	{
 		return;
 	}
@@ -125,15 +125,15 @@ void CAntiAim::Pitch(CUserCmd* cmd)
 	switch (mode)
 	{
 	case PitchAntiAims::EMOTION:
-		cmd->viewangles.pitch = 65.f;
+		cmd->viewangles.pitch = 55.f;
 		break;
 
 	case PitchAntiAims::DOWN:
-		cmd->viewangles.pitch = 90.f;
+		cmd->viewangles.pitch = 89.f;
 		break;
 
 	case PitchAntiAims::UP:
-		cmd->viewangles.pitch = -90.f;
+		cmd->viewangles.pitch = -89.f;
 		break;
 
 	case PitchAntiAims::ZERO:
