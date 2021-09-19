@@ -165,8 +165,8 @@ void Options::SetupWeapons()
 
 			SetupValue(aimbot->autofire.enabled, key, "AutoFire Enabled");
 			SetupValue(aimbot->autofire.hotkey, key, "AutoFire Hotkey");
-			SetupValue(aimbot->enablehc, "Aimbot", "Hitchance Enable");
-			SetupValue(aimbot->hitchance, "Aimbot", "Hitchance Value");
+			SetupValue(aimbot->enablehc, key, "Hitchance Enable");
+			SetupValue(aimbot->hitchance, key, "Hitchance Value");
 
 		}
 	}
@@ -305,6 +305,7 @@ void Options::SetupMisc()
 	SetupValue(edgejump.hotkey, "Misc", "Edge jump Key");
 	SetupValue(ducknair, "Misc", "Duck in Air");
 	SetupValue(clantag, "Misc", "Clantag");
+	SetupValue(clantagtype, "Misc", "Clantag Type");
 	SetupValue(nocool, "Misc", "No Duck Cooldown");
 	SetupValue(misc_hitmarker, "Misc", "Hitsounds");
 	SetupValue(hitmarkersound, "Misc", "Hitsound");

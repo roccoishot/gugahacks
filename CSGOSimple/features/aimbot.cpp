@@ -254,7 +254,6 @@ void CLegitbot::Run(CUserCmd* cmd)
 
 	if (GetClosestPlayer(cmd, bestBone, fov, angles))
 	{
-
 		if (g_Options.autoscope)
 		{
 			if (!g_LocalPlayer->m_bIsScoped() && !g_LocalPlayer->m_hActiveWeapon()->IsPistol() && g_LocalPlayer->m_hActiveWeapon()->IsSniper())
@@ -263,8 +262,11 @@ void CLegitbot::Run(CUserCmd* cmd)
 			}
 
 		}
+		if (settings.enablehc)
+		{
+			if (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread() < settings.hitchance)
+			{
 
-		if (settings.enablehc && (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread()) < settings.hitchance) {
 			if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
 				cmd->buttons |= IN_ATTACK;
 				const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
@@ -274,12 +276,14 @@ void CLegitbot::Run(CUserCmd* cmd)
 					cmd->buttons &= ~IN_ATTACK;
 			}
 		}
-		else
-		{
-			return;
-		}
-		if (!settings.enablehc)
-		{
+
+			else
+			{
+				return;
+			}
+
+	}
+		if (!settings.enablehc){
 			if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
 				cmd->buttons |= IN_ATTACK;
 				const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;

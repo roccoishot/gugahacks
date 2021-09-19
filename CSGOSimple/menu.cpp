@@ -650,7 +650,16 @@ void Menu::Render()
 					}
 
 					//Misc Man Shit FRFR
+					const char* ClantagTypes[] = {
+"Animated",
+	"Discord",
+	"Static",
+	"Reverse"
+					};
 					ImGui::Checkbox("Clantag", &g_Options.clantag);
+					if (g_Options.clantag) {
+						ImGui::Combo("Type", &g_Options.clantagtype, ClantagTypes, IM_ARRAYSIZE(ClantagTypes));
+					}
 					if (ImGui::Button("Change Name")) {
 						//NameChange
 						void NameChange(); {

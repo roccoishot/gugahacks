@@ -3,7 +3,10 @@
 #include "BetaAA.h"
 #include "crypt_str.h"
 
-std::string clantag_ = (("GUGAHACKS.SU  "));
+std::string clantag0_ = (("GUGAHACKS.SU  "));
+std::string clantag1_ = (("dc.gg/URvWEkvYc5"));
+std::string clantag2_ = (("GUGAHACKS"));
+std::string clantag3_ = (("  US.SKCAHAGUG"));
 std::string fart_ = ((" "));
 
 void Misc::ClanTag()
@@ -16,14 +19,41 @@ void Misc::ClanTag()
 
         static size_t lastTime = 0;
 
-        if (GetTickCount() > lastTime)
-        {
-            clantag_ += clantag_.at(0);
-            clantag_.erase(0, 1);
+        if (g_Options.clantagtype == 0) {
+            if (GetTickCount() > lastTime)
+            {
+                clantag0_ += clantag0_.at(0);
+                clantag0_.erase(0, 1);
 
-            Utils::SetClantag(clantag_.c_str());
+                Utils::SetClantag(clantag0_.c_str());
 
-            lastTime = GetTickCount() + 650;
+                lastTime = GetTickCount() + 650;
+            }
+        }
+        if (g_Options.clantagtype == 1) {
+            if (GetTickCount() > lastTime)
+            {
+                Utils::SetClantag(clantag1_.c_str());
+                lastTime = GetTickCount() + 650;
+            }
+        }
+        if (g_Options.clantagtype == 2) {
+            if (GetTickCount() > lastTime)
+            {
+                Utils::SetClantag(clantag2_.c_str());
+                lastTime = GetTickCount() + 650;
+            }
+        }
+        if (g_Options.clantagtype == 3) {
+            if (GetTickCount() > lastTime)
+            {
+                clantag3_ += clantag3_.at(0);
+                clantag3_.erase(0, 1);
+
+                Utils::SetClantag(clantag3_.c_str());
+
+                lastTime = GetTickCount() + 650;
+            }
         }
     }
 
