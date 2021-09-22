@@ -39,9 +39,14 @@ void resolver::Resolve(C_BasePlayer* player, LagRecord record)
 			}
 		}
 
+		//desync detector amounter!!
+		float a = player->GetPlayerAnimState()->m_flEyeYaw;
+		float b = player->GetPlayerAnimState()->m_flCurrentTorsoYaw;
+		long long c = a - b;
+
 		if (side)
-			player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw + 58.f;
+			player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw + c;
 		else
-			player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw - 58.f;
+			player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw - c;
 	}
 }

@@ -3,6 +3,10 @@
 
 void CNightmode::PerformNightmode()
 {
+
+	if (!g_Options.colormodulate)
+		return;
+
 	for (MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i))
 	{
 		IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
@@ -16,14 +20,16 @@ void CNightmode::PerformNightmode()
 		const char* group = pMaterial->GetTextureGroupName();
 		const char* name = pMaterial->GetName();
 
-		if (strstr(name, ("models/props/de_nuke/hr_nuke/nuke_skydome_001")))
-		{
-			pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
-		}
+		if (g_Options.sky_changer) {
+			if (strstr(name, ("models/props/de_nuke/hr_nuke/nuke_skydome_001")))
+			{
+				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			}
 
-		if (strstr(name, ("models/props/de_inferno/hr_i/inferno_skybox")))
-		{
-			pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			if (strstr(name, ("models/props/de_inferno/hr_i/inferno_skybox")))
+			{
+				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			}
 		}
 
 		if (g_Options.colormodulate) {
