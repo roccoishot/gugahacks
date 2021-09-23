@@ -10,7 +10,7 @@ bool C_BaseEntity::IsPlayer()
 	//index: 152
 	//ref: "effects/nightvision"
 	//sig: 8B 92 ? ? ? ? FF D2 84 C0 0F 45 F7 85 F6
-	return CallVFunction<bool(__thiscall*)(C_BaseEntity*)>(this, 157 + VALVE_ADDED_FUNCS)(this);
+	return CallVFunction<bool(__thiscall*)(C_BaseEntity*)>(this, 158 + VALVE_ADDED_FUNCS)(this);
 }
 
 bool C_BaseEntity::IsLoot() {
@@ -30,7 +30,7 @@ bool C_BaseEntity::IsWeapon()
 	//index: 160
 	//ref: "CNewParticleEffect::DrawModel"
 	//sig: 8B 80 ? ? ? ? FF D0 84 C0 74 6F 8B 4D A4
-	return CallVFunction<bool(__thiscall*)(C_BaseEntity*)>(this, 165 + VALVE_ADDED_FUNCS)(this);
+	return CallVFunction<bool(__thiscall*)(C_BaseEntity*)>(this, 166 + VALVE_ADDED_FUNCS)(this);
 }
 
 
@@ -76,12 +76,12 @@ bool C_BaseCombatWeapon::CanFire()
 
 bool C_BaseCombatWeapon::IsGrenade()
 {
-	return GetCSWeaponData()->iWeaponType == WEAPONTYPE_GRENADE;
+	return GetCSWeaponData()->weaponType == WEAPONTYPE_GRENADE;
 }
 
 bool C_BaseCombatWeapon::IsGun()
 {
-	switch (GetCSWeaponData()->iWeaponType)
+	switch (GetCSWeaponData()->weaponType)
 	{
 	case WEAPONTYPE_C4:
 		return false;
@@ -99,12 +99,12 @@ bool C_BaseCombatWeapon::IsGun()
 bool C_BaseCombatWeapon::IsKnife()
 {
 	if (this->m_Item().m_iItemDefinitionIndex() == WEAPON_TASER) return false;
-	return GetCSWeaponData()->iWeaponType == WEAPONTYPE_KNIFE;
+	return GetCSWeaponData()->weaponType == WEAPONTYPE_KNIFE;
 }
 
 bool C_BaseCombatWeapon::IsRifle()
 {
-	switch (GetCSWeaponData()->iWeaponType)
+	switch (GetCSWeaponData()->weaponType)
 	{
 	case WEAPONTYPE_RIFLE:
 		return true;
@@ -121,7 +121,7 @@ bool C_BaseCombatWeapon::IsRifle()
 
 bool C_BaseCombatWeapon::IsPistol()
 {
-	switch (GetCSWeaponData()->iWeaponType)
+	switch (GetCSWeaponData()->weaponType)
 	{
 	case WEAPONTYPE_PISTOL:
 		return true;
@@ -132,7 +132,7 @@ bool C_BaseCombatWeapon::IsPistol()
 
 bool C_BaseCombatWeapon::IsSniper()
 {
-	switch (GetCSWeaponData()->iWeaponType)
+	switch (GetCSWeaponData()->weaponType)
 	{
 	case WEAPONTYPE_SNIPER_RIFLE:
 		return true;
@@ -149,17 +149,17 @@ bool C_BaseCombatWeapon::IsReloading()
 
 float C_BaseCombatWeapon::GetInaccuracy()
 {
-	return CallVFunction<float(__thiscall*)(void*)>(this, 482 + VALVE_ADDED_FUNCS)(this);
+	return CallVFunction<float(__thiscall*)(void*)>(this, 483 + VALVE_ADDED_FUNCS)(this);
 }
 
 float C_BaseCombatWeapon::GetSpread()
 {
-	return CallVFunction<float(__thiscall*)(void*)>(this, 452 + VALVE_ADDED_FUNCS)(this);
+	return CallVFunction<float(__thiscall*)(void*)>(this, 453 + VALVE_ADDED_FUNCS)(this);
 }
 
 void C_BaseCombatWeapon::UpdateAccuracyPenalty()
 {
-	CallVFunction<void(__thiscall*)(void*)>(this, 483 + VALVE_ADDED_FUNCS)(this);
+	CallVFunction<void(__thiscall*)(void*)>(this, 484 + VALVE_ADDED_FUNCS)(this);
 }
 
 CUtlVector<IRefCounted*>& C_BaseCombatWeapon::m_CustomMaterials()
@@ -419,7 +419,7 @@ bool C_BasePlayer::CanSeePlayer(C_BasePlayer* player, const Vector& pos)
 
 void C_BasePlayer::UpdateClientSideAnimation()
 {
-	return CallVFunction<void(__thiscall*)(void*)>(this, 223 + VALVE_ADDED_FUNCS)(this);
+	return CallVFunction<void(__thiscall*)(void*)>(this, 224 + VALVE_ADDED_FUNCS)(this);
 }
 Vector C_BasePlayer::abs_origin()
 {
@@ -462,7 +462,7 @@ void C_BaseAttributableItem::SetGloveModelIndex(int modelIndex)
 
 void C_BaseViewModel::SendViewModelMatchingSequence(int sequence)
 {
-	return CallVFunction<void(__thiscall*)(void*, int)>(this, 246 + VALVE_ADDED_FUNCS)(this, sequence);
+	return CallVFunction<void(__thiscall*)(void*, int)>(this, 247 + VALVE_ADDED_FUNCS)(this, sequence);
 }
 
 float_t C_BasePlayer::m_flSpawnTime()
