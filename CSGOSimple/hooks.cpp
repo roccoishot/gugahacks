@@ -48,7 +48,7 @@ namespace Hooks {
 		direct3d_hook.hook_index(index::EndScene, hkEndScene);
 		direct3d_hook.hook_index(index::Reset, hkReset);
 		hlclient_hook.hook_index(index::FrameStageNotify, hkFrameStageNotify);
-		hlclient_hook.hook_index(index::CreateMove, hkCreateMove_Proxy);
+		//hlclient_hook.hook_index(index::CreateMove, hkCreateMove_Proxy); // uncomment when fixed lmao!
 		vguipanel_hook.hook_index(index::PaintTraverse, hkPaintTraverse);
 		sound_hook.hook_index(index::EmitSound1, hkEmitSound1);
 		vguisurf_hook.hook_index(index::LockCursor, hkLockCursor);
