@@ -47,7 +47,7 @@ bool C_BaseEntity::IsDefuseKit()
 CCSWeaponInfo* C_BaseCombatWeapon::GetCSWeaponData()
 {
 	//return g_WeaponSystem->GetWpnData(this->m_Item().m_iItemDefinitionIndex());
-	return CallVFunction<CCSWeaponInfo* (__thiscall*)(void*)>(this, 460)(this);
+	return CallVFunction<CCSWeaponInfo* (__thiscall*)(void*)>(this, 461)(this);
 
 }
 
@@ -181,7 +181,7 @@ CUserCmd*& C_BasePlayer::m_pCurrentCommand()
 
 int C_BasePlayer::GetNumAnimOverlays()
 {
-	return *(int*)((DWORD)this + 0x298C);
+	return *(int*)((DWORD)this + 0x2990);
 }
 
 AnimationLayer *C_BasePlayer::GetAnimOverlays()
