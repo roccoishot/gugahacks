@@ -37,18 +37,21 @@ namespace Hooks {
 		sound_hook.setup(g_EngineSound);
 		mdlrender_hook.setup(g_MdlRender);
 		clientmode_hook.setup(g_ClientMode);
+		cm_hook = new vmthook(reinterpret_cast<DWORD**>(g_ClientMode));
 		stdrender_hook.setup(g_StudioRender);
 		viewrender_hook.setup(g_ViewRender);
 
 		ConVar* sv_cheats_con = g_CVar->FindVar("sv_cheats");
 		sv_cheats.setup(sv_cheats_con);
 
+		
 		gameevents_hook.setup(g_GameEvents);
 		gameevents_hook.hook_index(index::FireEvent, hkFireEvent);
 		direct3d_hook.hook_index(index::EndScene, hkEndScene);
 		direct3d_hook.hook_index(index::Reset, hkReset);
 		hlclient_hook.hook_index(index::FrameStageNotify, hkFrameStageNotify);
 		//hlclient_hook.hook_index(index::CreateMove, hkCreateMove_Proxy); // uncomment when fixed lmao!
+		cm_hook->hook_function(reinterpret_cast<uintptr_t>(hkCreateMove), 24);
 		vguipanel_hook.hook_index(index::PaintTraverse, hkPaintTraverse);
 		sound_hook.hook_index(index::EmitSound1, hkEmitSound1);
 		vguisurf_hook.hook_index(index::LockCursor, hkLockCursor);
@@ -475,14 +478,18 @@ namespace Hooks {
 		return hr;
 	}
 	//--------------------------------------------------------------------------------
-	void __stdcall hkCreateMove(int sequence_number, float input_sample_frametime, bool active, bool& bSendPacket)
+	using CreateMove_t = bool(__thiscall*)(IClientMode*, float, CUserCmd*);
+	void __stdcall hkCreateMove(float smt, CUserCmd* cmd)
 	{
-		static auto oCreateMove = hlclient_hook.get_original<decltype(&hkCreateMove_Proxy)>(index::CreateMove);
+		//cm_hook->get_func_address< CreateMove_t >(24); // TODO: use this and rewrite this
+		static auto oCreateMove = cm_hook->get_func_address< CreateMove_t >(24);
 
-		oCreateMove(g_CHLClient, 0, sequence_number, input_sample_frametime, active);
+		oCreateMove(g_ClientMode, smt, cmd);
 
-		auto cmd = g_Input->GetUserCmd(sequence_number);
-		auto verified = g_Input->GetVerifiedCmd(sequence_number);
+		//auto cmd = g_Input->GetUserCmd(sequence_number);
+		//auto verified = g_Input->GetVerifiedCmd(sequence_number);
+		
+		bool bSendPacket = true;
 
 		//Desync
 		Misc::ClanTag();
@@ -525,8 +532,8 @@ namespace Hooks {
 			if (g_Options.nocool)
 			cmd->buttons |= IN_BULLRUSH;
 			//Math::CorrectMovement(cmd, oldAngle, cmd->viewangles);
-		verified->m_cmd = *cmd;
-		verified->m_crc = cmd->GetChecksum();
+		//verified->m_cmd = *cmd;
+		//verified->m_crc = cmd->GetChecksum();
 
 		if (!cmd || !cmd->command_number)
 			return;
@@ -547,7 +554,7 @@ namespace Hooks {
 		CPredictionSystem::Get().End(g_LocalPlayer);
 
 		if (g_Options.rageresolver) {
-			LagComp::Get().Run();
+			//LagComp::Get().Run();
 		}
 
 		Math::Normalize3(cmd->viewangles);
@@ -686,8 +693,8 @@ namespace Hooks {
 		else
 			g_CVar->FindVar("weapon_debug_spread_show")->SetValue(0);
 
-		verified->m_cmd = *cmd;
-		verified->m_crc = cmd->GetChecksum();
+		//verified->m_cmd = *cmd;
+		//verified->m_crc = cmd->GetChecksum();
 	}
 	//--------------------------------------------------------------------------------
 	__declspec(naked) void __fastcall hkCreateMove_Proxy(void* _this, int, int sequence_number, float input_sample_frametime, bool active)
