@@ -202,8 +202,8 @@ void Options::SetupVisuals()
 	SetupValue(chams_player_ignorez, "Visuals", "Chams XYZ");
 	SetupValue(chams_player_flat, "Visuals", "Flat");
 	SetupValue(chams_player_scary, "Visuals", "Wireframe");
-	SetupValue(player_velvet_material, "Visuals", "Velvet");
 	SetupValue(player_enemies_shine, "Visuals", "Shine");
+	SetupValue(player_velvet_material, "Visuals", "Velvet");
 	SetupColor(player_enemy_visible_shine, "Color Visible");
 	SetupColor(color_esp_enemy_visible, "Enemies Visible");
 	SetupColor(color_esp_enemy_occluded, "Enemies Occluded");

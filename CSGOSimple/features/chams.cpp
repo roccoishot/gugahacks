@@ -135,6 +135,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 								}
 								g_MdlRender->ForcedMaterialOverride(shine);
 							}
+
 							if (g_Options.player_velvet_material)
 							{
 								velvet->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
@@ -146,6 +147,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 								}
 								g_MdlRender->ForcedMaterialOverride(velvet);
 							}
+
 						}
 					}
 				}
@@ -249,6 +251,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 									}
 									g_MdlRender->ForcedMaterialOverride(shine);
 								}
+
 								if (g_Options.player_velvet_material)
 								{
 									velvet->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
@@ -260,6 +263,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 									}
 									g_MdlRender->ForcedMaterialOverride(velvet);
 								}
+
 							}
 						}
 						else

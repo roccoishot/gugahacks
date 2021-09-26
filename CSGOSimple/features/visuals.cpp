@@ -147,8 +147,8 @@ void Visuals::Player::RenderName(C_BaseEntity* pl)
 	auto sz = g_pDefaultFont->CalcTextSizeA(12.f, FLT_MAX, 0.0f, info.szName);
 
 	//	Render::Get().RenderText(info.szName, ctx.feet_pos.x - sz.x / 2, ctx.head_pos.y - sz.y, 12.f, Color::White);
-	if (ctx.pl->m_iHealth() == 1)
-	Render::Get().RenderText(info.szName, ctx.bbox.left + (ctx.bbox.right - ctx.bbox.left - sz.x) / 2, (ctx.bbox.top - sz.y - 1), 0.f, Color(255, 0, 0), flPlayerAlpha[pl->EntIndex()]), false;
+	if (ctx.pl->m_iHealth() == 1 && g_Options.flashkillcheck)
+		Render::Get().RenderText(info.szName, ctx.bbox.left + (ctx.bbox.right - ctx.bbox.left - sz.x) / 2, (ctx.bbox.top - sz.y - 1), 0.f, Color(255, 0, 0), flPlayerAlpha[pl->EntIndex()]), false;
 	else
 	Render::Get().RenderText(info.szName, ctx.bbox.left + (ctx.bbox.right - ctx.bbox.left - sz.x) / 2, (ctx.bbox.top - sz.y - 1), 0.f, Color(g_Options.color_name_player), flPlayerAlpha[pl->EntIndex()]), false;
 }
