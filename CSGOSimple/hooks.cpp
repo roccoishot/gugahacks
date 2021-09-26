@@ -1,4 +1,4 @@
-#include "hooks.hpp"
+﻿#include "hooks.hpp"
 #include <intrin.h>  
 
 #include "render.hpp"
@@ -37,21 +37,18 @@ namespace Hooks {
 		sound_hook.setup(g_EngineSound);
 		mdlrender_hook.setup(g_MdlRender);
 		clientmode_hook.setup(g_ClientMode);
-		cm_hook = new vmthook(reinterpret_cast<DWORD**>(g_ClientMode));
 		stdrender_hook.setup(g_StudioRender);
 		viewrender_hook.setup(g_ViewRender);
 
 		ConVar* sv_cheats_con = g_CVar->FindVar("sv_cheats");
 		sv_cheats.setup(sv_cheats_con);
 
-		
 		gameevents_hook.setup(g_GameEvents);
 		gameevents_hook.hook_index(index::FireEvent, hkFireEvent);
 		direct3d_hook.hook_index(index::EndScene, hkEndScene);
 		direct3d_hook.hook_index(index::Reset, hkReset);
 		hlclient_hook.hook_index(index::FrameStageNotify, hkFrameStageNotify);
 		//hlclient_hook.hook_index(index::CreateMove, hkCreateMove_Proxy); // uncomment when fixed lmao!
-		cm_hook->hook_function(reinterpret_cast<uintptr_t>(hkCreateMove), 24);
 		vguipanel_hook.hook_index(index::PaintTraverse, hkPaintTraverse);
 		sound_hook.hook_index(index::EmitSound1, hkEmitSound1);
 		vguisurf_hook.hook_index(index::LockCursor, hkLockCursor);
@@ -478,18 +475,14 @@ namespace Hooks {
 		return hr;
 	}
 	//--------------------------------------------------------------------------------
-	using CreateMove_t = bool(__thiscall*)(IClientMode*, float, CUserCmd*);
-	void __stdcall hkCreateMove(float smt, CUserCmd* cmd)
+	void __stdcall hkCreateMove(int sequence_number, float input_sample_frametime, bool active, bool& bSendPacket)
 	{
-		//cm_hook->get_func_address< CreateMove_t >(24); // TODO: use this and rewrite this
-		static auto oCreateMove = cm_hook->get_func_address< CreateMove_t >(24);
+		static auto oCreateMove = hlclient_hook.get_original<decltype(&hkCreateMove_Proxy)>(index::CreateMove);
 
-		oCreateMove(g_ClientMode, smt, cmd);
+		oCreateMove(g_CHLClient, 0, sequence_number, input_sample_frametime, active);
 
-		//auto cmd = g_Input->GetUserCmd(sequence_number);
-		//auto verified = g_Input->GetVerifiedCmd(sequence_number);
-		
-		bool bSendPacket = true;
+		auto cmd = g_Input->GetUserCmd(sequence_number);
+		auto verified = g_Input->GetVerifiedCmd(sequence_number);
 
 		//Desync
 		Misc::ClanTag();
@@ -532,8 +525,8 @@ namespace Hooks {
 			if (g_Options.nocool)
 			cmd->buttons |= IN_BULLRUSH;
 			//Math::CorrectMovement(cmd, oldAngle, cmd->viewangles);
-		//verified->m_cmd = *cmd;
-		//verified->m_crc = cmd->GetChecksum();
+		verified->m_cmd = *cmd;
+		verified->m_crc = cmd->GetChecksum();
 
 		if (!cmd || !cmd->command_number)
 			return;
@@ -554,7 +547,7 @@ namespace Hooks {
 		CPredictionSystem::Get().End(g_LocalPlayer);
 
 		if (g_Options.rageresolver) {
-			//LagComp::Get().Run();
+			LagComp::Get().Run();
 		}
 
 		Math::Normalize3(cmd->viewangles);
@@ -578,10 +571,10 @@ namespace Hooks {
 		if (g_Options.jump_bug && GetAsyncKeyState(g_Options.jump_bug_key)) {
 			if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
 				g_Options.misc_bhop2 = false;
-				bool unduck = cmd->buttons &= ~in_duck;
+				bool unduck = cmd->buttons &= ~IN_DUCK;
 				if (unduck) {
-					cmd->buttons &= ~in_duck; // duck
-					cmd->buttons |= in_jump; // jump
+					cmd->buttons &= ~IN_DUCK; // duck
+					cmd->buttons |= IN_JUMP; // jump
 					unduck = false;
 				};
 				Vector pos = g_LocalPlayer->abs_origin();
@@ -605,8 +598,8 @@ namespace Hooks {
 					g_EngineTrace->TraceRay(ray, MASK_PLAYERSOLID, &flt, &fag);
 
 					if (fag.fraction != 1.f && fag.fraction != 0.f) {
-						cmd->buttons |= in_duck; // duck
-						cmd->buttons &= ~in_jump; // jump
+						cmd->buttons |= IN_DUCK; // duck
+						cmd->buttons &= ~IN_JUMP; // jump
 						unduck = true;
 					};
 				};
@@ -629,8 +622,8 @@ namespace Hooks {
 					g_EngineTrace->TraceRay(ray, MASK_PLAYERSOLID, &flt, &fag);
 
 					if (fag.fraction != 1.f && fag.fraction != 0.f) {
-						cmd->buttons |= in_duck; // duck
-						cmd->buttons &= ~in_jump; // jump
+						cmd->buttons |= IN_DUCK; // duck
+						cmd->buttons &= ~IN_JUMP; // jump
 						unduck = true;
 					};
 				};
@@ -653,8 +646,8 @@ namespace Hooks {
 					g_EngineTrace->TraceRay(ray, MASK_PLAYERSOLID, &flt, &fag);
 
 					if (fag.fraction != 1.f && fag.fraction != 0.f) {
-						cmd->buttons |= in_duck; // duck
-						cmd->buttons &= ~in_jump; // jump
+						cmd->buttons |= IN_DUCK; // duck
+						cmd->buttons &= ~IN_JUMP; // jump
 						unduck = true;
 					};
 
@@ -693,8 +686,8 @@ namespace Hooks {
 		else
 			g_CVar->FindVar("weapon_debug_spread_show")->SetValue(0);
 
-		//verified->m_cmd = *cmd;
-		//verified->m_crc = cmd->GetChecksum();
+		verified->m_cmd = *cmd;
+		verified->m_crc = cmd->GetChecksum();
 	}
 	//--------------------------------------------------------------------------------
 	__declspec(naked) void __fastcall hkCreateMove_Proxy(void* _this, int, int sequence_number, float input_sample_frametime, bool active)
@@ -803,110 +796,67 @@ namespace Hooks {
 
 			constexpr auto getModel = [](int team) constexpr noexcept -> const char* {
 				constexpr std::array models{
-				//Silent | Sir Bloody Darryl", 
-					"models/player/custom_player/legacy/tm_professional_varf1.mdl", 
-				//Skullhead | Sir Bloody Darryl", 
-					"models/player/custom_player/legacy/tm_professional_varf2.mdl", 
-				//Royale | Sir Bloody Darryl", 
-					"models/player/custom_player/legacy/tm_professional_varf3.mdl", 
-				//Loudmouth | Sir Bloody Darryl", 
-					"models/player/custom_player/legacy/tm_professional_varf4.mdl", 
-				//Miami | Sir Bloody Darryl", 
-					"models/player/custom_player/legacy/tm_professional_varf.mdl", 
-				//Getaway Sally | Professional", 
-					"models/player/custom_player/legacy/tm_professional_varj.mdl",
-				//AGENT Gandon | Professional", 
-					"models/player/custom_player/legacy/tm_professional_vari.mdl",
-				//Safecracker Voltzmann | Professinal", 
-					"models/player/custom_player/legacy/tm_professional_varg.mdl",
-				//Little Kev | Professinal", 
-					"models/player/custom_player/legacy/tm_professional_varh.mdl",
-				//Blackwolf | Sabre", 
-					"models/player/custom_player/legacy/tm_balkan_variantj.mdl",
-				//Rezan the Redshirt | Sabre", 
-					"models/player/custom_player/legacy/tm_balkan_variantk.mdl",
-				//Rezan The Ready | Sabre", 
-					"models/player/custom_player/legacy/tm_balkan_variantg.mdl",
-				//Maximus | Sabre", 
-					"models/player/custom_player/legacy/tm_balkan_varianti.mdl",
-				//Dragomir | Sabre", 
-					"models/player/custom_player/legacy/tm_balkan_variantf.mdl",
-				//Dragomir | Sabre Footsoldier", 
-					"models/player/custom_player/legacy/tm_balkan_variantl.mdl",
-				//Lt. Commander Ricksaw | NSWC SEAL", 
-					"models/player/custom_player/legacy/ctm_st6_varianti.mdl",
-				//'Two Times' McCoy | USAF TACP", 
-					"models/player/custom_player/legacy/ctm_st6_variantm.mdl",
-				//'Two Times' McCoy | USAF Cavalry", 
-					"models/player/custom_player/legacy/ctm_st6_variantl.mdl",
-				//Buckshot | NSWC SEAL", 
-					"models/player/custom_player/legacy/ctm_st6_variantg.mdl",
-				//'Blueberries' Buckshot | NSWC SEAL", 
-					"models/player/custom_player/legacy/ctm_st6_variantj.mdl",
-				//Seal Team 6 Soldier | NSWC SEAL", 
-					"models/player/custom_player/legacy/ctm_st6_variante.mdl",
-				//3rd Commando Company | KSK",
-					"models/player/custom_player/legacy/ctm_st6_variantk.mdl",
-				//'The Doctor' Romanov | Sabre", 
-					"models/player/custom_player/legacy/tm_balkan_varianth.mdl",
-				//Michael Syfers  | FBI Sniper", 
-					"models/player/custom_player/legacy/ctm_fbi_varianth.mdl",
-				//Markus Delrow | FBI HRT", 
-					"models/player/custom_player/legacy/ctm_fbi_variantg.mdl",
-				//Cmdr. Mae | SWAT", 
-				"models/player/custom_player/legacy/ctm_swat_variante.mdl",
-				//1st Lieutenant Farlow | SWAT", 
-					"models/player/custom_player/legacy/ctm_swat_variantf.mdl",
-				//John 'Van Healen' Kask | SWAT", 
-					"models/player/custom_player/legacy/ctm_swat_variantg.mdl",
-				//Bio-Haz Specialist | SWAT", 
-					"models/player/custom_player/legacy/ctm_swat_varianth.mdl",
-				//Chem-Haz Specialist | SWAT", 
-					"models/player/custom_player/legacy/ctm_swat_variantj.mdl",
-				//Sergeant Bombson | SWAT", 
-					"models/player/custom_player/legacy/ctm_swat_varianti.mdl",
-				//Operator | FBI SWAT", 
-					"models/player/custom_player/legacy/ctm_fbi_variantf.mdl",
-				//Street Soldier | Phoenix", 
-				"models/player/custom_player/legacy/tm_phoenix_varianti.mdl",
-				//Slingshot | Phoenix", 
-					"models/player/custom_player/legacy/tm_phoenix_variantg.mdl",
-				//Enforcer | Phoenix", 
-					"models/player/custom_player/legacy/tm_phoenix_variantf.mdl",
-				//Soldier | Phoenix", 
-					"models/player/custom_player/legacy/tm_phoenix_varianth.mdl",
-				//The Elite Mr. Muhlik | Elite Crew", 
-				"models/player/custom_player/legacy/tm_leet_variantf.mdl",
-				//Prof. Shahmat | Elite Crew", 
-					"models/player/custom_player/legacy/tm_leet_varianti.mdl",
-				//Osiris | Elite Crew",
-				"models/player/custom_player/legacy/tm_leet_varianth.mdl",
-				//Ground Rebel  | Elite Crew", 
-					"models/player/custom_player/legacy/tm_leet_variantg.mdl",
-				//Special Agent Ava | FBI", 
-					"models/player/custom_player/legacy/ctm_fbi_variantb.mdl",
-				//B Squadron Officer | SAS" 
-				"models/player/custom_player/legacy/ctm_sas_variantf.mdl",
-
-				//Pirates (Arrrr)
-				"models/player/custom_player/legacy/tm_pirate.mdl",
-				"models/player/custom_player/legacy/tm_pirate_varianta.mdl",
-				"models/player/custom_player/legacy/tm_pirate_variantb.mdl",
-				"models/player/custom_player/legacy/tm_pirate_variantc.mdl",
-				"models/player/custom_player/legacy/tm_pirate_variantd.mdl",
-
-				//Power to the People
-				"models/player/custom_player/legacy/tm_anarchist.mdl",
-				"models/player/custom_player/legacy/tm_anarchist_varianta.mdl",
-				"models/player/custom_player/legacy/tm_anarchist_variantb.mdl",
-				"models/player/custom_player/legacy/tm_anarchist_variantc.mdl",
-				"models/player/custom_player/legacy/tm_anarchist_variantd.mdl",
-
-				//Jumpsuit Niggas (They will jump you)
-				"models/player/custom_player/legacy/tm_jumpsuit_varianta.mdl",
-				"models/player/custom_player/legacy/tm_jumpsuit_variantb.mdl",
-				"models/player/custom_player/legacy/tm_jumpsuit_variantc.mdl",
-
+"models/player/custom_player/legacy/ctm_diver_varianta.mdl", // Cmdr. Davida 'Goggles' Fernandez | SEAL Frogman
+"models/player/custom_player/legacy/ctm_diver_variantb.mdl", // Cmdr. Frank 'Wet Sox' Baroud | SEAL Frogman
+"models/player/custom_player/legacy/ctm_diver_variantc.mdl", // Lieutenant Rex Krikey | SEAL Frogman
+"models/player/custom_player/legacy/ctm_fbi_varianth.mdl", // Michael Syfers | FBI Sniper
+"models/player/custom_player/legacy/ctm_fbi_variantf.mdl", // Operator | FBI SWAT
+"models/player/custom_player/legacy/ctm_fbi_variantb.mdl", // Special Agent Ava | FBI
+"models/player/custom_player/legacy/ctm_fbi_variantg.mdl", // Markus Delrow | FBI HRT
+"models/player/custom_player/legacy/ctm_gendarmerie_varianta.mdl", // Sous-Lieutenant Medic | Gendarmerie Nationale
+"models/player/custom_player/legacy/ctm_gendarmerie_variantb.mdl", // Chem-Haz Capitaine | Gendarmerie Nationale
+"models/player/custom_player/legacy/ctm_gendarmerie_variantc.mdl", // Chef d'Escadron Rouchard | Gendarmerie Nationale
+"models/player/custom_player/legacy/ctm_gendarmerie_variantd.mdl", // Aspirant | Gendarmerie Nationale
+"models/player/custom_player/legacy/ctm_gendarmerie_variante.mdl", // Officer Jacques Beltram | Gendarmerie Nationale
+"models/player/custom_player/legacy/ctm_sas_variantg.mdl", // D Squadron Officer | NZSAS
+"models/player/custom_player/legacy/ctm_sas_variantf.mdl", // B Squadron Officer | SAS
+"models/player/custom_player/legacy/ctm_st6_variante.mdl", // Seal Team 6 Soldier | NSWC SEAL
+"models/player/custom_player/legacy/ctm_st6_variantg.mdl", // Buckshot | NSWC SEAL
+"models/player/custom_player/legacy/ctm_st6_varianti.mdl", // Lt. Commander Ricksaw | NSWC SEAL
+"models/player/custom_player/legacy/ctm_st6_variantj.mdl", // 'Blueberries' Buckshot | NSWC SEAL
+"models/player/custom_player/legacy/ctm_st6_variantk.mdl", // 3rd Commando Company | KSK
+"models/player/custom_player/legacy/ctm_st6_variantl.mdl", // 'Two Times' McCoy | TACP Cavalry
+"models/player/custom_player/legacy/ctm_st6_variantm.mdl", // 'Two Times' McCoy | USAF TACP
+"models/player/custom_player/legacy/ctm_st6_variantn.mdl", // Primeiro Tenente | Brazilian 1st Battalion
+"models/player/custom_player/legacy/ctm_swat_variante.mdl", // Cmdr. Mae 'Dead Cold' Jamison | SWAT
+"models/player/custom_player/legacy/ctm_swat_variantf.mdl", // 1st Lieutenant Farlow | SWAT
+"models/player/custom_player/legacy/ctm_swat_variantg.mdl", // John 'Van Healen' Kask | SWAT
+"models/player/custom_player/legacy/ctm_swat_varianth.mdl", // Bio-Haz Specialist | SWAT
+"models/player/custom_player/legacy/ctm_swat_varianti.mdl", // Sergeant Bombson | SWAT
+"models/player/custom_player/legacy/ctm_swat_variantj.mdl", // Chem-Haz Specialist | SWAT
+"models/player/custom_player/legacy/tm_professional_varj.mdl", // Getaway Sally | The Professionals
+"models/player/custom_player/legacy/tm_professional_vari.mdl", // Number K | The Professionals
+"models/player/custom_player/legacy/tm_professional_varh.mdl", // Little Kev | The Professionals
+"models/player/custom_player/legacy/tm_professional_varg.mdl", // Safecracker Voltzmann | The Professionals
+"models/player/custom_player/legacy/tm_professional_varf5.mdl", // Bloody Darryl The Strapped | The Professionals
+"models/player/custom_player/legacy/tm_professional_varf4.mdl", // Sir Bloody Loudmouth Darryl | The Professionals
+"models/player/custom_player/legacy/tm_professional_varf3.mdl", // Sir Bloody Darryl Royale | The Professionals
+"models/player/custom_player/legacy/tm_professional_varf2.mdl", // Sir Bloody Skullhead Darryl | The Professionals
+"models/player/custom_player/legacy/tm_professional_varf1.mdl", // Sir Bloody Silent Darryl | The Professionals
+"models/player/custom_player/legacy/tm_professional_varf.mdl", // Sir Bloody Miami Darryl | The Professionals
+"models/player/custom_player/legacy/tm_phoenix_varianti.mdl", // Street Soldier | Phoenix
+"models/player/custom_player/legacy/tm_phoenix_varianth.mdl", // Soldier | Phoenix
+"models/player/custom_player/legacy/tm_phoenix_variantg.mdl", // Slingshot | Phoenix
+"models/player/custom_player/legacy/tm_phoenix_variantf.mdl", // Enforcer | Phoenix
+"models/player/custom_player/legacy/tm_leet_variantj.mdl", // Mr. Muhlik | Elite Crew
+"models/player/custom_player/legacy/tm_leet_varianti.mdl", // Prof. Shahmat | Elite Crew
+"models/player/custom_player/legacy/tm_leet_varianth.mdl", // Osiris | Elite Crew
+"models/player/custom_player/legacy/tm_leet_variantg.mdl", // Ground Rebel | Elite Crew
+"models/player/custom_player/legacy/tm_leet_variantf.mdl", // The Elite Mr. Muhlik | Elite Crew
+"models/player/custom_player/legacy/tm_jungle_raider_variantf2.mdl", // Trapper | Guerrilla Warfare
+"models/player/custom_player/legacy/tm_jungle_raider_variantf.mdl", // Trapper Aggressor | Guerrilla Warfare
+"models/player/custom_player/legacy/tm_jungle_raider_variante.mdl", // Vypa Sista of the Revolution | Guerrilla Warfare
+"models/player/custom_player/legacy/tm_jungle_raider_variantd.mdl", // Col. Mangos Dabisi | Guerrilla Warfare
+"models/player/custom_player/legacy/tm_jungle_raider_variantb2.mdl", // 'Medium Rare' Crasswater | Guerrilla Warfare
+"models/player/custom_player/legacy/tm_jungle_raider_variantb.mdl", // Crasswater The Forgotten | Guerrilla Warfare
+"models/player/custom_player/legacy/tm_jungle_raider_varianta.mdl", // Elite Trapper Solman | Guerrilla Warfare
+"models/player/custom_player/legacy/tm_balkan_varianth.mdl", // 'The Doctor' Romanov | Sabre
+"models/player/custom_player/legacy/tm_balkan_variantj.mdl", // Blackwolf | Sabre
+"models/player/custom_player/legacy/tm_balkan_varianti.mdl", // Maximus | Sabre
+"models/player/custom_player/legacy/tm_balkan_variantf.mdl", // Dragomir | Sabre
+"models/player/custom_player/legacy/tm_balkan_variantg.mdl", // Rezan The Ready | Sabre
+"models/player/custom_player/legacy/tm_balkan_variantk.mdl", // Rezan the Redshirt | Sabre
+"models/player/custom_player/legacy/tm_balkan_variantl.mdl", // Dragomir | Sabre Footsoldier
 				};
 
 				switch (team) {

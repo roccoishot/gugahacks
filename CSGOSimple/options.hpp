@@ -208,6 +208,7 @@ public:
 		// ESP
 		// 
 	//	bool esp_enabled = false;
+	bool flashkillcheck = false;
 	bool autoscope = false;
 	float amibence = 0;
 	bool slidewalk = false;
@@ -254,6 +255,7 @@ public:
 		//
 		bool chams_player_enabled = false;
 		bool player_enemies_shine = false;
+		bool player_velvet_material = false;
 		bool player_enemies_glow = false;
 
 		bool chams_player_enemies_only = false;

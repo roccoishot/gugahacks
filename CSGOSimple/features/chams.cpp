@@ -41,6 +41,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 	bool is_player = strstr(mdl->szName, "models/player") != nullptr;
 	bool is_sleeve = strstr(mdl->szName, "sleeve") != nullptr;
 	static IMaterial* shine = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
+	static IMaterial* velvet = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/velvet", TEXTURE_GROUP_OTHER);
 	if (is_player) {
 		// 
 		// Draw player Chams.
@@ -93,7 +94,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 						player_enemies_occluded_type = g_MatSystem->FindMaterial("glowOverlay", TEXTURE_GROUP_MODEL);
 						break;
 					}
-					if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr)
+					if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr && velvet != nullptr)
 					{
 						if (g_Options.chams_player_ignorez && g_Options.chams_player_enabled)
 						{
@@ -133,6 +134,17 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
 								}
 								g_MdlRender->ForcedMaterialOverride(shine);
+							}
+							if (g_Options.player_velvet_material)
+							{
+								velvet->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+								bool bFound = false;
+								auto pVar = velvet->FindVar("$envmaptint", &bFound);
+								if (bFound)
+								{
+									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_player_ally_visible[0] / 255.f, g_Options.color_chams_player_ally_visible[1] / 255.f, g_Options.color_chams_player_ally_visible[2] / 255.f);
+								}
+								g_MdlRender->ForcedMaterialOverride(velvet);
 							}
 						}
 					}
@@ -197,7 +209,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 							player_enemies_occluded_type = g_MatSystem->FindMaterial("glowOverlay", TEXTURE_GROUP_MODEL);
 							break;
 						}
-						if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr)
+						if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr && velvet != nullptr)
 						{
 							if (g_Options.chams_player_ignorez && g_Options.chams_player_enabled)
 							{
@@ -237,7 +249,17 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 									}
 									g_MdlRender->ForcedMaterialOverride(shine);
 								}
-
+								if (g_Options.player_velvet_material)
+								{
+									velvet->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+									bool bFound = false;
+									auto pVar = velvet->FindVar("$envmaptint", &bFound);
+									if (bFound)
+									{
+										(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_player_enemy_visible[0] / 255.f, g_Options.color_chams_player_enemy_visible[1] / 255.f, g_Options.color_chams_player_enemy_visible[2] / 255.f);
+									}
+									g_MdlRender->ForcedMaterialOverride(velvet);
+								}
 							}
 						}
 						else

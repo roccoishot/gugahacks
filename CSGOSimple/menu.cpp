@@ -380,6 +380,7 @@ void Menu::Render()
 					ImGui::Checkbox("Health", &g_Options.esp_player_health);
 					ImGui::Checkbox("Armour", &g_Options.esp_player_armour);
 					ImGui::Checkbox("Weapons", &g_Options.esp_player_weapons);
+					ImGui::Checkbox("Flash Kill Check", &g_Options.flashkillcheck);
 					ImGui::Checkbox("Dropped Weapons", &g_Options.esp_dropped_weapons);
 					ImGui::Separator("Viewmodel");
 					ImGui::Spacing();
@@ -500,6 +501,7 @@ void Menu::Render()
 						ImGui::Selectable("Shine", &g_Options.player_enemies_shine, ImGuiSelectableFlags_DontClosePopups);
 						ImGui::Selectable("Wireframe", &g_Options.chams_player_scary, ImGuiSelectableFlags_DontClosePopups);
 						ImGui::Selectable("Flat", &g_Options.chams_player_flat, ImGuiSelectableFlags_DontClosePopups);
+						ImGui::Selectable("Velvet", &g_Options.player_velvet_material, ImGuiSelectableFlags_DontClosePopups);
 
 						ImGui::EndCombo();
 					}
@@ -824,11 +826,11 @@ void Menu::Render()
 					ImGui::Separator("Playermodel");
 					ImGui::Text("   CT Player Model");
 					ImGui::PushItemWidth(160.f);
-					ImGui::Combo("##TPlayerModel", &g_Options.playerModelCT, "Default\0Silent Darryl\0Skullhead Darryl\0Royale Darryl\0Loudmouth Darryl\0Miami Darryl\0Getaway Sally\0AGENT Gandon\0Safecracker Voltzmann\0Little Kev\0Blackwolf\0Rezan the Redshirt\0Rezan The Ready\0Maximus\0Dragomir 1\0Dragomir 2\0Lt.Commander Ricksaw\0Two Times McCoy 1\0Two Times McCoy 2\0Buckshot\0Blueberries Buckshot\0Seal Team 6 Soldier\0Commando\0The Doctor Romanov\0Michael Syfers\0Markus Delrow\0Cmdr.Mae\0Lieutenant Farlow\0John 'Van Healen' Kask\0Bio - Haz Specialist\0Chem - Haz Specialist\0Sergeant Bombson\0Operator\0Street Soldier\0Slingshot\0Enforcer\0Soldier\0The Elite Mr.Muhlik\0Prof.Shahmat\0Osiris\0Ground Rebel\0Special Agent Ava\0B Squadron Officer\0");
+					ImGui::Combo("##TPlayerModel", &g_Options.playerModelCT, "Default\0Cmdr. Goggles\0Cmdr. Wet Sox\0Lieutenant Rex Krikey\0Michael Syfers\0Operator\0Special Agent Ava\0Markus Delrow\0Sous-Lieutenant Medic\0Chem-Haz Capitaine\0Chef d'Escadron Rouchard\0Aspirant\0Officer Jacques Beltram\0D Squadron Officer\0B Squadron Officer\0Seal Team 6 Soldier\0Buckshot\0Lt. Commander Ricksaw\0Buckshot\0Commando Company\0Two Times' McCoy\0Two Times' McCoy2\0Primeiro Tenente\0Cmdr. Mae 'Dead Cold' Jamison\0Lieutenant Farlow\0John 'Van Healen' Kask\0Bio-Haz Specialist\0Sergeant Bombson\0Chem-Haz Specialist\0Getaway Sally\0Number K\0Little Kev\0Safecracker Voltzmann\0Bloody Darryl The Strapped\0Sir Bloody Loudmouth Darryl\0Sir Bloody Darryl Royale\0Sir Bloody Skullhead Darryl\0Sir Bloody Silent Darryl\0Sir Bloody Miami Darryl\0Street Soldier\0Soldier\0Slingshot\0Enforcer\0Mr. Muhlik\0Prof. Shahmat\0Osiris\0Ground Rebel\0The Elite Mr. Muhlik\0Trapper\0Trapper Aggressor\0Vypa Sista of the Revolution\0Col. Mangos Dabisi\0'Medium Rare' Crasswater\0Crasswater The Forgotten\0Elite Trapper Solman\0'The Doctor' Romanov\0Blackwolf\0Maximus\0Dragomir\0Rezan The Ready\0Rezan the Redshirt\0Dragomir\0");
 
 					ImGui::Text("   T Player Model");
 					ImGui::PushItemWidth(160.f);
-					ImGui::Combo("##CTPlayerModel", &g_Options.playerModelT, "Default\0Silent Darryl\0Skullhead Darryl\0Royale Darryl\0Loudmouth Darryl\0Miami Darryl\0Getaway Sally\0AGENT Gandon\0Safecracker Voltzmann\0Little Kev\0Blackwolf\0Rezan the Redshirt\0Rezan The Ready\0Maximus\0Dragomir 1\0Dragomir 2\0Lt.Commander Ricksaw\0Two Times McCoy 1\0Two Times McCoy 2\0Buckshot\0Blueberries Buckshot\0Seal Team 6 Soldier\0Commando\0The Doctor Romanov\0Michael Syfers\0Markus Delrow\0Cmdr.Mae\0Lieutenant Farlow\0John 'Van Healen' Kask\0Bio - Haz Specialist\0Chem - Haz Specialist\0Sergeant Bombson\0Operator\0Street Soldier\0Slingshot\0Enforcer\0Soldier\0The Elite Mr.Muhlik\0Prof.Shahmat\0Osiris\0Ground Rebel\0Special Agent Ava\0B Squadron Officer\0");
+					ImGui::Combo("##CTPlayerModel", &g_Options.playerModelT, "Default\0Cmdr. Goggles\0Cmdr. Wet Sox\0Lieutenant Rex Krikey\0Michael Syfers\0Operator\0Special Agent Ava\0Markus Delrow\0Sous-Lieutenant Medic\0Chem-Haz Capitaine\0Chef d'Escadron Rouchard\0Aspirant\0Officer Jacques Beltram\0D Squadron Officer\0B Squadron Officer\0Seal Team 6 Soldier\0Buckshot\0Lt. Commander Ricksaw\0Buckshot\0Commando Company\0Two Times' McCoy\0Two Times' McCoy2\0Primeiro Tenente\0Cmdr. Mae 'Dead Cold' Jamison\0Lieutenant Farlow\0John 'Van Healen' Kask\0Bio-Haz Specialist\0Sergeant Bombson\0Chem-Haz Specialist\0Getaway Sally\0Number K\0Little Kev\0Safecracker Voltzmann\0Bloody Darryl The Strapped\0Sir Bloody Loudmouth Darryl\0Sir Bloody Darryl Royale\0Sir Bloody Skullhead Darryl\0Sir Bloody Silent Darryl\0Sir Bloody Miami Darryl\0Street Soldier\0Soldier\0Slingshot\0Enforcer\0Mr. Muhlik\0Prof. Shahmat\0Osiris\0Ground Rebel\0The Elite Mr. Muhlik\0Trapper\0Trapper Aggressor\0Vypa Sista of the Revolution\0Col. Mangos Dabisi\0'Medium Rare' Crasswater\0Crasswater The Forgotten\0Elite Trapper Solman\0'The Doctor' Romanov\0Blackwolf\0Maximus\0Dragomir\0Rezan The Ready\0Rezan the Redshirt\0Dragomir\0");
 
 				}
 				ImGui::EndChild();
