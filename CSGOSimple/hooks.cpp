@@ -19,6 +19,7 @@
 #include "lagcompesnation.h"
 #include "Globals.h"
 #include "Colormodulation.h"
+#include "movement.h"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -570,102 +571,17 @@ namespace Hooks {
 		auto flags = g_LocalPlayer->m_fFlags();
 
 		prediction->StartPrediction(cmd);
-
+		movement::edgebug(cmd);
 		g_Legitbot->Run(cmd);
 		float max_radias = 3.1415926535897932384626433832795028841971693993 * 2;
 		float step = max_radias / 128;
 		float xThick = 23;
 		if (g_Options.jump_bug && GetAsyncKeyState(g_Options.jump_bug_key)) {
-			if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
+			if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 				g_Options.misc_bhop2 = false;
-				bool unduck = cmd->buttons &= ~IN_DUCK;
-				if (unduck) {
-					cmd->buttons &= ~IN_DUCK; // duck
-					cmd->buttons |= IN_JUMP; // jump
-					unduck = false;
-				};
-				Vector pos = g_LocalPlayer->abs_origin();
-				for (float a = 0.f; a < max_radias; a += step) {
-					Vector pt;
-					pt.x = (xThick * cos(a)) + pos.x;
-					pt.y = (xThick * sin(a)) + pos.y;
-					pt.z = pos.z;
-
-
-					Vector pt2 = pt;
-					pt2.z -= 8192;
-
-					trace_t fag;
-
-					Ray_t ray;
-					ray.Init(pt, pt2);
-
-					CTraceFilter flt;
-					flt.pSkip = g_LocalPlayer;
-					g_EngineTrace->TraceRay(ray, MASK_PLAYERSOLID, &flt, &fag);
-
-					if (fag.fraction != 1.f && fag.fraction != 0.f) {
-						cmd->buttons |= IN_DUCK; // duck
-						cmd->buttons &= ~IN_JUMP; // jump
-						unduck = true;
-					};
-				};
-				for (float a = 0.f; a < max_radias; a += step) {
-					Vector pt;
-					pt.x = ((xThick - 2.f) * cos(a)) + pos.x;
-					pt.y = ((xThick - 2.f) * sin(a)) + pos.y;
-					pt.z = pos.z;
-
-					Vector pt2 = pt;
-					pt2.z -= 8192;
-
-					trace_t fag;
-
-					Ray_t ray;
-					ray.Init(pt, pt2);
-
-					CTraceFilter flt;
-					flt.pSkip = g_LocalPlayer;
-					g_EngineTrace->TraceRay(ray, MASK_PLAYERSOLID, &flt, &fag);
-
-					if (fag.fraction != 1.f && fag.fraction != 0.f) {
-						cmd->buttons |= IN_DUCK; // duck
-						cmd->buttons &= ~IN_JUMP; // jump
-						unduck = true;
-					};
-				};
-				for (float a = 0.f; a < max_radias; a += step) {
-					Vector pt;
-					pt.x = ((xThick - 20.f) * cos(a)) + pos.x;
-					pt.y = ((xThick - 20.f) * sin(a)) + pos.y;
-					pt.z = pos.z;
-
-					Vector pt2 = pt;
-					pt2.z -= 8192;
-
-					trace_t fag;
-
-					Ray_t ray;
-					ray.Init(pt, pt2);
-
-					CTraceFilter flt;
-					flt.pSkip = g_LocalPlayer;
-					g_EngineTrace->TraceRay(ray, MASK_PLAYERSOLID, &flt, &fag);
-
-					if (fag.fraction != 1.f && fag.fraction != 0.f) {
-						cmd->buttons |= IN_DUCK; // duck
-						cmd->buttons &= ~IN_JUMP; // jump
-						unduck = true;
-					};
-
-
-
-				}
-			}
 		}
-		else g_Options.misc_bhop2 = true;
+			else g_Options.misc_bhop2 = true;
 		prediction->EndPrediction();
-		if ((g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_LocalPlayer->IsAlive()) if (g_Options.edge_bug && GetAsyncKeyState(g_Options.edge_bug_key)) cmd->buttons = 4;
 		if (g_Options.edgejump.enabled && GetAsyncKeyState(g_Options.edgejump.hotkey))
 		{
 			if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && (flags & FL_ONGROUND))

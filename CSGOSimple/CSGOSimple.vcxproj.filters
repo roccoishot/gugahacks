@@ -173,6 +173,9 @@
     <ClCompile Include="Colormodulation.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
+    <ClCompile Include="movement.cpp">
+      <Filter>Source Files\features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="valve_sdk\misc\BaseHandle.hpp">
@@ -485,6 +488,9 @@
       <Filter>Source Files\features</Filter>
     </ClInclude>
     <ClInclude Include="Colormodulation.h">
+      <Filter>Source Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="movement.h">
       <Filter>Source Files\features</Filter>
     </ClInclude>
   </ItemGroup>
