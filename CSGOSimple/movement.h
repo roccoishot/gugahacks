@@ -4,7 +4,7 @@
 
 namespace movement {
 		
-	//void jumpbug(CUserCmd* cmd);
+	void jumpbug(CUserCmd* cmd);
 	void edgebug(CUserCmd* cmd);
 
 }

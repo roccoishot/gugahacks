@@ -14,18 +14,19 @@ void movement::edgebug(CUserCmd* cmd) {
 	}
 }
 
-/*void movement::jumpbug(CUserCmd* cmd) {
-	float max_radias = IM_PI * 2;
-	float step = max_radias / 128;
-	float xThick = 23;
-	static bool bDidJump = true;
-	static bool unduck = true;
-	if (g_Options.jump_bug && GetAsyncKeyState(g_Options.jump_bug_key)) {
-        if (g_LocalPlayer->m_fFlags() & (1 << 0)) {
+void movement::jumpbug(CUserCmd* cmd) {
+    float max_radias = IM_PI * 2;
+    float step = max_radias / 128;
+    float xThick = 23;
+    static bool bDidJump = true;
+    static bool unduck = true;
+    if (g_Options.jump_bug && GetAsyncKeyState(g_Options.jump_bug_key)) {
+        if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
+            g_Options.misc_bhop2 = false;
             if (unduck) {
                 bDidJump = false;
-                cmd->buttons &= ~IN_DUCK; // duck
-                cmd->buttons |= IN_JUMP; // jump
+                cmd->buttons &= ~in_duck; // duck
+                cmd->buttons |= in_jump; // jump
                 unduck = false;
             }
             Vector pos = g_LocalPlayer->m_vecOrigin();
@@ -50,8 +51,8 @@ void movement::edgebug(CUserCmd* cmd) {
 
                 if (fag.fraction != 1.f && fag.fraction != 0.f) {
                     bDidJump = true;
-                    cmd->buttons |= IN_DUCK; // duck
-                    cmd->buttons &= ~IN_JUMP; // jump
+                    cmd->buttons |= in_duck; // duck
+                    cmd->buttons &= ~in_jump; // jump
                     unduck = true;
                 }
             }
@@ -75,8 +76,8 @@ void movement::edgebug(CUserCmd* cmd) {
 
                 if (fag.fraction != 1.f && fag.fraction != 0.f) {
                     bDidJump = true;
-                    cmd->buttons |= IN_DUCK; // duck
-                    cmd->buttons &= ~IN_JUMP; // jump
+                    cmd->buttons |= in_duck; // duck
+                    cmd->buttons &= ~in_jump; // jump
                     unduck = true;
                 }
             }
@@ -100,11 +101,12 @@ void movement::edgebug(CUserCmd* cmd) {
 
                 if (fag.fraction != 1.f && fag.fraction != 0.f) {
                     bDidJump = true;
-                    cmd->buttons |= IN_DUCK; // duck
-                    cmd->buttons &= ~IN_JUMP; // jump
+                    cmd->buttons |= in_duck; // duck
+                    cmd->buttons &= ~in_jump; // jump
                     unduck = true;
                 }
             }
         }
-	}
-}*/
+    }
+    else g_Options.misc_bhop2 = true;
+}

@@ -553,6 +553,13 @@ namespace Hooks {
 
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
 		{
+			if (g_Options.jump_bug && GetAsyncKeyState(g_Options.jump_bug_key)) {
+				if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
+					g_Options.misc_bhop2 = true;
+			}
+			else g_Options.misc_bhop2 = false;
+			movement::edgebug(cmd);
+			movement::jumpbug(cmd);
 			Misc::SlowWalk(cmd);
 			CAntiAim::Get().CreateMove(cmd, bSendPacket);
 		}
@@ -575,16 +582,8 @@ namespace Hooks {
 		auto flags = g_LocalPlayer->m_fFlags();
 
 		prediction->StartPrediction(cmd);
-		movement::edgebug(cmd);
 		g_Legitbot->Run(cmd);
-		float max_radias = 3.1415926535897932384626433832795028841971693993 * 2;
-		float step = max_radias / 128;
-		float xThick = 23;
-		if (g_Options.jump_bug && GetAsyncKeyState(g_Options.jump_bug_key)) {
-			if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
-				g_Options.misc_bhop2 = false;
-		}
-			else g_Options.misc_bhop2 = true;
+
 		prediction->EndPrediction();
 		if (g_Options.edgejump.enabled && GetAsyncKeyState(g_Options.edgejump.hotkey))
 		{
