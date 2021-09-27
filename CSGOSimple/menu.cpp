@@ -631,7 +631,7 @@ void Menu::Render()
 	"Metallic",
 		"Agree",
 		"Disagree",
-		"Spark",
+		"Electric",
 		"FranzJ",
 		"Spark",
 		"Gmod",

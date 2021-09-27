@@ -1,5 +1,4 @@
 #include "movement.h"
-#define IM_PI 3.14159265358979323846f
 
 void movement::edgebug(CUserCmd* cmd) {
 	if (g_LocalPlayer->IsAlive() && g_EngineClient->IsInGame())
@@ -15,7 +14,7 @@ void movement::edgebug(CUserCmd* cmd) {
 }
 
 void movement::jumpbug(CUserCmd* cmd) {
-    float max_radias = IM_PI * 2;
+    float max_radias = 3.1415926535897932384626433832795028841971693993 * 2;
     float step = max_radias / 128;
     float xThick = 23;
     static bool bDidJump = true;
