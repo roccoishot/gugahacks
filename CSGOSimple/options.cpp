@@ -317,7 +317,7 @@ void Options::SetupMisc()
 	SetupValue(fakelag, "Misc", "Fakelag");
 	SetupValue(enablebeta, "Misc", "Beta");
 	SetupValue(faketicks, "Misc", "FL Ticks");
-	SetupValue(bowlsfreshcut, "Misc", "Bowl's Fat Cock");
+	SetupValue(bowlsfreshcut, "Misc", "Flash Indicator");
 	SetupValue(misc_backtrack, "Misc", "Backtrack");
 	SetupValue(fakeping, "Misc", "Fake Ping");
 	SetupValue(fakepingzzz, "Misc", "Fake Ping Tix");

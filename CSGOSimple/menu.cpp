@@ -533,6 +533,7 @@ void Menu::Render()
 					ImGui::Checkbox("Draw FOV", &g_Options.drawfov);
 					ImGui::Checkbox("Sniper crosshair", &g_Options.sniper_xhair);
 					ImGui::Checkbox("No flash", &g_Options.no_flash);
+					ImGui::Checkbox("Flash Indicator", &g_Options.bowlsfreshcut);
 					ImGui::Checkbox("Fliter smoke", &g_Options.no_smoke);
 					ImGui::Checkbox("Shot Info", &g_Options.shotinfo);
 					ImGui::Checkbox("Floating Ragdolls", &g_Options.ragfloat);
@@ -706,7 +707,6 @@ void Menu::Render()
 					}
 					ImGui::Checkbox("Edge jump", &g_Options.edgejump.enabled); ImGui::SameLine(group_w - 50); ImGui::Hotkey("    ", &g_Options.edgejump.hotkey);
 					ImGui::Checkbox("Duck In Air", &g_Options.ducknair);
-					ImGui::Checkbox("Bowl's Fat Cock", &g_Options.bowlsfreshcut);
 					ImGui::Checkbox("Chat Spam", &g_Options.misc_chatspam);
 					ImGui::Checkbox("Auto Accept", &g_Options.autoaccept);
 					ImGui::Separator("Test");

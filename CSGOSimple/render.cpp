@@ -95,8 +95,8 @@ void Render::BeginScene() {
 	draw_list->Clear();
 	draw_list->PushClipRectFullScreen();
 
-	if (g_Options.bowlsfreshcut) {
-		Render::Get().RenderText("8==D", 965, 545, 18.f, Color::White, false, true, g_VeloFont);
+	if (g_Options.bowlsfreshcut && g_EngineClient->IsInGame() && g_LocalPlayer->IsFlashed()) {
+		Render::Get().RenderText("FLASHED", 965, 545, 18.f, Color(120, 208, 255), false, true, g_VeloFont);
 	}
 
 	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive() && g_Options.ragebot_antiaim_desync && GetKeyState(g_Options.invertaakey)) {

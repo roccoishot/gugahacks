@@ -547,6 +547,10 @@ namespace Hooks {
 		if (GetAsyncKeyState(g_Options.AutoStafe_key))
 			BunnyHop::AutoStafe(cmd);
 
+		CViewSetup* vsView;
+		if (g_EngineClient->IsInGame() && vsView)
+			Visuals::Get().ThirdPerson();
+
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
 		{
 			Misc::SlowWalk(cmd);
@@ -810,9 +814,6 @@ namespace Hooks {
 	void __fastcall hkOverrideView(void* _this, int edx, CViewSetup* vsView)
 	{
 		static auto ofunc = clientmode_hook.get_original<decltype(&hkOverrideView)>(index::OverrideView);
-
-		if (g_EngineClient->IsInGame() && vsView)
-			Visuals::Get().ThirdPerson();
 
 		ofunc(g_ClientMode, edx, vsView);
 	}
