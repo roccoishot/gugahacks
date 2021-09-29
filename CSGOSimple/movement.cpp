@@ -14,7 +14,7 @@ void movement::edgebug(CUserCmd* cmd) {
 }
 
 void movement::jumpbug(CUserCmd* cmd) {
-    float max_radias = DirectX::XM_PI;
+    float max_radias = DirectX::XM_PI * 2;
     float step = max_radias / 128;
     float xThick = 23;
     static bool bDidJump = true;
@@ -28,7 +28,7 @@ void movement::jumpbug(CUserCmd* cmd) {
                 cmd->buttons |= in_jump; // jump
                 unduck = false;
             }
-            Vector pos = g_LocalPlayer->m_vecOrigin();
+            Vector pos = g_LocalPlayer->abs_origin();
             for (float a = 0.f; a < max_radias; a += step) {
                 Vector pt;
                 pt.x = (xThick * cos(a)) + pos.x;
