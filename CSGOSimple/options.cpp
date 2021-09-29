@@ -200,10 +200,8 @@ void Options::SetupVisuals()
 	SetupValue(esp_dropped_weapons, "Visuals", "Dropped Weapons");
 	SetupValue(chams_player_enabled, "Visuals", "Chams Vis");
 	SetupValue(chams_player_ignorez, "Visuals", "Chams XYZ");
-	SetupValue(chams_player_flat, "Visuals", "Flat");
-	SetupValue(chams_player_scary, "Visuals", "Wireframe");
-	SetupValue(player_enemies_shine, "Visuals", "Shine");
-	SetupValue(player_velvet_material, "Visuals", "Velvet");
+	SetupValue(arms_material, "Visuals", "Arms Material");
+	SetupValue(player_material, "Visuals", "Player Material");
 	SetupColor(player_enemy_visible_shine, "Color Visible");
 	SetupColor(color_esp_enemy_visible, "Enemies Visible");
 	SetupColor(color_esp_enemy_occluded, "Enemies Occluded");
@@ -214,15 +212,10 @@ void Options::SetupVisuals()
 	SetupColor(color_chams_strap_visible, "Strap Visible");
 	SetupColor(color_chams_strap_occluded, "Strap XYZ");
 	SetupValue(chams_strap_enabled, "Visuals", "Strap Enabled");
-	SetupValue(chams_strap_wireframe, "Visuals", "Strap Wireframe");
-	SetupValue(chams_strap_flat, "Visuals", "Strap Flat");
+	SetupValue(strap_material, "Visuals", "Strap Material");
 	SetupValue(chams_strap_ignorez, "Visuals", "Strap XYZ");
-	SetupValue(chams_strap_glass, "Visuals", "Strap Glass");
 	SetupValue(chams_arms_enabled, "Visuals", "Arms Enabled");
-	SetupValue(chams_arms_wireframe, "Visuals", "Arms Wireframe");
-	SetupValue(chams_arms_flat, "Visuals", "Arms Flat");
 	SetupValue(chams_arms_ignorez, "Visuals", "Arms XYZ");
-	SetupValue(chams_arms_glass, "Visuals", "Arms Shine");
 	SetupColor(color_chams_arms_visible, "Arms Visible");
 	SetupColor(color_chams_arms_occluded, "Arms Occluded");
 	SetupValue(chams_sleeve_enabled, "Visuals", "Sleeves Enabled");
@@ -235,7 +228,6 @@ void Options::SetupVisuals()
 	SetupValue(misc_thirdperson, "Visuals", "Thirdperson");
 	SetupValue(misc_thirdperson_dist, "Visuals", "Thirdperson Distance");
 	SetupValue(misc_thirdperson_key, "Visuals", "Thirdperson Key");
-	SetupValue(shine_oc, "Visuals", "Shine Occluded");
 	SetupColor(colormodulation, "World Color");
 	SetupValue(worldglowb, "Visuals", "World Glow Blue");
 	SetupValue(worldglowg, "Visuals", "World Glow Green");

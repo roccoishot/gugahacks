@@ -250,7 +250,7 @@ void Menu::Render()
 				};
 
 				ImGui::Text("More Coming Soon!");
-				ImGui::Separator("AntiAim");
+				ImGui::Separator("Anti Aim");
 				ImGui::Combo("Pitch", &g_Options.ragebot_antiaim_pitch, aa_pitch_list, IM_ARRAYSIZE(aa_pitch_list));
 				ImGui::Combo("Yaw", &g_Options.ragebot_antiaim_yaw, aa_yaw_list, IM_ARRAYSIZE(aa_yaw_list));
 				ImGui::Checkbox("Desync", &g_Options.ragebot_antiaim_desync);
@@ -317,7 +317,7 @@ void Menu::Render()
 				}
 
 				ImGui::Separator("Others");
-				ImGui::Checkbox("HitChance", &settings->enablehc);
+				ImGui::Checkbox("Hitchance", &settings->enablehc);
 				if (settings->enablehc)
 					ImGui::SliderInt("Hitchance", &settings->hitchance, 1, 100, "%.f");
 				ImGui::Checkbox("Backtrack", &g_Options.misc_backtrack);
@@ -331,8 +331,8 @@ void Menu::Render()
 					ImGui::SliderFloat("##Silentfov", &settings->silent_fov, 0.f, 360.f, "%.f");
 					ImGui::Spacing();
 				}
-				ImGui::Checkbox("AutoScope", &g_Options.autoscope);
-				ImGui::Checkbox("Auto Fire##autofire", &settings->autofire.enabled);
+				ImGui::Checkbox("Autoscope", &g_Options.autoscope);
+				ImGui::Checkbox("Autofire##autofire", &settings->autofire.enabled);
 				ImGui::Checkbox("Autowall##autowall", &settings->autowall.enabled);
 				if (settings->autowall.enabled) {
 					ImGui::Spacing();
@@ -409,7 +409,7 @@ void Menu::Render()
 						ImGui::Text("Boxes"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemies Visible   ", &g_Options.color_esp_enemy_visible);
 					}
 					if (g_Options.esp_player_boxesOccluded && g_Options.esp_player_boxes) {
-						ImGui::Text("Boxes XYZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemies Occluded      ", &g_Options.color_esp_enemy_occluded);
+						ImGui::Text("Boxes XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemies Occluded      ", &g_Options.color_esp_enemy_occluded);
 					}
 					if (g_Options.esp_player_names) {
 						ImGui::Text("Names"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Names Color ", &g_Options.color_name_player);
@@ -424,31 +424,31 @@ void Menu::Render()
 						ImGui::Text("Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemy Visible ", &g_Options.color_chams_player_enemy_visible);
 					}
 					if (g_Options.chams_player_ignorez) {
-						ImGui::Text("Chams XYZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemy Occluded ", &g_Options.color_chams_player_enemy_occluded);
+						ImGui::Text("Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemy Occluded ", &g_Options.color_chams_player_enemy_occluded);
 					}
 					if (g_Options.chams_player_enabled && g_Options.teamchams) {
 						ImGui::Text("Team Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Team Visible ", &g_Options.color_chams_player_ally_visible);
 					}
 					if (g_Options.chams_player_ignorez && g_Options.teamchams) {
-						ImGui::Text("Team Chams XYZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Team Occluded ", &g_Options.color_chams_player_ally_occluded);
+						ImGui::Text("Team Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Team Occluded ", &g_Options.color_chams_player_ally_occluded);
 					}
 					if (g_Options.chams_arms_enabled) {
 						ImGui::Text("Arm Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Arms", &g_Options.color_chams_arms_visible);
 					}
 					if (g_Options.chams_arms_ignorez) {
-						ImGui::Text("Sleeve Chams XYZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Arms XYZ", &g_Options.color_chams_sleeve_occluded);
+						ImGui::Text("Arms XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Arms XQZ", &g_Options.color_chams_arms_occluded);
 					}
 					if (g_Options.chams_sleeve_enabled) {
 						ImGui::Text("Sleeve Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Sleeves", &g_Options.color_chams_sleeve_visible);
 					}
 					if (g_Options.chams_sleeve_ignorez) {
-						ImGui::Text("Sleeve Chams XYZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Sleeves XYZ", &g_Options.color_chams_sleeve_occluded);
+						ImGui::Text("Sleeve Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Sleeves XQZ", &g_Options.color_chams_sleeve_occluded);
 					}
 					if (g_Options.chams_strap_enabled) {
 						ImGui::Text("Strap Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Strap", &g_Options.color_chams_strap_visible);
 					}
 					if (g_Options.chams_strap_ignorez) {
-						ImGui::Text("Strap XYZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Strap XYZ", &g_Options.color_chams_strap_occluded);
+						ImGui::Text("Strap XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Strap XQZ", &g_Options.color_chams_strap_occluded);
 					}
 				}
 				ImGui::EndChild();
@@ -481,50 +481,43 @@ void Menu::Render()
 					}
 					ImGui::Checkbox("Arms Chams", &g_Options.chams_arms_enabled);
 					if (g_Options.chams_arms_enabled) {
-						ImGui::Checkbox("Arms XYZ", &g_Options.chams_arms_ignorez);
+						ImGui::Checkbox("Arms XQZ", &g_Options.chams_arms_ignorez);
 					}
 
 					ImGui::Checkbox("Sleeve Chams", &g_Options.chams_sleeve_enabled);
 					if (g_Options.chams_sleeve_enabled) {
-						ImGui::Checkbox("Sleeve XYZ", &g_Options.chams_arms_ignorez);
+						ImGui::Checkbox("Sleeve XQZ", &g_Options.chams_arms_ignorez);
 					}
 
 					ImGui::Checkbox("Strap Chams", &g_Options.chams_strap_enabled);
 					if (g_Options.chams_arms_enabled) {
-						ImGui::Checkbox("Strap XYZ", &g_Options.chams_strap_ignorez);
+						ImGui::Checkbox("Strap XQZ", &g_Options.chams_strap_ignorez);
 					}
 
-					ImGui::Checkbox("Shine OC", &g_Options.shine_oc);
+					const char* MatList[] = {
+"Regular",
+"Flat",
+"Shine",
+"Wireframe",
+"Velvet",
+"Animated"
+					};
 
-					if (ImGui::BeginCombo("##material", "Material"))
-					{
-						ImGui::Selectable("Shine", &g_Options.player_enemies_shine, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Wireframe", &g_Options.chams_player_scary, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Flat", &g_Options.chams_player_flat, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Velvet", &g_Options.player_velvet_material, ImGuiSelectableFlags_DontClosePopups);
+					const char* MatList2[] = {
+"Regular",
+"Flat",
+"Shine",
+"Wireframe",
+"Animated"
+					};
 
-						ImGui::EndCombo();
-					}
+					ImGui::Combo("Player Mat", &g_Options.player_material, MatList, IM_ARRAYSIZE(MatList));
 
 					if (g_Options.chams_strap_enabled) {
-						if (ImGui::BeginCombo("##strapmaterial", "Strap Material"))
-						{
-							ImGui::Selectable("Shine", &g_Options.chams_strap_glass, ImGuiSelectableFlags_DontClosePopups);
-							ImGui::Selectable("Wireframe", &g_Options.chams_strap_wireframe, ImGuiSelectableFlags_DontClosePopups);
-							ImGui::Selectable("Flat", &g_Options.chams_strap_flat, ImGuiSelectableFlags_DontClosePopups);
-
-							ImGui::EndCombo();
-						}
+						ImGui::Combo("Strap Mat", &g_Options.strap_material, MatList2, IM_ARRAYSIZE(MatList2));
 					}
 					if (g_Options.chams_arms_enabled) {
-						if (ImGui::BeginCombo("##armsmaterial", "Arms Material"))
-						{
-							ImGui::Selectable("Shine", &g_Options.chams_arms_glass, ImGuiSelectableFlags_DontClosePopups);
-							ImGui::Selectable("Wireframe", &g_Options.chams_arms_wireframe, ImGuiSelectableFlags_DontClosePopups);
-							ImGui::Selectable("Flat", &g_Options.chams_arms_flat, ImGuiSelectableFlags_DontClosePopups);
-
-							ImGui::EndCombo();
-						}
+						ImGui::Combo("Arms Mat", &g_Options.arms_material, MatList2, IM_ARRAYSIZE(MatList2));
 					}
 
 					ImGui::Spacing();
@@ -539,7 +532,7 @@ void Menu::Render()
 					ImGui::Checkbox("Floating Ragdolls", &g_Options.ragfloat);
 					ImGui::Checkbox("Recoil Crosshair", &g_Options.rcross);
 					ImGui::Checkbox("Grenade Prediction", &g_Options.pnade);
-					ImGui::Checkbox("Third Person", &g_Options.misc_thirdperson); ImGui::SameLine(); ImGui::Hotkey("            ", &g_Options.misc_thirdperson_key);
+					ImGui::Checkbox("Thirdperson", &g_Options.misc_thirdperson); ImGui::SameLine(); ImGui::Hotkey("            ", &g_Options.misc_thirdperson_key);
 					ImGui::Spacing();
 					ImGui::SliderInt("Fov", &g_Options.fovchangaaa, 0, 120, "%.f");
 					ImGui::Checkbox("Aspect Ratio", &g_Options.aspectchange);
@@ -659,6 +652,7 @@ void Menu::Render()
 	"Static",
 	"Reverse"
 					};
+					ImGui::Checkbox("Chat Spam", &g_Options.misc_chatspam);
 					ImGui::Checkbox("Clantag", &g_Options.clantag);
 					if (g_Options.clantag) {
 						ImGui::Combo("Type", &g_Options.clantagtype, ClantagTypes, IM_ARRAYSIZE(ClantagTypes));
@@ -699,15 +693,12 @@ void Menu::Render()
 
 					//NOT COOL!!!
 					ImGui::Checkbox("No Duck Cooldown", &g_Options.nocool);
-					ImGui::Checkbox("Bunny hop", &g_Options.misc_bhop);
+					ImGui::Checkbox("Bhop", &g_Options.misc_bhop);
 					ImGui::Checkbox("Autostrafe", &g_Options.autostrafe); ImGui::SameLine(group_w - 50);     ImGui::Hotkey(" ", &g_Options.AutoStafe_key);
-					ImGui::Checkbox("Edge bug", &g_Options.edge_bug); ImGui::SameLine(group_w - 50);          ImGui::Hotkey("  ", &g_Options.edge_bug_key);
-					if (g_Options.nocool) {
-						ImGui::Checkbox("Jump bug", &g_Options.jump_bug); ImGui::SameLine(group_w - 50);          ImGui::Hotkey("   ", &g_Options.jump_bug_key);
-					}
+					ImGui::Checkbox("Edgebug", &g_Options.edge_bug); ImGui::SameLine(group_w - 50);          ImGui::Hotkey("  ", &g_Options.edge_bug_key);
+					ImGui::Checkbox("Jumpbug", &g_Options.jump_bug); ImGui::SameLine(group_w - 50);          ImGui::Hotkey("   ", &g_Options.jump_bug_key);
 					ImGui::Checkbox("Edge jump", &g_Options.edgejump.enabled); ImGui::SameLine(group_w - 50); ImGui::Hotkey("    ", &g_Options.edgejump.hotkey);
 					ImGui::Checkbox("Duck In Air", &g_Options.ducknair);
-					ImGui::Checkbox("Chat Spam", &g_Options.misc_chatspam);
 					ImGui::Checkbox("Auto Accept", &g_Options.autoaccept);
 					ImGui::Separator("Test");
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);

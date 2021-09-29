@@ -253,31 +253,21 @@ public:
 		//
 		// CHAMS
 		//
-		bool player_velvet_material = false;
-		bool chams_player_enabled = false;
-		bool player_enemies_shine = false;
-		bool player_enemies_glow = false;
+		int arms_material = 0;
+		int strap_material = 0;
+		int player_material = 0;
 
+		bool chams_player_enabled = false;
 		bool chams_player_enemies_only = false;
-		bool chams_player_wireframe = false;
-		bool chams_player_scary = false;
-		bool chams_player_flat = false;
 		bool chams_player_ignorez = false;
-		bool chams_player_glass = false;
 		bool chams_arms_enabled = false;
-		bool chams_arms_wireframe = false;
-		bool chams_arms_flat = false;
 		bool chams_arms_ignorez = false;
-		bool chams_arms_glass = false;
 
 		bool chams_sleeve_enabled = false;
 		bool chams_sleeve_ignorez = false;
 
 		bool chams_strap_enabled = false;
-		bool chams_strap_wireframe = false;
-		bool chams_strap_flat = false;
 		bool chams_strap_ignorez = false;
-		bool chams_strap_glass = false;
 
 		//
 		// MISC
@@ -311,7 +301,6 @@ public:
 		bool pnade = false;
 		bool fatassmf = false;
 		int spinspeed = 1;
-		bool shine_oc = false;
 		bool sky_changer = false;
 		int skyshitsssss = 0;
 		float misc_nightmode = 1.0f;

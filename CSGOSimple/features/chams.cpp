@@ -40,8 +40,10 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 	bool is_arm = strstr(mdl->szName, "arms") != nullptr;
 	bool is_player = strstr(mdl->szName, "models/player") != nullptr;
 	bool is_sleeve = strstr(mdl->szName, "sleeve") != nullptr;
+	// save for l8r //static IMaterial* pulse = g_MatSystem->FindMaterial("models/inventory_items/dogtags/dogtags_outline", TEXTURE_GROUP_OTHER);
 	static IMaterial* shine = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
 	static IMaterial* velvet = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/velvet", TEXTURE_GROUP_OTHER);
+	static IMaterial* animated = g_MatSystem->FindMaterial("models/inventory_items/music_kit/darude_01/mp3_detail", TEXTURE_GROUP_OTHER);
 	if (is_player) {
 		// 
 		// Draw player Chams.
@@ -53,47 +55,15 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 			if (ent && ent->IsAlive()) {
 				if (g_Options.teamchams) {
 					static IMaterial* player_enemies_type = nullptr;
-					switch (g_Options.chams_player_flat)
-					{
-					case 0:
+					if (g_Options.player_material == 0)
 						player_enemies_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-						break;
-
-					case 1:
+					if (g_Options.player_material == 1)
 						player_enemies_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
-						break;
-
-					case 2:
-						player_enemies_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
-						break;
-
-					case 3:
-						player_enemies_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/velvet", TEXTURE_GROUP_OTHER);
-						break;
-
-					case 4:
-						player_enemies_type = g_MatSystem->FindMaterial("glowOverlay", TEXTURE_GROUP_MODEL);
-						break;
-					}
 					static IMaterial* player_enemies_occluded_type = nullptr;
-					switch (g_Options.chams_player_flat)
-					{
-					case 0:
+					if (g_Options.player_material == 0)
 						player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-						break;
-
-					case 1:
+					if (g_Options.player_material == 1)
 						player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
-						break;
-
-					case 2:
-						player_enemies_occluded_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
-						break;
-
-					case 3:
-						player_enemies_occluded_type = g_MatSystem->FindMaterial("glowOverlay", TEXTURE_GROUP_MODEL);
-						break;
-					}
 					if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr && velvet != nullptr)
 					{
 						if (g_Options.chams_player_ignorez && g_Options.chams_player_enabled)
@@ -109,23 +79,18 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 							modulate(g_Options.color_chams_player_ally_visible, player_enemies_type);
 							g_StudioRender->ForcedMaterialOverride(player_enemies_type);
 							fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
-							if (g_Options.chams_player_scary) {
+
+							if (g_Options.player_material == 3) {
 								player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
+								player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
 							}
-							else
-							{
+							else {
 								player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
+								player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_FLAT, false);
 							}
 
-							if (g_Options.player_enemies_shine)
+							if (g_Options.player_material == 2)
 							{
-								if (g_Options.shine_oc == true) {
-									shine->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
-								}
-								if (g_Options.shine_oc == false)
-								{
-									shine->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
-								}
 								shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
 								bool bFound = false;
 								auto pVar = shine->FindVar("$envmaptint", &bFound);
@@ -136,7 +101,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 								g_MdlRender->ForcedMaterialOverride(shine);
 							}
 
-							if (g_Options.player_velvet_material)
+							if (g_Options.player_material == 4)
 							{
 								velvet->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
 								bool bFound = false;
@@ -146,6 +111,18 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_player_ally_visible[0] / 255.f, g_Options.color_chams_player_ally_visible[1] / 255.f, g_Options.color_chams_player_ally_visible[2] / 255.f);
 								}
 								g_MdlRender->ForcedMaterialOverride(velvet);
+							}
+
+							if (g_Options.player_material == 5)
+							{
+								animated->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+								bool bFound = false;
+								auto pVar = animated->FindVar("$envmaptint", &bFound);
+								if (bFound)
+								{
+									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
+								}
+								g_MdlRender->ForcedMaterialOverride(animated);
 							}
 
 						}
@@ -170,47 +147,15 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 					else
 					{
 						static IMaterial* player_enemies_type = nullptr;
-						switch (g_Options.chams_player_flat)
-						{
-						case 0:
+						if (g_Options.player_material == 0)
 							player_enemies_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-							break;
-
-						case 1:
+						if (g_Options.player_material == 1)
 							player_enemies_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
-							break;
-
-						case 2:
-							player_enemies_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
-							break;
-
-						case 3:
-							player_enemies_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/velvet", TEXTURE_GROUP_OTHER);
-							break;
-
-						case 4:
-							player_enemies_type = g_MatSystem->FindMaterial("glowOverlay", TEXTURE_GROUP_MODEL);
-							break;
-						}
 						static IMaterial* player_enemies_occluded_type = nullptr;
-						switch (g_Options.chams_player_flat)
-						{
-						case 0:
+						if (g_Options.player_material == 0)
 							player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-							break;
-
-						case 1:
+						if (g_Options.player_material == 1)
 							player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
-							break;
-
-						case 2:
-							player_enemies_occluded_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
-							break;
-
-						case 3:
-							player_enemies_occluded_type = g_MatSystem->FindMaterial("glowOverlay", TEXTURE_GROUP_MODEL);
-							break;
-						}
 						if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr && velvet != nullptr)
 						{
 							if (g_Options.chams_player_ignorez && g_Options.chams_player_enabled)
@@ -226,22 +171,17 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 								modulate(g_Options.color_chams_player_enemy_visible, player_enemies_type);
 								g_StudioRender->ForcedMaterialOverride(player_enemies_type);
 								fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
-								if (g_Options.chams_player_scary) {
+								if (g_Options.player_material == 3) {
 									player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
+									player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
 								}
-								else
-								{
+								else {
 									player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
+									player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_FLAT, false);
 								}
-								if (g_Options.player_enemies_shine)
+
+								if (g_Options.player_material == 2)
 								{
-									if (g_Options.shine_oc == true) {
-										shine->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
-									}
-									if (g_Options.shine_oc == false)
-									{
-										shine->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
-									}
 									shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
 									bool bFound = false;
 									auto pVar = shine->FindVar("$envmaptint", &bFound);
@@ -252,7 +192,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 									g_MdlRender->ForcedMaterialOverride(shine);
 								}
 
-								if (g_Options.player_velvet_material)
+								if (g_Options.player_material == 4)
 								{
 									velvet->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
 									bool bFound = false;
@@ -262,6 +202,18 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 										(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_player_enemy_visible[0] / 255.f, g_Options.color_chams_player_enemy_visible[1] / 255.f, g_Options.color_chams_player_enemy_visible[2] / 255.f);
 									}
 									g_MdlRender->ForcedMaterialOverride(velvet);
+								}
+
+								if (g_Options.player_material == 5)
+								{
+									animated->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+									bool bFound = false;
+									auto pVar = animated->FindVar("$envmaptint", &bFound);
+									if (bFound)
+									{
+										(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
+									}
+									g_MdlRender->ForcedMaterialOverride(animated);
 								}
 
 							}
@@ -278,48 +230,16 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 	if (is_arm) {
 		static IMaterial* player_enemies_type = nullptr;
-		switch (g_Options.chams_arms_flat)
-		{
-		case 0:
+		if (g_Options.arms_material == 0)
 			player_enemies_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-			break;
-
-		case 1:
+		if (g_Options.arms_material == 1)
 			player_enemies_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
-			break;
-
-		case 2:
-			player_enemies_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
-			break;
-
-		case 3:
-			player_enemies_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/velvet", TEXTURE_GROUP_OTHER);
-			break;
-
-		case 4:
-			player_enemies_type = g_MatSystem->FindMaterial("glowOverlay", TEXTURE_GROUP_MODEL);
-			break;
-		}
 		static IMaterial* player_enemies_occluded_type = nullptr;
-		switch (g_Options.chams_arms_flat)
-		{
-		case 0:
+		if (g_Options.arms_material == 0)
 			player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-			break;
-
-		case 1:
+		if (g_Options.arms_material == 1)
 			player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
-			break;
-
-		case 2:
-			player_enemies_occluded_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
-			break;
-
-		case 3:
-			player_enemies_occluded_type = g_MatSystem->FindMaterial("glowOverlay", TEXTURE_GROUP_MODEL);
-			break;
-		}
-		if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr)
+		if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr && velvet != nullptr)
 		{
 			if (g_Options.chams_arms_ignorez && g_Options.chams_arms_enabled)
 			{
@@ -335,15 +255,16 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 				g_StudioRender->ForcedMaterialOverride(player_enemies_type);
 				fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 
-				if (g_Options.chams_arms_wireframe == true) {
+				if (g_Options.arms_material == 3) {
 					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
+					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
 				}
-
-				if (g_Options.chams_arms_wireframe == false) {
+				else {
 					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
+					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_FLAT, false);
 				}
 
-				if (g_Options.chams_arms_glass)
+				if (g_Options.arms_material == 2)
 				{
 					shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
 					bool bFound = false;
@@ -354,53 +275,33 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 					}
 					g_MdlRender->ForcedMaterialOverride(shine);
 				}
+
+				if (g_Options.arms_material == 4)
+				{
+					animated->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+					bool bFound = false;
+					auto pVar = animated->FindVar("$envmaptint", &bFound);
+					if (bFound)
+					{
+						(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
+					}
+					g_MdlRender->ForcedMaterialOverride(animated);
+				}
 			}
 		}
 	}
 	if (is_sleeve) {
 		static IMaterial* player_enemies_type = nullptr;
-		switch (g_Options.chams_arms_flat)
-		{
-		case 0:
+		if (g_Options.arms_material == 0)
 			player_enemies_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-			break;
-
-		case 1:
+		if (g_Options.arms_material == 1)
 			player_enemies_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
-			break;
-
-		case 2:
-			player_enemies_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
-			break;
-
-		case 3:
-			player_enemies_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/velvet", TEXTURE_GROUP_OTHER);
-			break;
-
-		case 4:
-			player_enemies_type = g_MatSystem->FindMaterial("glowOverlay", TEXTURE_GROUP_MODEL);
-			break;
-		}
 		static IMaterial* player_enemies_occluded_type = nullptr;
-		switch (g_Options.chams_arms_flat)
-		{
-		case 0:
+		if (g_Options.arms_material == 0)
 			player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-			break;
-
-		case 1:
+		if (g_Options.arms_material == 1)
 			player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
-			break;
-
-		case 2:
-			player_enemies_occluded_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
-			break;
-
-		case 3:
-			player_enemies_occluded_type = g_MatSystem->FindMaterial("glowOverlay", TEXTURE_GROUP_MODEL);
-			break;
-		}
-		if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr)
+		if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr && velvet != nullptr)
 		{
 			if (g_Options.chams_sleeve_ignorez && g_Options.chams_sleeve_enabled)
 			{
@@ -416,15 +317,16 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 				g_StudioRender->ForcedMaterialOverride(player_enemies_type);
 				fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 
-				if (g_Options.chams_arms_wireframe == true) {
+				if (g_Options.arms_material == 3) {
 					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
+					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
 				}
-
-				if (g_Options.chams_arms_wireframe == false) {
+				else {
 					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
+					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_FLAT, false);
 				}
 
-				if (g_Options.chams_arms_glass)
+				if (g_Options.arms_material == 2)
 				{
 					shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
 					bool bFound = false;
@@ -434,6 +336,18 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 						(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
 					}
 					g_MdlRender->ForcedMaterialOverride(shine);
+				}
+
+				if (g_Options.arms_material == 4)
+				{
+					animated->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+					bool bFound = false;
+					auto pVar = animated->FindVar("$envmaptint", &bFound);
+					if (bFound)
+					{
+						(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
+					}
+					g_MdlRender->ForcedMaterialOverride(animated);
 				}
 			}
 		}
@@ -448,49 +362,16 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 			return;
 		}
 		static IMaterial* player_enemies_type = nullptr;
-
-		switch (g_Options.chams_strap_flat)
-		{
-		case 0:
+		if (g_Options.strap_material == 0)
 			player_enemies_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-			break;
-
-		case 1:
+		if (g_Options.strap_material == 1)
 			player_enemies_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
-			break;
-
-		case 2:
-			player_enemies_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
-			break;
-
-		case 3:
-			player_enemies_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/velvet", TEXTURE_GROUP_OTHER);
-			break;
-
-		case 4:
-			player_enemies_type = g_MatSystem->FindMaterial("glowOverlay", TEXTURE_GROUP_MODEL);
-			break;
-		}
 		static IMaterial* player_enemies_occluded_type = nullptr;
-		switch (g_Options.chams_strap_flat)
-		{
-		case 0:
+		if (g_Options.strap_material == 0)
 			player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-			break;
-
-		case 1:
+		if (g_Options.strap_material == 1)
 			player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
-			break;
-
-		case 2:
-			player_enemies_occluded_type = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
-			break;
-
-		case 3:
-			player_enemies_occluded_type = g_MatSystem->FindMaterial("glowOverlay", TEXTURE_GROUP_MODEL);
-			break;
-		}
-		if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr)
+		if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr && velvet != nullptr)
 		{
 			if (g_Options.chams_strap_ignorez && g_Options.chams_strap_enabled)
 			{
@@ -506,15 +387,16 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 				g_StudioRender->ForcedMaterialOverride(player_enemies_type);
 				fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 
-				if (g_Options.chams_strap_wireframe == true) {
+				if (g_Options.strap_material == 3) {
 					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
+					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
 				}
-
-				if (g_Options.chams_strap_wireframe == false) {
+				else {
 					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
+					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_FLAT, false);
 				}
 
-				if (g_Options.chams_strap_glass)
+				if (g_Options.strap_material == 2)
 				{
 					shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
 					bool bFound = false;
@@ -524,6 +406,18 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 						(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
 					}
 					g_MdlRender->ForcedMaterialOverride(shine);
+				}
+
+				if (g_Options.strap_material == 4)
+				{
+					animated->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+					bool bFound = false;
+					auto pVar = animated->FindVar("$envmaptint", &bFound);
+					if (bFound)
+					{
+						(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
+					}
+					g_MdlRender->ForcedMaterialOverride(animated);
 				}
 			}
 		}
