@@ -100,10 +100,10 @@ void Render::BeginScene() {
 	}
 
 	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive() && g_Options.ragebot_antiaim_desync && GetKeyState(g_Options.invertaakey)) {
-		Render::Get().RenderText("RIGHT", 60, 500, 30.f, Color::White, false, true, g_Cum);
+		Render::Get().RenderText("RIGHT", 60, 500, 30.f, g_Options.menucolor, false, true, g_Cum);
 		}
 	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive() && g_Options.ragebot_antiaim_desync && !GetKeyState(g_Options.invertaakey)) {
-		Render::Get().RenderText("LEFT", 60, 500, 30.f, Color::White, false, true, g_Cum);
+		Render::Get().RenderText("LEFT", 60, 500, 30.f, g_Options.menucolor, false, true, g_Cum);
 		}
 
 	if (g_Options.misc_watermark) {
@@ -111,7 +111,7 @@ void Render::BeginScene() {
 			#define VERSION ("Made By Roccoishot, Sopmk, Levito, and You're Mother. |")
 			auto watermark = VERSION + username + (" | ");
 				watermark = VERSION + username + (" | ");
-				Render::Get().RenderText(watermark, 10, 5, 18.f, Color::White, false, true, g_VeloFont);
+				Render::Get().RenderText(watermark, 10, 5, 18.f, g_Options.menucolor, false, true, g_VeloFont);
 
 				if (g_EngineClient->IsInGame()) {
 					auto server = g_EngineClient->GetNetChannelInfo()->GetAddress();
@@ -121,18 +121,18 @@ void Render::BeginScene() {
 					#define VERSION ("Made By Roccoishot, Sopmk, Levito, and You're Mother. |")
 					auto watermark = VERSION + username + (" | ") + server + (" | ");
 					watermark = VERSION + username + (" | ") + server + (" | ");
-					Render::Get().RenderText(watermark, 10, 5, 18.f, Color::White, false, true, g_VeloFont);
+					Render::Get().RenderText(watermark, 10, 5, 18.f, g_Options.menucolor, false, true, g_VeloFont);
 				}
 			}
 
 	if (g_Options.enablebeta)
-		Render::Get().RenderText("USING TEST", 10, 35, 18.f, Color::White, false, true, g_VeloFont);
+		Render::Get().RenderText("USING TEST", 10, 35, 18.f, g_Options.menucolor, false, true, g_VeloFont);
 
 	if (g_Options.backtix > 16)
-		Render::Get().RenderText("WARNING: This Backtrack Can Be Unstable!", 10, 65, 18.f, Color::White, false, true, g_VeloFont);
+		Render::Get().RenderText("WARNING: This Backtrack Can Be Unstable!", 10, 65, 18.f, g_Options.menucolor, false, true, g_VeloFont);
 		
 	if (g_Options.drawfov)
-		Render::Get().RenderCircle(960.f, 540.f, c, 48, Color::White, 1.3f);
+		Render::Get().RenderCircle(960.f, 540.f, c, 48, g_Options.menucolor, 1.3f);
 
 	if (g_EngineClient->IsInGame() && g_LocalPlayer)
 		Visuals::Get().AddToDrawList();

@@ -353,10 +353,10 @@ public:
 		// 
 		// COLORS
 		// 
-		Color color_esp_ally_visible= {165, 165, 255};
-		Color color_esp_enemy_visible= { 96, 255, 43 };
-		Color color_esp_ally_occluded= {0, 0, 0};
-		Color color_esp_enemy_occluded= { 24, 104, 173 };
+		Color color_esp_ally_visible= {0, 0, 255};
+		Color color_esp_enemy_visible= { 152,255,0,255 };
+		Color color_esp_ally_occluded= {165, 165, 255};
+		Color color_esp_enemy_occluded= {52,255,0,110 };
 		Color color_esp_weapons= {255, 255, 255};
 		Color color_esp_defuse= {100, 100, 255};
 		Color color_esp_c4= {255, 0, 0};
@@ -378,17 +378,16 @@ public:
 
 		Color color_armour_player = { 0, 0, 255 };
 		Color color_name_player = { 255, 255, 255 };
-		Color color_chams_player_ally_visible= {0, 161, 255, 255};
-		Color color_chams_player_ally_occluded= {52, 106, 193, 255};
-		Color color_chams_player_enemy_visible= { 96, 255, 43 };
-		Color color_chams_player_enemy_occluded= { 24, 104, 173 };
-		Color color_chams_strap_visible = { 255, 255, 255 };
-		Color color_chams_strap_occluded = { 255, 255, 255 };	
-		Color color_chams_arms_visible= {0, 0, 0};
-		Color color_chams_arms_occluded= {0, 0, 0};
-		Color color_chams_sleeve_visible = { 0, 0, 0 };
-		Color color_chams_sleeve_occluded = { 0, 0, 0 };
-		Color color_watermark= {0, 0, 0}; // no menu config cuz its useless
+		Color color_chams_player_ally_visible= { 0, 0, 255 };
+		Color color_chams_player_ally_occluded= { 165, 165, 255 };
+		Color color_chams_player_enemy_visible= { 152,255,0,255 };
+		Color color_chams_player_enemy_occluded= { 52,255,0,110 };
+		Color color_chams_strap_visible = { 255, 255, 255, 255 };
+		Color color_chams_strap_occluded = { 255, 255, 255, 100 };	
+		Color color_chams_arms_visible= { 152,255,0,255 };
+		Color color_chams_arms_occluded= { 52,255,0,110 };
+		Color color_chams_sleeve_visible = { 255, 255, 255 };
+		Color color_chams_sleeve_occluded = { 255, 255, 255 };
 		Color player_enemy_visible_shine = { 255, 255, 255 };
 		Color colormodulation = { 0, 0, 0, 255 };
 		Color proprmodulation = { 0, 0, 0, 255 };

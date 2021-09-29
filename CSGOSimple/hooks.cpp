@@ -142,7 +142,7 @@ namespace Hooks {
 
 		//Viewmodel Sheeeesh 
 		//Viewmodel FOV
-		if (g_Options.enablechanger == true) {
+		if (g_Options.enablechanger) {
 			static auto viewmodel_fov = g_CVar->FindVar("viewmodel_fov");
 			viewmodel_fov->m_fnChangeCallbacks.m_Size = 0;
 			viewmodel_fov->SetValue(g_Options.viewmodel_fov);
@@ -158,23 +158,6 @@ namespace Hooks {
 			static auto viewmodel_offset_z = g_CVar->FindVar("viewmodel_offset_z");
 			viewmodel_offset_z->m_fnChangeCallbacks.m_Size = 0;
 			viewmodel_offset_z->SetValue(g_Options.viewmodel_offset_z);
-		}
-		if (g_Options.enablechanger == false) {
-			static auto viewmodel_fov = g_CVar->FindVar("viewmodel_fov");
-			viewmodel_fov->m_fnChangeCallbacks.m_Size = 0;
-			viewmodel_fov->SetValue("68");
-			//Viewmodel X
-			static auto viewmodel_offset_x = g_CVar->FindVar("viewmodel_offset_x");
-			viewmodel_offset_x->m_fnChangeCallbacks.m_Size = 0;
-			viewmodel_offset_x->SetValue("2.5");
-			//Viewmodel Y
-			static auto viewmodel_offset_y = g_CVar->FindVar("viewmodel_offset_y");
-			viewmodel_offset_y->m_fnChangeCallbacks.m_Size = 0;
-			viewmodel_offset_y->SetValue("2");
-			//Viewmodel Z
-			static auto viewmodel_offset_z = g_CVar->FindVar("viewmodel_offset_z");
-			viewmodel_offset_z->m_fnChangeCallbacks.m_Size = 0;
-			viewmodel_offset_z->SetValue("-2");
 		}
 
 		//sv_cheats force
