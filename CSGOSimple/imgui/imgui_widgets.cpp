@@ -1310,7 +1310,7 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
 
     if (!(flags & ImGuiComboFlags_NoPreview))
     {
-        window->DrawList->AddRectFilled(frame_bb.Min + ImVec2(5, 2), ImVec2(frame_bb.Max.x, frame_bb.Max.y - 2), ImColor(28, 28, 28), style.FrameRounding, ImDrawCornerFlags_Left);
+        window->DrawList->AddRectFilled(frame_bb.Min + ImVec2(5, 2), ImVec2(frame_bb.Max.x, frame_bb.Max.y - 2), ImColor(22, 22, 22), style.FrameRounding, ImDrawCornerFlags_Left);
         window->DrawList->AddRect(frame_bb.Min + ImVec2(5, 2), ImVec2(frame_bb.Max.x, frame_bb.Max.y - 2), ImColor(0, 0, 0), style.FrameRounding, ImDrawCornerFlags_Left);
     }
 

@@ -133,7 +133,7 @@ bool Tab(const char* label, const ImVec2& size_arg, bool state)
 	if (pressed)
 		ImGui::MarkItemEdited(id);
 
-	ImGui::RenderFrame(bb.Min, bb.Max, state ? ImColor(15, 15, 15) : ImColor(23, 23, 23), true, style.FrameRounding);
+	ImGui::RenderFrame(bb.Min, bb.Max, state ? ImColor(15, 15, 15) : ImColor(11, 11, 11), true, style.FrameRounding);
 	window->DrawList->AddRect(bb.Min, bb.Max, ImColor(0, 0, 0));
 	ImGui::RenderTextClipped(bb.Min + style.FramePadding, bb.Max - style.FramePadding, label, NULL, &label_size, style.ButtonTextAlign, &bb);
 
@@ -179,17 +179,17 @@ void Menu::Render()
 	Style->PopupRounding = 0;
 	Style->GrabRounding = 0;
 	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
-	Style->Colors[ImGuiCol_TitleBg] = ImColor(0, 0, 0); //Titlebg = title bg theme
+	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11);
 	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
 	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_WindowBg] = ImColor(22, 22, 22);
-	Style->Colors[ImGuiCol_ChildBg] = ImColor(22, 22, 22);
-	Style->Colors[ImGuiCol_FrameBg] = ImColor(33, 33, 33);
-	Style->Colors[ImGuiCol_Button] = ImColor(33, 33, 33);
+	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
 	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(34, 34, 34);
+	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
 	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(0, 0, 0);
 	ImGui::PushFont(g_SpectatorListFont);
