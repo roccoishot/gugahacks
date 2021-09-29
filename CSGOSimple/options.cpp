@@ -201,6 +201,10 @@ void Options::SetupVisuals()
 	SetupValue(chams_player_enabled, "Visuals", "Chams Vis");
 	SetupValue(chams_player_ignorez, "Visuals", "Chams XYZ");
 	SetupValue(arms_material, "Visuals", "Arms Material");
+	SetupColor(glowcolor, "Glow Color Team");
+	SetupColor(glowcolorenemy, "Glow Color Enemy");
+	SetupColor(glowcolorarms, "Glow Color Arms");
+	SetupColor(glowcolorstrap, "Glow Color Strap");
 	SetupValue(player_material, "Visuals", "Player Material");
 	SetupColor(player_enemy_visible_shine, "Color Visible");
 	SetupColor(color_esp_enemy_visible, "Enemies Visible");
@@ -306,9 +310,7 @@ void Options::SetupMisc()
 	SetupValue(breaklby, "Misc", "Break LBY");
 	SetupValue(removeblur, "Misc", "Reduce Blur");
 	SetupColor(menucolor, "Menu Accents");
-	SetupValue(fakelag, "Misc", "Fakelag");
 	SetupValue(enablebeta, "Misc", "Beta");
-	SetupValue(faketicks, "Misc", "FL Ticks");
 	SetupValue(bowlsfreshcut, "Misc", "Flash Indicator");
 	SetupValue(misc_backtrack, "Misc", "Backtrack");
 	SetupValue(fakeping, "Misc", "Fake Ping");

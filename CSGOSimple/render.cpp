@@ -100,10 +100,10 @@ void Render::BeginScene() {
 	}
 
 	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive() && g_Options.ragebot_antiaim_desync && GetKeyState(g_Options.invertaakey)) {
-		Render::Get().RenderText("RIGHT", 60, 500, 30.f, g_Options.menucolor, false, true, g_Cum);
+		Render::Get().RenderText("LEFT", 60, 500, 30.f, g_Options.menucolor, false, true, g_Cum);
 		}
 	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive() && g_Options.ragebot_antiaim_desync && !GetKeyState(g_Options.invertaakey)) {
-		Render::Get().RenderText("LEFT", 60, 500, 30.f, g_Options.menucolor, false, true, g_Cum);
+		Render::Get().RenderText("RIGHT", 60, 500, 30.f, g_Options.menucolor, false, true, g_Cum);
 		}
 
 	if (g_Options.misc_watermark) {

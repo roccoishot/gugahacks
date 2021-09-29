@@ -299,13 +299,13 @@ void CLegitbot::Run(CUserCmd* cmd)
 		RCS(angles, target);
 	last_punch = current_punch;
 
-	if (!IsSilent())
+	if (!IsSilent()) {
 		Smooth(current, angles, angles);
+		g_EngineClient->SetViewAngles(&angles);
+	}
 
 	Math::FixAngles(angles);
 	cmd->viewangles = angles;
-	if (!IsSilent())
-		g_EngineClient->SetViewAngles(&angles);
 
 	if (~IN_ATTACK)
 		g_LocalPlayer->SetVAngles(current);

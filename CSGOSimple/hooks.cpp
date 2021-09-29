@@ -9,7 +9,6 @@
 #include "features/bhop.hpp"
 #include "features/chams.hpp"
 #include "features/visuals.hpp"
-#include "features/glow.hpp"
 #include "features/skins.h"
 #include "features/Misc.hpp"
 #include "backtrack.h"
@@ -77,7 +76,6 @@ namespace Hooks {
 		sound_hook.unhook_all();
 		sv_cheats.unhook_all();
 
-		Glow::Get().Shutdown();
 		sequence_hook->~recv_prop_hook();
 
 	}
@@ -673,9 +671,6 @@ namespace Hooks {
 	int __fastcall hkDoPostScreenEffects(void* _this, int edx, int a1)
 	{
 		static auto oDoPostScreenEffects = clientmode_hook.get_original<decltype(&hkDoPostScreenEffects)>(index::DoPostScreenSpaceEffects);
-
-		if (g_LocalPlayer && g_Options.glow_enabled)
-			Glow::Get().Run();
 
 		return oDoPostScreenEffects(g_ClientMode, edx, a1);
 	}

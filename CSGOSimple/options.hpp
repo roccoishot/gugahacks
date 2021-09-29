@@ -236,20 +236,6 @@ public:
 		float worldglowr = 0;
 		float worldglowg = 0;
 		float worldglowb = 0;
-
-		// 
-		// GLOW
-		// 
-		bool glow_enabled = false;
-		bool glow_enemies_only = false;
-		bool glow_players = false;
-		bool glow_chickens = false;
-		bool glow_c4_carrier = false;
-		bool glow_planted_c4 = false;
-		bool glow_defuse_kits = false;
-		bool glow_weapons = false;
-		bool glow_enemiesOC = false;
-
 		//
 		// CHAMS
 		//
@@ -389,6 +375,10 @@ public:
 		Color color_chams_sleeve_visible = { 255, 255, 255 };
 		Color color_chams_sleeve_occluded = { 255, 255, 255 };
 		Color player_enemy_visible_shine = { 255, 255, 255 };
+		Color glowcolor = { 255, 255, 255 };
+		Color glowcolorenemy = { 255, 255, 255 };
+		Color glowcolorarms = { 255, 255, 255 };
+		Color glowcolorstrap = { 255, 255, 255 };
 		Color colormodulation = { 0, 0, 0, 255 };
 		Color proprmodulation = { 0, 0, 0, 255 };
 		Color menucolor = { 255,255,255,255 };

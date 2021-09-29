@@ -89,9 +89,6 @@
     <ClCompile Include="features\chams.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
-    <ClCompile Include="features\glow.cpp">
-      <Filter>Source Files\features</Filter>
-    </ClCompile>
     <ClCompile Include="valve_sdk\misc\Convar.cpp">
       <Filter>Source Files\SDK</Filter>
     </ClCompile>
@@ -392,9 +389,6 @@
       <Filter>Source Files\Header Files\features</Filter>
     </ClInclude>
     <ClInclude Include="features\chams.hpp">
-      <Filter>Source Files\Header Files\features</Filter>
-    </ClInclude>
-    <ClInclude Include="features\glow.hpp">
       <Filter>Source Files\Header Files\features</Filter>
     </ClInclude>
     <ClInclude Include="features\visuals.hpp">

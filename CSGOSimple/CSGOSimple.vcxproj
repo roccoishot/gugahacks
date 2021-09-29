@@ -104,7 +104,6 @@
     <ClCompile Include="features\autowall.cpp" />
     <ClCompile Include="features\bhop.cpp" />
     <ClCompile Include="features\chams.cpp" />
-    <ClCompile Include="features\glow.cpp" />
     <ClCompile Include="features\hitmarker.cpp" />
     <ClCompile Include="features\item_definitions.cpp" />
     <ClCompile Include="features\kit_parser.cpp" />
@@ -174,7 +173,6 @@
     <ClInclude Include="valve_sdk\Misc\datamap.hpp" />
     <ClInclude Include="features\bhop.hpp" />
     <ClInclude Include="features\chams.hpp" />
-    <ClInclude Include="features\glow.hpp" />
     <ClInclude Include="features\visuals.hpp" />
     <ClInclude Include="helpers\input.hpp" />
     <ClInclude Include="helpers\math.hpp" />
