@@ -14,7 +14,7 @@ void movement::edgebug(CUserCmd* cmd) {
 }
 
 void movement::jumpbug(CUserCmd* cmd) {
-    float max_radias = 3.1415926535897932384626433832795028841971693993 * 2;
+    float max_radias = DirectX::XM_PI;
     float step = max_radias / 128;
     float xThick = 23;
     static bool bDidJump = true;
@@ -37,7 +37,7 @@ void movement::jumpbug(CUserCmd* cmd) {
 
 
                 Vector pt2 = pt;
-                pt2.z -= 6;
+                pt2.z -= 4;
 
                 trace_t fag;
 
@@ -62,7 +62,7 @@ void movement::jumpbug(CUserCmd* cmd) {
                 pt.z = pos.z;
 
                 Vector pt2 = pt;
-                pt2.z -= 6;
+                pt2.z -= 4;
 
                 trace_t fag;
 
@@ -87,7 +87,7 @@ void movement::jumpbug(CUserCmd* cmd) {
                 pt.z = pos.z;
 
                 Vector pt2 = pt;
-                pt2.z -= 6;
+                pt2.z -= 4;
 
                 trace_t fag;
 

@@ -143,7 +143,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 							if (g_Options.player_material == 6)
 							{
-								shit->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+								shit->AlphaModulate(g_Options.glowcolor[3] / 255.f);
 								bool bFound = false;
 								auto pVar = shit->FindVar("$envmaptint", &bFound);
 								if (bFound)
@@ -251,7 +251,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 								if (g_Options.player_material == 6)
 								{
-									shit->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+									shit->AlphaModulate(g_Options.glowcolorenemy[3] / 255.f);
 									bool bFound = false;
 									auto pVar = shit->FindVar("$envmaptint", &bFound);
 									if (bFound)
@@ -339,7 +339,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 				if (g_Options.arms_material == 5)
 				{
-					shit->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+					shit->AlphaModulate(g_Options.glowcolorarms[3] / 255.f);
 					bool bFound = false;
 					auto pVar = shit->FindVar("$envmaptint", &bFound);
 					if (bFound)
@@ -418,7 +418,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 				if (g_Options.arms_material == 5)
 				{
-					shit->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+					shit->AlphaModulate(g_Options.glowcolorarms[3] / 255.f);
 					bool bFound = false;
 					auto pVar = shit->FindVar("$envmaptint", &bFound);
 					if (bFound)
@@ -504,7 +504,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 				if (g_Options.strap_material == 5)
 				{
-					shit->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+					shit->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
 					bool bFound = false;
 					auto pVar = shit->FindVar("$envmaptint", &bFound);
 					if (bFound)
