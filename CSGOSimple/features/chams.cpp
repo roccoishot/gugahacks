@@ -26,6 +26,26 @@ void modulate(const Color color, IMaterial* material)
 	g_RenderView->SetColorModulation(color[0] / 255.f, color[1] / 255.f, color[2] / 255.f);
 }
 
+Chams::Chams()
+{
+	std::ofstream("csgo\\materials\\glowOverlay.vmt") << R"#("VertexLitGeneric"
+{
+	"$additive" "1"
+	"$envmap" "models/effects/cube_white"
+	"$envmaptint" "[1 1 1]"
+	"$envmapfresnel" "1"
+	"$envmapfresnelminmaxexp" "[0 1 2]"
+	"$alpha" "1.0"
+}
+)#";
+}
+
+
+Chams::~Chams()
+{
+	std::remove("csgo\\materials\\glowOverlay.vmt");
+}
+
 void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4_t* pBoneToWorld, float* flpFlexWeights, float* flpFlexDelayedWeights, Vector& vrModelOrigin, int32_t iFlags)
 {
 
@@ -40,16 +60,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 	bool is_arm = strstr(mdl->szName, "arms") != nullptr;
 	bool is_player = strstr(mdl->szName, "models/player") != nullptr;
 	bool is_sleeve = strstr(mdl->szName, "sleeve") != nullptr;
-	std::ofstream("csgo\\materials\\glowOverlay.vmt") << R"#("VertexLitGeneric"
-{
-    "$additive" "1"
-    "$envmap" "models/effects/cube_white"
-    "$envmaptint" "[0 0.5 1]"
-    "$envmapfresnel" "1"
-    "$envmapfresnelminmaxexp" "[0 1 2]"
-    "$alpha" "1.0"
-}
-)#";
+
 	//materials\models\inventory_items\dogtags\dogtags_lightray.vmt
 	// save for l8r //static IMaterial* pulse = g_MatSystem->FindMaterial("models/inventory_items/dogtags/dogtags_outline", TEXTURE_GROUP_OTHER);
 	static IMaterial* shine = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
@@ -81,15 +92,6 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 						player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
 					if (g_Options.player_material > 1)
 						player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-
-					if (!g_Options.player_material == 1) {
-						if (!player_enemies_type->IsPrecached())
-							return;
-
-						if (!player_enemies_occluded_type->IsPrecached())
-							return;
-					}
-
 					if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr && velvet != nullptr)
 					{
 						if (g_Options.chams_player_ignorez && g_Options.chams_player_enabled)
@@ -201,15 +203,6 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 							player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
 						if (g_Options.player_material > 1)
 							player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-
-						if (!g_Options.player_material == 1) {
-							if (!player_enemies_type->IsPrecached())
-								return;
-
-							if (!player_enemies_occluded_type->IsPrecached())
-								return;
-						}
-
 						if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr && velvet != nullptr)
 						{
 							if (g_Options.chams_player_ignorez && g_Options.chams_player_enabled)
@@ -313,15 +306,6 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 			player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
 		if (g_Options.arms_material > 1)
 			player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-
-		if (!g_Options.arms_material == 1) {
-			if (!player_enemies_type->IsPrecached())
-				return;
-
-			if (!player_enemies_occluded_type->IsPrecached())
-				return;
-		}
-
 		if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr && velvet != nullptr)
 		{
 			if (g_Options.chams_arms_ignorez && g_Options.chams_arms_enabled)
@@ -404,15 +388,6 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 			player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
 		if (g_Options.arms_material > 1)
 			player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-
-		if (!g_Options.arms_material == 1) {
-			if (!player_enemies_type->IsPrecached())
-				return;
-
-			if (!player_enemies_occluded_type->IsPrecached())
-				return;
-		}
-
 		if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr && velvet != nullptr)
 		{
 			if (g_Options.chams_sleeve_ignorez && g_Options.chams_sleeve_enabled)
@@ -504,15 +479,6 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 			player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
 		if (g_Options.strap_material > 1)
 			player_enemies_occluded_type = g_MatSystem->FindMaterial("debug/debugambientcube", TEXTURE_GROUP_MODEL);
-
-		if (!g_Options.strap_material == 1) {
-			if (!player_enemies_type->IsPrecached())
-				return;
-
-			if (!player_enemies_occluded_type->IsPrecached())
-				return;
-		}
-
 		if (player_enemies_type != nullptr && player_enemies_occluded_type != nullptr && shine != nullptr && velvet != nullptr)
 		{
 			if (g_Options.chams_strap_ignorez && g_Options.chams_strap_enabled)

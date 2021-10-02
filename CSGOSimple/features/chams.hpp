@@ -18,6 +18,8 @@ class Chams
     : public Singleton<Chams>
 {
     friend class Singleton<Chams>;
+    Chams();
+    ~Chams();
 
 public:
     void OnDrawModelExecute(

@@ -274,7 +274,6 @@ void Options::SetupMisc()
 	SetupValue(autoscope, "Aimbot", "Auto Scope");
 	SetupValue(slidewalk, "Test", "Fast Shiftwalk");
 	SetupValue(misc_chatspam, "Misc", "Chat Spam");
-	SetupValue(faketest, "Test", "180 Desync");
 	SetupValue(invertaakey, "Rage", "Invert AA Key");
 	SetupValue(rageresolver, "Rage", "Rage Resolver");
 	SetupValue(fakepingkey, "Rage", "Fake Ping Key");

@@ -725,7 +725,6 @@ void Menu::Render()
 					ImGui::Separator("Test");
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
 					if (g_Options.enablebeta) {
-						ImGui::Checkbox("180 Desync", &g_Options.faketest);
 						ImGui::Checkbox("Fast Shiftwalk Charge", &g_Options.slidewalk);
 					}
 					ImGui::EndChild();

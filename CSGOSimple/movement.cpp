@@ -28,7 +28,7 @@ void movement::jumpbug(CUserCmd* cmd) {
                 cmd->buttons |= in_jump; // jump
                 unduck = false;
             }
-            Vector pos = g_LocalPlayer->abs_origin();
+            Vector pos = g_LocalPlayer->m_vecOrigin();
             for (float a = 0.f; a < max_radias; a += step) {
                 Vector pt;
                 pt.x = (xThick * cos(a)) + pos.x;
