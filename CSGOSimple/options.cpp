@@ -205,6 +205,10 @@ void Options::SetupVisuals()
 	SetupColor(glowcolorenemy, "Glow Color Enemy");
 	SetupColor(glowcolorarms, "Glow Color Arms");
 	SetupColor(glowcolorstrap, "Glow Color Strap");
+	SetupColor(doublecolor, "Double Color Team");
+	SetupColor(doublecolorenemy, "Double Color Enemy");
+	SetupColor(doublecolorarms, "Double Color Arms");
+	SetupColor(doublecolorstrap, "Double Color Strap");
 	SetupValue(player_material, "Visuals", "Player Material");
 	SetupColor(player_enemy_visible_shine, "Color Visible");
 	SetupColor(color_esp_enemy_visible, "Enemies Visible");

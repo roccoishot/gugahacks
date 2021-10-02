@@ -621,7 +621,6 @@ namespace Hooks {
 		static auto oPaintTraverse = vguipanel_hook.get_original<decltype(&hkPaintTraverse)>(index::PaintTraverse);
 
 		oPaintTraverse(g_VGuiPanel, edx, panel, forceRepaint, allowForce);
-
 		if (!panelId) {
 			const auto panelName = g_VGuiPanel->GetName(panel);
 			if (!strcmp(panelName, "FocusOverlayPanel")) {

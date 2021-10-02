@@ -382,6 +382,10 @@ public:
 		Color colormodulation = { 0, 0, 0, 255 };
 		Color proprmodulation = { 0, 0, 0, 255 };
 		Color menucolor = { 255,255,255,255 };
+		Color doublecolor = { 255, 255, 255 };
+		Color doublecolorenemy = { 255, 255, 255 };
+		Color doublecolorarms = { 255, 255, 255 };
+		Color doublecolorstrap = { 255, 255, 255 };
 
 protected:
 	//std::vector<ConfigValue<char>*> chars;
