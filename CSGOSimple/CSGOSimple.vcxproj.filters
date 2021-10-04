@@ -484,6 +484,9 @@
     <ClInclude Include="movement.h">
       <Filter>Source Files\features</Filter>
     </ClInclude>
+    <ClInclude Include="valve_sdk\misc\glow_outline_effect.hpp">
+      <Filter>Source Files\SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
