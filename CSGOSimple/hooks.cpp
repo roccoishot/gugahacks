@@ -590,7 +590,7 @@ namespace Hooks {
 		// https://github.com/spirthack/CSGOSimple/issues/69
 		if (g_Options.sniper_xhair && !g_LocalPlayer->m_bIsScoped())
 			g_CVar->FindVar("weapon_debug_spread_show")->SetValue(3);
-		else
+		if (!g_Options.sniper_xhair)
 			g_CVar->FindVar("weapon_debug_spread_show")->SetValue(0);
 
 		//verified->m_cmd = *cmd;

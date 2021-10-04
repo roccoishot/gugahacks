@@ -43,7 +43,7 @@
 
 #include "Misc/Convar.hpp"
 #include "Misc/CUserCmd.hpp"
-#include "Misc/glow_outline_effect.hpp"
+#include "misc/glow_outline_effect.hpp"
 #include "Misc/datamap.hpp"
 
 #include "netvars.hpp"

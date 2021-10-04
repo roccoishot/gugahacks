@@ -419,17 +419,23 @@ void Menu::Render()
 					if (g_Options.chams_player_enabled) {
 						ImGui::Text("Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemy Visible ", &g_Options.color_chams_player_enemy_visible);
 					}
+					if (g_Options.player_material == 4 && !g_Options.teamchams) {
+						ImGui::Text("Double Enemy"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Enemies", &g_Options.glowcolorenemy);
+					}
 					if (g_Options.player_material == 5 && !g_Options.teamchams) {
-						ImGui::Text("Glow Enemy"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Glow Color Enemies", &g_Options.glowcolorenemy);
+						ImGui::Text("Double Enemy"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Enemies", &g_Options.glowcolorenemy);
 					}
 					if (g_Options.player_material == 6 && !g_Options.teamchams) {
-						ImGui::Text("Double Enemy"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Enemies", &g_Options.doublecolorenemy);
+						ImGui::Text("Double Enemy"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Enemies", &g_Options.glowcolorenemy);
+					}
+					if (g_Options.player_material == 4 && g_Options.teamchams) {
+						ImGui::Text("Double Team"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Team", &g_Options.glowcolor);
 					}
 					if (g_Options.player_material == 5 && g_Options.teamchams) {
-						ImGui::Text("Glow Team"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Glow Color Team", &g_Options.glowcolor);
+						ImGui::Text("Double Team"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Team", &g_Options.glowcolor);
 					}
 					if (g_Options.player_material == 6 && g_Options.teamchams) {
-						ImGui::Text("Double Team"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Team", &g_Options.doublecolor);
+						ImGui::Text("Double Team"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Team", &g_Options.glowcolor);
 					}
 					if (g_Options.chams_player_ignorez) {
 						ImGui::Text("Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemy Occluded ", &g_Options.color_chams_player_enemy_occluded);
@@ -440,11 +446,14 @@ void Menu::Render()
 					if (g_Options.chams_player_ignorez && g_Options.teamchams) {
 						ImGui::Text("Team Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Team Occluded ", &g_Options.color_chams_player_ally_occluded);
 					}
+					if (g_Options.chams_arms_enabled && g_Options.arms_material == 3) {
+						ImGui::Text("Double Arms"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Arms", &g_Options.glowcolorarms);
+					}
 					if (g_Options.chams_arms_enabled && g_Options.arms_material == 4) {
-						ImGui::Text("Glow Arms"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Glow Arms", &g_Options.glowcolorarms);
+						ImGui::Text("Double Arms"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Arms", &g_Options.glowcolorarms);
 					}
 					if (g_Options.chams_arms_enabled && g_Options.arms_material == 5) {
-						ImGui::Text("Double Arms"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Arms", &g_Options.doublecolorarms);
+						ImGui::Text("Double Arms"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Arms", &g_Options.glowcolorarms);
 					}
 					if (g_Options.chams_arms_enabled) {
 						ImGui::Text("Arm Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Arms", &g_Options.color_chams_arms_visible);
@@ -458,14 +467,20 @@ void Menu::Render()
 					if (g_Options.chams_sleeve_ignorez) {
 						ImGui::Text("Sleeve Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Sleeves XQZ", &g_Options.color_chams_sleeve_occluded);
 					}
+					if (g_Options.chams_strap_enabled && g_Options.strap_material == 3) {
+						ImGui::Text("Double Strap"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Strap", &g_Options.glowcolorstrap);
+					}
 					if (g_Options.chams_strap_enabled && g_Options.strap_material == 4) {
-						ImGui::Text("Glow Strap"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Glow Strap", &g_Options.glowcolorstrap);
+						ImGui::Text("Double Strap"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Strap", &g_Options.glowcolorstrap);
 					}
 					if (g_Options.chams_strap_enabled && g_Options.strap_material == 5) {
-						ImGui::Text("Double Strap"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Strap", &g_Options.doublecolorstrap);
+						ImGui::Text("Double Strap"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Strap", &g_Options.glowcolorstrap);
 					}
 					if (g_Options.chams_strap_enabled) {
 						ImGui::Text("Strap Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Strap", &g_Options.color_chams_strap_visible);
+					}
+					if (g_Options.advancedaim) {
+						ImGui::Text("Overlay Color"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Overlay Color", &g_Options.fortniteballs);
 					}
 					if (g_Options.chams_strap_ignorez) {
 						ImGui::Text("Strap XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Strap XQZ", &g_Options.color_chams_strap_occluded);
@@ -496,22 +511,23 @@ void Menu::Render()
 
 					ImGui::Checkbox("Enabled ", &g_Options.chams_player_enabled);
 					if (g_Options.chams_player_enabled) {
+						ImGui::Checkbox("AA Weapon Overlay", &g_Options.advancedaim);
 						ImGui::Checkbox("Occluded", &g_Options.chams_player_ignorez);
 						ImGui::Checkbox("Team Chams", &g_Options.teamchams);
-					}
-					ImGui::Checkbox("Arms Chams", &g_Options.chams_arms_enabled);
-					if (g_Options.chams_arms_enabled) {
-						ImGui::Checkbox("Arms XQZ", &g_Options.chams_arms_ignorez);
-					}
+						ImGui::Checkbox("Arms Chams", &g_Options.chams_arms_enabled);
+						if (g_Options.chams_arms_enabled) {
+							ImGui::Checkbox("Arms XQZ", &g_Options.chams_arms_ignorez);
+						}
 
-					ImGui::Checkbox("Sleeve Chams", &g_Options.chams_sleeve_enabled);
-					if (g_Options.chams_sleeve_enabled) {
-						ImGui::Checkbox("Sleeve XQZ", &g_Options.chams_arms_ignorez);
-					}
+						ImGui::Checkbox("Sleeve Chams", &g_Options.chams_sleeve_enabled);
+						if (g_Options.chams_sleeve_enabled) {
+							ImGui::Checkbox("Sleeve XQZ", &g_Options.chams_arms_ignorez);
+						}
 
-					ImGui::Checkbox("Strap Chams", &g_Options.chams_strap_enabled);
-					if (g_Options.chams_arms_enabled) {
-						ImGui::Checkbox("Strap XQZ", &g_Options.chams_strap_ignorez);
+						ImGui::Checkbox("Strap Chams", &g_Options.chams_strap_enabled);
+						if (g_Options.chams_arms_enabled) {
+							ImGui::Checkbox("Strap XQZ", &g_Options.chams_strap_ignorez);
+						}
 					}
 
 					const char* MatList[] = {
