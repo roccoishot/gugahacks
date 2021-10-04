@@ -600,20 +600,25 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 		}
 
 		fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
-		if (g_Options.arms_material == 2) {
+		if (g_Options.strap_material == 2) {
 			shine->ColorModulate(g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
 			shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
 			g_StudioRender->ForcedMaterialOverride(shine);
 		}
-		if (g_Options.arms_material == 3) {
+		if (g_Options.strap_material == 3) {
 			animated->ColorModulate(g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
 			animated->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
 			g_StudioRender->ForcedMaterialOverride(animated);
 		}
-		if (g_Options.arms_material == 4) {
+		if (g_Options.strap_material == 4) {
 			shit->ColorModulate(g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
 			shit->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
 			g_StudioRender->ForcedMaterialOverride(shit);
+		}
+		if (g_Options.strap_material == 6) {
+			animated2->ColorModulate(g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
+			animated2->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
+			g_StudioRender->ForcedMaterialOverride(animated2);
 		}
 		fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 
@@ -689,6 +694,13 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 					}
 					g_MdlRender->ForcedMaterialOverride(dubble);
 				}
+
+				if (g_Options.strap_material == 6) {
+					animated2->ColorModulate(g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
+					animated2->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
+					g_StudioRender->ForcedMaterialOverride(animated2);
+				}
+
 			}
 		}
 	}

@@ -208,7 +208,6 @@ public:
 		// ESP
 		// 
 	//	bool esp_enabled = false;
-	bool advancedaim = false;
 	bool flashkillcheck = false;
 	bool autoscope = false;
 	float amibence = 0;
@@ -382,7 +381,6 @@ public:
 		Color colormodulation = { 0, 0, 0, 255 };
 		Color proprmodulation = { 0, 0, 0, 255 };
 		Color menucolor = { 255,255,255,255 };
-		Color fortniteballs = { 255, 255, 255, 255 };
 
 protected:
 	//std::vector<ConfigValue<char>*> chars;

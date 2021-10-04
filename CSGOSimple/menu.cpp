@@ -476,11 +476,11 @@ void Menu::Render()
 					if (g_Options.chams_strap_enabled && g_Options.strap_material == 5) {
 						ImGui::Text("Double Strap"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Strap", &g_Options.glowcolorstrap);
 					}
+					if (g_Options.chams_strap_enabled && g_Options.strap_material == 6) {
+						ImGui::Text("Double Strap"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Strap", &g_Options.glowcolorstrap);
+					}
 					if (g_Options.chams_strap_enabled) {
 						ImGui::Text("Strap Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Strap", &g_Options.color_chams_strap_visible);
-					}
-					if (g_Options.advancedaim) {
-						ImGui::Text("Overlay Color"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Overlay Color", &g_Options.fortniteballs);
 					}
 					if (g_Options.chams_strap_ignorez) {
 						ImGui::Text("Strap XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Strap XQZ", &g_Options.color_chams_strap_occluded);
@@ -511,7 +511,6 @@ void Menu::Render()
 
 					ImGui::Checkbox("Enabled ", &g_Options.chams_player_enabled);
 					if (g_Options.chams_player_enabled) {
-						ImGui::Checkbox("AA Weapon Overlay", &g_Options.advancedaim);
 						ImGui::Checkbox("Occluded", &g_Options.chams_player_ignorez);
 						ImGui::Checkbox("Team Chams", &g_Options.teamchams);
 						ImGui::Checkbox("Arms Chams", &g_Options.chams_arms_enabled);
@@ -549,10 +548,20 @@ void Menu::Render()
 "Double"
 					};
 
+					const char* MatList3[] = {
+"Regular",
+"Flat",
+"Shine",
+"Animated",
+"Glow",
+"Double",
+"AdvancedAim"
+					};
+
 					ImGui::Combo("Player Mat", &g_Options.player_material, MatList, IM_ARRAYSIZE(MatList));
 
 					if (g_Options.chams_strap_enabled) {
-						ImGui::Combo("Strap Mat", &g_Options.strap_material, MatList2, IM_ARRAYSIZE(MatList2));
+						ImGui::Combo("Strap Mat", &g_Options.strap_material, MatList3, IM_ARRAYSIZE(MatList3));
 					}
 					if (g_Options.chams_arms_enabled) {
 						ImGui::Combo("Arms Mat", &g_Options.arms_material, MatList2, IM_ARRAYSIZE(MatList2));

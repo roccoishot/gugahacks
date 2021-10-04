@@ -199,8 +199,6 @@ void Options::SetupVisuals()
 	SetupValue(esp_player_weapons, "Visuals", "Weapon");
 	SetupValue(esp_dropped_weapons, "Visuals", "Dropped Weapons");
 	SetupValue(chams_player_enabled, "Visuals", "Chams Vis");
-	SetupValue(advancedaim, "Visuals", "AdvancedAim Weapon Overlay");
-	SetupColor(fortniteballs, "Overlay Color");
 	SetupValue(chams_player_ignorez, "Visuals", "Chams XYZ");
 	SetupValue(arms_material, "Visuals", "Arms Material");
 	SetupColor(glowcolor, "Double Color Team");

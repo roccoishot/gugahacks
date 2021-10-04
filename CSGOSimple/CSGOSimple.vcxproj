@@ -192,7 +192,6 @@
     <ClInclude Include="singleton.hpp" />
     <ClInclude Include="ui.hpp" />
     <ClInclude Include="valve_sdk\csgostructs.hpp" />
-    <ClInclude Include="valve_sdk\misc\glow_outline_effect.hpp" />
     <ClInclude Include="valve_sdk\sdk.hpp" />
     <ClInclude Include="valve_sdk\interfaces\CClientState.hpp" />
     <ClInclude Include="valve_sdk\interfaces\CInput.hpp" />
