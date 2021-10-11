@@ -163,20 +163,20 @@ void Menu::HCDisplay() {
 	Style->ScrollbarRounding = 0;
 	Style->PopupRounding = 0;
 	Style->GrabRounding = 0;
-	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
-	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22);
-	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
-	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
-	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 0.7);
+	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11, 0.7);
+	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 0.7);
+	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 0.7);
+	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11, 0.7);
+	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11, 0.7);
+	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22, 0.7);
+	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22, 0.7);
+	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0, 0.7);
+	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0, 0.7);
+	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(0, 0, 0, 0.7);
+	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23, 0.7);
+	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0, 0.7);
+	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(0, 0, 0, 0.7);
 	ImGui::PushFont(g_SpectatorListFont);
 	auto flags = NULL | ImGuiWindowFlags_NoScrollbar | NULL | NULL | NULL | NULL | NULL | NULL;
 
@@ -184,6 +184,9 @@ void Menu::HCDisplay() {
 		return;
 
 	if (!g_LocalPlayer->IsAlive())
+		return;
+
+	if (!(g_LocalPlayer->m_hActiveWeapon()))
 		return;
 
 	ImGui::SetNextWindowSize({ 280.f,165.f });

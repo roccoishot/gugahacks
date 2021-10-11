@@ -83,7 +83,6 @@ public:
 
 class ISPSharedMemory;
 class CGamestatsData;
-class KeyValues;
 class CSteamAPIContext;
 struct Frustum_t;
 
@@ -144,6 +143,12 @@ public:
 	virtual	void ShowTracks(float seconds) = 0; // show player trails for n seconds
 };
 
+class KeyValues {
+public:
+	static KeyValues* fromString(const char* name, const char* value) noexcept;
+	KeyValues* findKey(const char* keyName, bool create) noexcept;
+	void setString(const char* keyName, const char* value) noexcept;
+};
 
 class IVEngineClient
 {

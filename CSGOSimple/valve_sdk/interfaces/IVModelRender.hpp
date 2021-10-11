@@ -62,7 +62,6 @@ class IMatRenderContext;
 class DataCacheHandle_t;
 class ITexture;
 class IMaterialVar;
-class KeyValues;
 struct model_t;
 struct mstudioanimdesc_t;
 struct mstudioseqdesc_t;

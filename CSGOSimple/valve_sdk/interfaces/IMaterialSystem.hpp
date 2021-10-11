@@ -47,7 +47,6 @@ class VMatrix;
 class matrix3x4_t;
 class ITexture;
 struct MaterialSystemHWID_t;
-class KeyValues;
 class IShader;
 class IVertexTexture;
 class IMorph;

@@ -130,6 +130,16 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 	bool is_player = strstr(mdl->szName, "models/player") != nullptr;
 	bool is_sleeve = strstr(mdl->szName, "sleeve") != nullptr;
 
+	class KeyValues {
+	public:
+		static KeyValues* fromString(const char* name, const char* value) noexcept;
+		KeyValues* findKey(const char* keyName, bool create) noexcept;
+		void setString(const char* keyName, const char* value) noexcept;
+	};
+
+	//const auto kv = KeyValues::fromString("VertexLitGeneric", "$envmap models/effects/cube_white $envmapfresnel 1 $additive 1 $envmapfresnelminmaxexp [0 1 2] $alpha 1.0");
+	//kv->setString("$envmaptint", "[1 1 1]");
+
 	//materials\models\inventory_items\dogtags\dogtags_lightray.vmt
 	// save for l8r //static IMaterial* pulse = g_MatSystem->FindMaterial("models/inventory_items/dogtags/dogtags_outline", TEXTURE_GROUP_OTHER);
 	static IMaterial* shine = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
