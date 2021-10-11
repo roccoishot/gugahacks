@@ -149,6 +149,76 @@ bool Tab(const char* label, const ImVec2& size_arg, bool state)
 	return pressed;
 }
 
+void Menu::HCDisplay() {
+
+	ImGuiStyle* Style = &ImGui::GetStyle();
+	Style->WindowBorderSize = 0.5;
+	Style->FrameBorderSize = 0.5;
+	Style->ChildBorderSize = 0.5;
+	Style->WindowRounding = 0;
+	Style->ChildRounding = 0;
+	Style->FrameRounding = 0;
+	Style->ScrollbarSize = 6;
+	ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.500000f,0.500000f });
+	Style->ScrollbarRounding = 0;
+	Style->PopupRounding = 0;
+	Style->GrabRounding = 0;
+	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
+	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
+	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(0, 0, 0);
+	ImGui::PushFont(g_SpectatorListFont);
+	auto flags = NULL | ImGuiWindowFlags_NoScrollbar | NULL | NULL | NULL | NULL | NULL | NULL;
+
+	if (!g_EngineClient->IsInGame())
+		return;
+
+	if (!g_LocalPlayer->IsAlive())
+		return;
+
+		ImGui::SetNextWindowSize({ 280.f,165.f });
+		ImGui::Begin("GUGAHACKS.SU STRAP INFUH", nullptr, flags);
+		ImGui::SetCursorPos({ 13.f,25.f });
+		ImGui::PushItemWidth(161.000000);
+		ImGui::Text("GUGAHACKS.SU STRAP INFUH");
+		ImGui::PopItemWidth();
+		ImGui::SetCursorPos({ 10.f,46.f });
+		ImGui::BeginChild("child0", { 261.f,110.f }, true);
+		ImGui::SetCursorPos({ 5.f,5.f });
+		ImGui::PushItemWidth(70.000000);
+		std::stringstream hc;
+		hc << "Innacuracy: " << (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread());
+		ImGui::Text(hc.str().c_str());
+		/*bool nadestatus = g_LocalPlayer->m_hActiveWeapon()->m_bPinPulled();
+		if (nadestatus)
+			ImGui::Text("Nade Status: Pulled Out ;)");
+		else
+			ImGui::Text("Nade Status: We Cool");*/
+		ImGui::Text(hc.str().c_str());
+		ImGui::PopItemWidth();
+		ImGui::SetCursorPos({ 5.f,25.f });
+		ImGui::PushItemWidth(49.000000);
+		if (g_LocalPlayer->m_hActiveWeapon()->IsReloading()) {
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.f), "Reloading...");
+		}
+		else {
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.f), "READY TO CUM!");
+		}
+		ImGui::PopItemWidth();
+		ImGui::EndChild();
+		ImGui::End();
+}
+
 void Menu::Render()
 {
 

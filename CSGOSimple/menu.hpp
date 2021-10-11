@@ -17,7 +17,7 @@ public:
     void OnDeviceReset();
 
     void Render();
-    void  SpectatorList();
+    void  HCDisplay();
     void Toggle();
 
     bool IsVisible() const { return _visible; }
