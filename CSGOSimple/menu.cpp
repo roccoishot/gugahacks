@@ -186,37 +186,32 @@ void Menu::HCDisplay() {
 	if (!g_LocalPlayer->IsAlive())
 		return;
 
-		ImGui::SetNextWindowSize({ 280.f,165.f });
-		ImGui::Begin("GUGAHACKS.SU STRAP INFUH", nullptr, flags);
-		ImGui::SetCursorPos({ 13.f,25.f });
-		ImGui::PushItemWidth(161.000000);
-		ImGui::Text("GUGAHACKS.SU STRAP INFUH");
-		ImGui::PopItemWidth();
-		ImGui::SetCursorPos({ 10.f,46.f });
-		ImGui::BeginChild("child0", { 261.f,110.f }, true);
-		ImGui::SetCursorPos({ 5.f,5.f });
-		ImGui::PushItemWidth(70.000000);
-		std::stringstream hc;
-		hc << "Innacuracy: " << (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread());
-		ImGui::Text(hc.str().c_str());
-		/*bool nadestatus = g_LocalPlayer->m_hActiveWeapon()->m_bPinPulled();
-		if (nadestatus)
-			ImGui::Text("Nade Status: Pulled Out ;)");
-		else
-			ImGui::Text("Nade Status: We Cool");*/
-		ImGui::Text(hc.str().c_str());
-		ImGui::PopItemWidth();
-		ImGui::SetCursorPos({ 5.f,25.f });
-		ImGui::PushItemWidth(49.000000);
-		if (g_LocalPlayer->m_hActiveWeapon()->IsReloading()) {
-			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.f), "Reloading...");
-		}
-		else {
-			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.f), "READY TO CUM!");
-		}
-		ImGui::PopItemWidth();
-		ImGui::EndChild();
-		ImGui::End();
+	ImGui::SetNextWindowSize({ 280.f,165.f });
+	ImGui::Begin("GUGAHACKS.SU STRAP INFUH", nullptr, flags);
+	ImGui::SetCursorPos({ 13.f,25.f });
+	ImGui::PushItemWidth(161.000000);
+	ImGui::Text("GUGAHACKS.SU STRAP INFUH");
+	ImGui::PopItemWidth();
+	ImGui::SetCursorPos({ 10.f,46.f });
+	ImGui::BeginChild("child0", { 261.f,110.f }, true);
+	ImGui::SetCursorPos({ 5.f,5.f });
+	ImGui::PushItemWidth(70.000000);
+	std::stringstream hc;
+	hc << "Innacuracy: " << (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread());
+	ImGui::Text(hc.str().c_str());
+	ImGui::PopItemWidth();
+	ImGui::PushItemWidth(70.000000);
+	ImGui::SetCursorPos({ 5.f,25.f });
+	ImGui::PushItemWidth(49.000000);
+	if (g_LocalPlayer->m_hActiveWeapon()->IsReloading()) {
+		ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.f), "Reloading...");
+	}
+	else {
+		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.f), "READY TO CUM!");
+	}
+	ImGui::PopItemWidth();
+	ImGui::EndChild();
+	ImGui::End();
 }
 
 void Menu::Render()
