@@ -151,6 +151,21 @@ bool Tab(const char* label, const ImVec2& size_arg, bool state)
 
 void Menu::HCDisplay() {
 
+	if (!g_Options.strapinfuh)
+		return;
+
+	if (!g_EngineClient->IsInGame())
+		return;
+
+	if (!g_LocalPlayer)
+		return;
+
+	if (!g_LocalPlayer->IsAlive())
+		return;
+
+	if (!(g_LocalPlayer->m_hActiveWeapon()))
+		return;
+
 	ImGuiStyle* Style = &ImGui::GetStyle();
 	Style->WindowBorderSize = 0.5;
 	Style->FrameBorderSize = 0.5;
@@ -163,31 +178,22 @@ void Menu::HCDisplay() {
 	Style->ScrollbarRounding = 0;
 	Style->PopupRounding = 0;
 	Style->GrabRounding = 0;
-	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 0.7);
-	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11, 0.7);
-	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 0.7);
-	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 0.7);
-	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11, 0.7);
-	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11, 0.7);
-	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22, 0.7);
-	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22, 0.7);
-	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0, 0.7);
-	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0, 0.7);
-	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(0, 0, 0, 0.7);
-	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23, 0.7);
-	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0, 0.7);
-	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(0, 0, 0, 0.7);
+	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
+	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
+	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(0, 0, 0);
 	ImGui::PushFont(g_SpectatorListFont);
-	auto flags = NULL | ImGuiWindowFlags_NoScrollbar | NULL | NULL | NULL | NULL | NULL | NULL;
-
-	if (!g_EngineClient->IsInGame())
-		return;
-
-	if (!g_LocalPlayer->IsAlive())
-		return;
-
-	if (!(g_LocalPlayer->m_hActiveWeapon()))
-		return;
+	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | NULL | NULL | NULL | NULL | NULL;
 
 	ImGui::SetNextWindowSize({ 280.f,165.f });
 	ImGui::Begin("GUGAHACKS.SU STRAP INFUH", nullptr, flags);
@@ -748,10 +754,10 @@ void Menu::Render()
 					if (g_Options.misc_hitmarker) {
 						ImGui::Combo("Sound", &g_Options.hitmarkersound, HitList, IM_ARRAYSIZE(HitList));
 					}
-					ImGui::Checkbox("Velocity", &g_Options.Velocity);
+					ImGui::Checkbox("Velocity Graph", &g_Options.Velocity);
 					ImGui::SameLine(group_w - 20);
-					ImGuiEx::ColorEdit4("##Velocity", &g_Options.Velocitycol);
-					if (ImGui::BeginCombo("##Velocity", "Velocity"))
+					ImGuiEx::ColorEdit4("Velocity Color", &g_Options.Velocitycol);
+					if (ImGui::BeginCombo("Velocity", "Velocity"))
 					{
 						ImGui::Selectable("Outline", &g_Options.outline, ImGuiSelectableFlags_DontClosePopups);
 						ImGui::Selectable("Last jump", &g_Options.lastjump, ImGuiSelectableFlags_DontClosePopups);
@@ -819,6 +825,7 @@ void Menu::Render()
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
 					if (g_Options.enablebeta) {
 						ImGui::Checkbox("Fast Shiftwalk Charge", &g_Options.slidewalk);
+						ImGui::Checkbox("Strap Info", &g_Options.strapinfuh);
 					}
 					ImGui::EndChild();
 				}

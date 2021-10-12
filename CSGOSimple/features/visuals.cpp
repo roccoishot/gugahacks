@@ -384,18 +384,12 @@ void Visuals::ThirdPerson() {
 		g_Input->m_fCameraInThirdPerson = false;
 }
 
-//--------------------------------------------------------------------------------
 bool lastvelsaved = false; //saver 
 int lastjump, lastvel, lasttick = 0; // last vel holder 
 std::string drawvel; //text drawer holder 
 std::string drawvel2;
 void speed()
 {
-	/*if (!interfaces::engine->is_connected())
-		return;
-
-	if (!interfaces::engine->is_in_game())
-		return;*/
 	if (!g_Options.Velocity)
 		return;
 
@@ -444,9 +438,9 @@ void speed()
 
 		//	else
 		if (g_Options.outline)
-			Render::Get().RenderText(std::to_string(intspeed), screenWidth / 2 - 48, screenHeight - 100, 27.f, Color(0, 0, 0, 255), false, false, g_VeloFont);
+			Render::Get().RenderText(std::to_string(intspeed), screenWidth / 2, screenHeight - 100, 27.f, Color(0, 0, 0, 255), false, true, g_VeloFont);
 
-		Render::Get().RenderText(std::to_string(intspeed), screenWidth / 2 - 48, screenHeight - 100, 27.f, g_Options.Velocitycol, false, false, g_VeloFont);
+		Render::Get().RenderText(std::to_string(intspeed), screenWidth / 2, screenHeight - 100, 27.f, g_Options.Velocitycol, false, false, g_VeloFont);
 
 		if (!(local_player->m_fFlags() & FL_ONGROUND)) {
 			//if (lastjump >= 270)
@@ -456,18 +450,36 @@ void speed()
 			if (lastjump >= 100 && g_Options.lastjump)
 			{
 				if (g_Options.lastjumpoutline)
-					Render::Get().RenderText(drawvel2, screenWidth / 2 + 2, screenHeight - 100, 27.f, Color(0, 0, 0), false, false, g_VeloFont);
+					Render::Get().RenderText(drawvel2, screenWidth / 2 + 45, screenHeight - 100, 27.f, Color(0, 0, 0), false, true, g_VeloFont);
 
-				Render::Get().RenderText(drawvel2, screenWidth / 2 + 2, screenHeight - 100, 27.f, g_Options.Velocitycol, false, false, g_VeloFont);
+				Render::Get().RenderText(drawvel2, screenWidth / 2 + 45, screenHeight - 100, 27.f, g_Options.Velocitycol, false, false, g_VeloFont);
 
 			}
 
 		}
 
-
 	}
+	static std::vector<float> velData(120, 0);
+	float currentVelocity = sqrt(speed.x * speed.x + speed.y * speed.y);
 
+	velData.erase(velData.begin());
+	velData.push_back(currentVelocity);
+
+	for (auto i = 0; i < velData.size() - 1; i++)
+	{
+		int cur = velData.at(i);
+		int next = velData.at(i + 1);
+
+		Render::Get().RenderLine<float>(
+			screenWidth / 2 + (velData.size() * 5 / 2) - (i - 1) * 5.f,
+			screenHeight / 1.15 - (std::clamp(cur, 0, 450) * .3f),
+			screenWidth / 2 + (velData.size() * 5 / 2) - i * 5.f,
+			screenHeight / 1.15 - (std::clamp(next, 0, 450) * .3f), Color(255, 255, 255, 255)
+			);
+	}
 }
+
+//--------------------------------------------------------------------------------
 
 void Visuals::AddToDrawList() {
 	for (auto i = 1; i <= g_EntityList->GetHighestEntityIndex(); ++i) {
