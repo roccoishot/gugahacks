@@ -1,16 +1,47 @@
 #include "movement.h"
+#include "OldPrediction.h"
 
 void movement::edgebug(CUserCmd* cmd) {
-	if (g_LocalPlayer->IsAlive() && g_EngineClient->IsInGame())
-	{
-		if (g_Options.edge_bug && GetAsyncKeyState(g_Options.edge_bug_key)) {
-			if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND))
-			return;
-		
-			if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
-			cmd->buttons |= IN_DUCK;
-		}
-	}
+    if (!g_Options.edge_bug || !GetAsyncKeyState(g_Options.edge_bug_key))
+        return;
+
+    auto local = g_LocalPlayer;
+    float max_radias = DirectX::XM_PI * 2;
+    float step = max_radias / 128;
+    float xThick = 23;
+    bool did_jump;
+    bool edgebugz;
+    bool unduck;
+    Vector pos = local->m_vecOrigin();
+
+    for (float a = 0.f; a < max_radias; a += step)
+    {
+        Vector pt;
+        pt.x = ((xThick - 20.f) * cos(a)) + pos.x;
+        pt.y = ((xThick - 20.f) * sin(a)) + pos.y;
+        pt.z = pos.z;
+
+        Vector pt2 = pt;
+        pt2.z -= 6;
+
+        trace_t edgebug;
+        trace_t fag;
+
+        Ray_t ray;
+        ray.Init(pt, pt2);
+
+        CTraceFilter flt;
+        flt.pSkip = local;
+        g_EngineTrace->TraceRay(ray, MASK_SOLID_BRUSHONLY, &flt, &fag);
+
+        if (ray.m_IsRay != 1.f && edgebug.fraction != 0.f)
+        {
+            did_jump = true;
+            cmd->buttons |= in_duck; // duck
+            unduck = true;
+            edgebugz = true;
+        }
+    }
 }
 
 void movement::jumpbug(CUserCmd* cmd) {

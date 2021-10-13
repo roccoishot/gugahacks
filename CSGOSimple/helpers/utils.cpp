@@ -9,6 +9,7 @@
 #include "../valve_sdk/csgostructs.hpp"
 #include "Math.hpp"
 #include <map>
+#include <algorithm>
 
 
 HANDLE _out = NULL, _old_out = NULL;
@@ -156,7 +157,6 @@ namespace Utils {
 
         return key;
     }
-
 
     /*
      * @brief Wait for all the given modules to be loaded

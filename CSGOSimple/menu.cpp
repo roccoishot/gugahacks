@@ -40,14 +40,6 @@ struct hud_weapons_t {
 	}
 };
 
-template<class T>
-static T* FindHudElement(const char* name)
-{
-	static auto pThis = *reinterpret_cast<DWORD**>(Utils::PatternScan2("client.dll", "B9 ? ? ? ? E8 ? ? ? ? 8B 5D 08") + 1);
-
-	static auto find_hud_element = reinterpret_cast<DWORD(__thiscall*)(void*, const char*)>(Utils::PatternScan2("client.dll", "55 8B EC 53 8B 5D 08 56 57 8B F9 33 F6 39 77 28"));
-	return (T*)find_hud_element(pThis, name);
-}
 namespace ImGuiEx
 {
 	inline bool ColorEdit4(const char* label, Color* v, bool show_alpha = true)
@@ -644,6 +636,7 @@ void Menu::Render()
 					ImGui::Spacing();
 					ImGui::Separator("Others");
 					ImGui::Spacing();
+					ImGui::Checkbox("Edgebug Effect", &g_Options.ebeffect);
 					ImGui::Checkbox("Draw FOV", &g_Options.drawfov);
 					ImGui::Checkbox("Sniper crosshair", &g_Options.sniper_xhair);
 					ImGui::Checkbox("No flash", &g_Options.no_flash);
@@ -719,6 +712,15 @@ void Menu::Render()
 					ImGui::SliderFloat("G Glow", &g_Options.worldglowg, 0, 1);
 					ImGui::Spacing();
 					ImGui::SliderFloat("B Glow", &g_Options.worldglowb, 0, 1);
+					ImGui::Separator("Fog");
+					ImGui::Checkbox("Fog modulation", &g_Options.fogchanga);
+					ImGui::Spacing();
+					ImGui::SliderInt("Distance", &g_Options.fogfardamn, 0, 2500);
+					ImGui::Spacing();
+					ImGui::SliderInt("Density", &g_Options.fogdens, 0, 100);
+					ImGui::Text("Fog Color");
+					ImGui::SameLine();
+					ImGuiEx::ColorEdit3("Fog Color", &g_Options.fogcoluh);
 					ImGui::EndChild();
 					ImGui::SetCursorPos({ 31 + 188,65 });
 					ImGui::BeginChild("##3", { 166,316 });

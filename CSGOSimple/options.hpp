@@ -208,6 +208,10 @@ public:
 		// ESP
 		// 
 	//	bool esp_enabled = false;
+	bool ebeffect = false;
+	bool fogchanga = false;
+	int fogfardamn = 0;
+	int fogdens = 0;
 	bool flashkillcheck = false;
 	bool autoscope = false;
 	float amibence = 0;
@@ -381,6 +385,7 @@ public:
 		Color glowcolorstrap = { 255, 255, 255 };
 		Color colormodulation = { 0, 0, 0, 255 };
 		Color proprmodulation = { 0, 0, 0, 255 };
+		Color fogcoluh = { 255, 255, 255, 255 };
 		Color menucolor = { 255,255,255,255 };
 
 protected:

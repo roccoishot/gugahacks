@@ -19,6 +19,7 @@
 #include "Globals.h"
 #include "Colormodulation.h"
 #include "movement.h"
+#include "crypt_str.h"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -376,7 +377,29 @@ namespace Hooks {
 			fatshit->SetValue("0.055");
 		}
 
-
+		//Fog
+		static auto fog_override = g_CVar->FindVar(crypt_str("fog_override")); //-V807
+		if (!g_Options.fogchanga)
+		{
+			if (fog_override->GetBool())
+				fog_override->SetValue(FALSE);
+		}
+		if (!fog_override->GetBool())
+			fog_override->SetValue(TRUE);
+		static auto fog_start = g_CVar->FindVar(crypt_str("fog_start"));
+		if (fog_start->GetInt())
+			fog_start->SetValue(0);
+		static auto fog_end = g_CVar->FindVar(crypt_str("fog_end"));
+		if (fog_end->GetInt() != g_Options.fogfardamn)
+			fog_end->SetValue(g_Options.fogfardamn);
+		static auto fog_maxdensity = g_CVar->FindVar(crypt_str("fog_maxdensity"));
+		if (fog_maxdensity->GetFloat() != (float)g_Options.fogdens * 0.01f) //-V550
+			fog_maxdensity->SetValue((float)g_Options.fogdens * 0.01f);
+		char buffer_color[12];
+		sprintf_s(buffer_color, 12, "%i %i %i", g_Options.fogcoluh.r(), g_Options.fogcoluh.g(), g_Options.fogcoluh.b());
+		static auto fog_color = g_CVar->FindVar(crypt_str("fog_color"));
+		if (strcmp(fog_color->GetString(), buffer_color)) //-V526
+			fog_color->SetValue(buffer_color);
 		//World Glow
 		static auto mat_ambient_light_r = g_CVar->FindVar("mat_ambient_light_r");
 		static auto mat_ambient_light_g = g_CVar->FindVar("mat_ambient_light_g");
@@ -474,6 +497,8 @@ namespace Hooks {
 		
 		bool bSendPacket = true;
 
+		movement::edgebug(cmd);
+
 		//Desync
 		Misc::ClanTag();
 
@@ -540,7 +565,6 @@ namespace Hooks {
 					g_Options.misc_bhop2 = true;
 			}
 			else g_Options.misc_bhop2 = false;
-			movement::edgebug(cmd);
 			movement::jumpbug(cmd);
 			Misc::SlowWalk(cmd);
 			CAntiAim::Get().CreateMove(cmd, bSendPacket);
@@ -562,8 +586,10 @@ namespace Hooks {
 
 		static auto prediction = new PredictionSystem();
 		auto flags = g_LocalPlayer->m_fFlags();
+		float eb = floor(g_LocalPlayer->m_vecVelocity().z);
 
 		prediction->StartPrediction(cmd);
+		Visuals::Get().ebdetection(eb, flags);
 		g_Legitbot->Run(cmd);
 
 		prediction->EndPrediction();
@@ -882,10 +908,31 @@ namespace Hooks {
 		std::vector<const char*> vistasmoke_mats =
 
 		{
-				"particle/vistasmokev1/vistasmokev1_fire",
-				"particle/vistasmokev1/vistasmokev1_smokegrenade",
-				"particle/vistasmokev1/vistasmokev1_emods",
-				"particle/vistasmokev1/vistasmokev1_emods_impactdust",
+		"effects/overlaysmoke",
+		"particle/beam_smoke_01",
+		"particle/particle_smokegrenade",
+		"particle/particle_smokegrenade1",
+		"particle/particle_smokegrenade2",
+		"particle/particle_smokegrenade3",
+		"particle/particle_smokegrenade_sc",
+		"particle/smoke1/smoke1",
+		"particle/smoke1/smoke1_ash",
+		"particle/smoke1/smoke1_nearcull",
+		"particle/smoke1/smoke1_nearcull2",
+		"particle/smoke1/smoke1_snow",
+		"particle/smokesprites_0001",
+		"particle/smokestack",
+		"particle/vistasmokev1/vistasmokev1",
+		"particle/vistasmokev1/vistasmokev1_emods",
+		"particle/vistasmokev1/vistasmokev1_emods_impactdust",
+		"particle/vistasmokev1/vistasmokev1_fire",
+		"particle/vistasmokev1/vistasmokev1_nearcull",
+		"particle/vistasmokev1/vistasmokev1_nearcull_fog",
+		"particle/vistasmokev1/vistasmokev1_nearcull_nodepth",
+		"particle/vistasmokev1/vistasmokev1_smokegrenade",
+		"particle/vistasmokev1/vistasmokev4_emods_nocull",
+		"particle/vistasmokev1/vistasmokev4_nearcull",
+		"particle/vistasmokev1/vistasmokev4_nocull"
 		};
 
 		for (auto mat_s : vistasmoke_mats)

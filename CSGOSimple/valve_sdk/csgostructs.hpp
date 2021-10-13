@@ -255,6 +255,7 @@ public:
 	NETVAR(int, m_nSequence, "DT_BaseViewModel", "m_nSequence");
 	NETVAR(float, m_flNextAttack, "DT_BaseCombatCharacter", "m_flNextAttack");
 	NETVAR(int32_t, m_nSurvivalTeam, "DT_CSPlayer", "m_nSurvivalTeam");
+	NETVAR(float, m_flHealthShotBoost, "DT_CSPlayer", "m_flHealthShotBoostExpirationTime");
 
 	//NETVAR(int, m_iAccount, "DT_CSPlayer", "m_iAccount");
 

@@ -188,6 +188,7 @@ void Options::SetupWeapons()
 
 void Options::SetupVisuals()
 {
+	SetupValue(ebeffect, "Visuals", "Edgebug Effect");
 	SetupValue(flashkillcheck, "Visuals", "Flash Kill Check");
 	SetupValue(teamesp, "Visuals", "Team ESP");
 	SetupValue(teamchams, "Visuals", "Team Chams");
@@ -262,6 +263,10 @@ void Options::SetupVisuals()
 	SetupValue(viewmodel_offset_z, "Visuals", "Z");
 	SetupValue(sniper_xhair, "Visuals", "Sniper crosshair");
 	SetupValue(drawfov, "Visuals", "Draw FOV");
+	SetupValue(fogchanga, "World", "Fog Modulation");
+	SetupValue(fogdens, "World", "Fog Density");
+	SetupValue(fogfardamn, "World", "Fog Distance");
+	SetupColor(fogcoluh, "Fog Color");
 	
 }
 
