@@ -45,7 +45,6 @@ public:
 	void RenderPlantedC4(C_BaseEntity* ent);
 	void RenderItemEsp(C_BaseEntity* ent);
 	void ThirdPerson();
-	void ebdetection(float unpred_z, int unpred_flags);
 public:
 	void AddToDrawList();
 	void Render();

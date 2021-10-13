@@ -20,6 +20,7 @@
 #include "Colormodulation.h"
 #include "movement.h"
 #include "crypt_str.h"
+#include "blockbot.hpp"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -497,8 +498,6 @@ namespace Hooks {
 		
 		bool bSendPacket = true;
 
-		movement::edgebug(cmd);
-
 		//Desync
 		Misc::ClanTag();
 
@@ -586,10 +585,9 @@ namespace Hooks {
 
 		static auto prediction = new PredictionSystem();
 		auto flags = g_LocalPlayer->m_fFlags();
-		float eb = floor(g_LocalPlayer->m_vecVelocity().z);
 
 		prediction->StartPrediction(cmd);
-		Visuals::Get().ebdetection(eb, flags);
+		movement::edgebug(cmd);
 		g_Legitbot->Run(cmd);
 
 		prediction->EndPrediction();
@@ -620,8 +618,10 @@ namespace Hooks {
 		if (!g_Options.sniper_xhair)
 			g_CVar->FindVar("weapon_debug_spread_show")->SetValue(0);
 
-		//verified->m_cmd = *cmd;
-		//verified->m_crc = cmd->GetChecksum();
+		if (g_Options.blockbot && GetAsyncKeyState(g_Options.bbkey)) {
+			g_BlockBot->cmove(cmd);
+			g_BlockBot->draw();
+		}
 	}
 	//--------------------------------------------------------------------------------
 	__declspec(naked) void __fastcall hkCreateMove_Proxy(void* _this, int, int sequence_number, float input_sample_frametime, bool active)

@@ -636,7 +636,6 @@ void Menu::Render()
 					ImGui::Spacing();
 					ImGui::Separator("Others");
 					ImGui::Spacing();
-					ImGui::Checkbox("Edgebug Effect", &g_Options.ebeffect);
 					ImGui::Checkbox("Draw FOV", &g_Options.drawfov);
 					ImGui::Checkbox("Sniper crosshair", &g_Options.sniper_xhair);
 					ImGui::Checkbox("No flash", &g_Options.no_flash);
@@ -821,6 +820,7 @@ void Menu::Render()
 					ImGui::Checkbox("Edgebug", &g_Options.edge_bug); ImGui::SameLine(group_w - 50);          ImGui::Hotkey("  ", &g_Options.edge_bug_key);
 					ImGui::Checkbox("Jumpbug", &g_Options.jump_bug); ImGui::SameLine(group_w - 50);          ImGui::Hotkey("   ", &g_Options.jump_bug_key);
 					ImGui::Checkbox("Edge jump", &g_Options.edgejump.enabled); ImGui::SameLine(group_w - 50); ImGui::Hotkey("    ", &g_Options.edgejump.hotkey);
+					ImGui::Checkbox("Blockbot", &g_Options.blockbot); ImGui::SameLine(group_w - 50); ImGui::Hotkey("                                                                                                                                                                                                                                                                                                                                      ", &g_Options.bbkey);
 					ImGui::Checkbox("Duck In Air", &g_Options.ducknair);
 					ImGui::Checkbox("Auto Accept", &g_Options.autoaccept);
 					ImGui::Separator("Test");

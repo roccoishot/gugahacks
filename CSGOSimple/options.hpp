@@ -208,7 +208,8 @@ public:
 		// ESP
 		// 
 	//	bool esp_enabled = false;
-	bool ebeffect = false;
+	bool blockbot = false;
+	int bbkey = 0;
 	bool fogchanga = false;
 	int fogfardamn = 0;
 	int fogdens = 0;

@@ -188,7 +188,6 @@ void Options::SetupWeapons()
 
 void Options::SetupVisuals()
 {
-	SetupValue(ebeffect, "Visuals", "Edgebug Effect");
 	SetupValue(flashkillcheck, "Visuals", "Flash Kill Check");
 	SetupValue(teamesp, "Visuals", "Team ESP");
 	SetupValue(teamchams, "Visuals", "Team Chams");
@@ -272,6 +271,8 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
+	SetupValue(g_Options.blockbot, "Misc", "Blockbot");
+	SetupValue(g_Options.bbkey, "Misc", "BlockBot Key");
 	SetupValue(strapinfuh, "Misc", "Strap Info");
 	SetupValue(autoscope, "Aimbot", "Auto Scope");
 	SetupValue(slidewalk, "Test", "Fast Shiftwalk");

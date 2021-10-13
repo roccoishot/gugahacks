@@ -173,6 +173,9 @@
     <ClCompile Include="movement.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
+    <ClCompile Include="blockbot.cpp">
+      <Filter>Source Files\features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="valve_sdk\misc\BaseHandle.hpp">
@@ -486,6 +489,9 @@
     </ClInclude>
     <ClInclude Include="valve_sdk\misc\glow_outline_effect.hpp">
       <Filter>Source Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="blockbot.hpp">
+      <Filter>Source Files\features</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
