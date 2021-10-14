@@ -588,16 +588,6 @@ namespace Hooks {
 		prediction->StartPrediction(cmd);
 		movement::edgebug(cmd);
 		g_Legitbot->Run(cmd);
-
-		if (g_Options.ebmode == 0) {
-
-			if (g_Options.edge_bug || GetAsyncKeyState(g_Options.edge_bug_key)) {
-
-				if (!(flags & FL_ONGROUND) && g_LocalPlayer->m_fFlags() & FL_ONGROUND)
-					cmd->buttons |= IN_DUCK;
-			}
-		}
-
 		prediction->EndPrediction();
 		if (g_Options.edgejump.enabled && GetAsyncKeyState(g_Options.edgejump.hotkey))
 		{

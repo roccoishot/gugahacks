@@ -12,7 +12,14 @@ public:
 };
 
 void movement::edgebug(CUserCmd* cmd) {
-    if (g_Options.edge_bug || GetAsyncKeyState(g_Options.edge_bug_key)) {
+    if (g_Options.edge_bug && GetAsyncKeyState(g_Options.edge_bug_key)) {
+    if (g_Options.ebmode == 0) {
+            if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
+                cmd->buttons |= IN_DUCK;
+        }
+    }
+
+    if (g_Options.edge_bug && GetAsyncKeyState(g_Options.edge_bug_key)) {
         if (g_Options.ebmode == 1) {
             auto local = g_LocalPlayer;
             float max_radias = DirectX::XM_PI * 2;
