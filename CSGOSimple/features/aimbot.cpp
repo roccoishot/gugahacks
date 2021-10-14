@@ -36,20 +36,18 @@ bool CLegitbot::IsEnabled(CUserCmd* cmd)
 		if (!weapon || !weapon->IsGun())
 			return false;
 
-		settings = g_Options.weapons[weapon->m_Item().m_iItemDefinitionIndex()].legit;
-
-		if (!settings.enabled)
+		if (!g_Options.aimbot.enabled)
 			return false;
 
 		if (!weapon->HasBullets())
 			return false;
 
-		return (cmd->buttons & IN_ATTACK) || (settings.autofire.enabled);
+		return (cmd->buttons & IN_ATTACK) || (g_Options.aimbot.autofire);
 }
 
 void CLegitbot::Smooth(QAngle currentAngle, QAngle aimAngle, QAngle& angle)
 {
-	auto smooth_value = max(1.0f, settings.smooth);
+	auto smooth_value = max(1.0f, g_Options.aimbot.smoof);
 	
 	Vector current, aim;
 
@@ -64,10 +62,10 @@ void CLegitbot::Smooth(QAngle currentAngle, QAngle aimAngle, QAngle& angle)
 
 void CLegitbot::RCS(QAngle& angle, C_BasePlayer* target)
 {
-	if (!settings.rcs.enabled || shotsFired < settings.rcs.start - 1)
+	if (!g_Options.aimbot.rcs || shotsFired < g_Options.aimbot.rcsstart - 1)
 		return;
 
-	if (!settings.rcs.x && !settings.rcs.y)
+	if (!g_Options.aimbot.x && !g_Options.aimbot.y)
 		return;
 
 	
@@ -79,14 +77,14 @@ void CLegitbot::RCS(QAngle& angle, C_BasePlayer* target)
 
 	
 
-	const auto x = float(settings.rcs.y) / 100.f * scale;
-	const auto y = float(settings.rcs.x) / 100.f * scale;
+	const auto x = float(g_Options.aimbot.y) / 100.f * scale;
+	const auto y = float(g_Options.aimbot.x) / 100.f * scale;
 
 	
 
 	if (target)
 		punch = { current_punch.pitch * x, current_punch.yaw * y, 0 };
-	else if (settings.rcs.type == 0)
+	else if (g_Options.aimbot.rcstype == 0)
 		punch = { (current_punch.pitch - last_punch.pitch) * x, (current_punch.yaw - last_punch.yaw) * y, 0 };
 
 	if ((punch.pitch != 0.f || punch.yaw != 0.f) && current_punch.roll == 0.f) {
@@ -97,20 +95,20 @@ void CLegitbot::RCS(QAngle& angle, C_BasePlayer* target)
 
 bool CLegitbot::IsSilent()
 {
-	if (settings.silent2 == 2)
-		return !(shotsFired > 0 || !settings.silent2 || !settings.silent_fov);
-	if (settings.silent2 == 1)
-		return !(!settings.silent2 || !settings.silent_fov);
-	if (settings.silent2 == 0)
-		return !(shotsFired > 0 || !settings.silent2 || !settings.silent_fov);
+	if (g_Options.aimbot.silent == 2)
+		return !(shotsFired > 0 || !g_Options.aimbot.silent || !g_Options.aimbot.silentfov);
+	if (g_Options.aimbot.silent == 1)
+		return !(!g_Options.aimbot.silent || !g_Options.aimbot.silentfov);
+	if (g_Options.aimbot.silent == 0)
+		return !(shotsFired > 0 || !g_Options.aimbot.silent || !g_Options.aimbot.silentfov);
 }
 
 float CLegitbot::GetFov()
 {
 	if (IsSilent())
-		return settings.silent_fov;
+		return g_Options.aimbot.silentfov;
 
-	return settings.fov;
+	return g_Options.aimbot.fov;
 }
 
 C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& bestFov, QAngle& bestAngles)
@@ -120,23 +118,23 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 	std::vector<int> hitboxes;
 
 	//I be getting mad head :weary:
-	if (settings.hitboxes.head) {
+	if (g_Options.aimbot.head) {
 		hitboxes.emplace_back(HITBOX_HEAD);
 	}
 
-	if (settings.hitboxes.chest)
+	if (g_Options.aimbot.chest)
 	{
 		hitboxes.emplace_back(HITBOX_UPPER_CHEST);
 		hitboxes.emplace_back(HITBOX_CHEST);
 		hitboxes.emplace_back(HITBOX_LOWER_CHEST);
 	}
 
-	if (settings.hitboxes.pelvis)
+	if (g_Options.aimbot.pelvis)
 	{
 		hitboxes.emplace_back(HITBOX_PELVIS);
 	}
 
-	if (settings.hitboxes.arms)
+	if (g_Options.aimbot.arms)
 	{
 		hitboxes.emplace_back(HITBOX_LEFT_FOREARM);
 		hitboxes.emplace_back(HITBOX_LEFT_UPPER_ARM);
@@ -145,7 +143,7 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 		hitboxes.emplace_back(HITBOX_RIGHT_UPPER_ARM);
 	}
 
-	if (settings.hitboxes.legs)
+	if (g_Options.aimbot.legs)
 	{
 		hitboxes.emplace_back(HITBOX_RIGHT_CALF);
 		hitboxes.emplace_back(HITBOX_RIGHT_THIGH);
@@ -155,14 +153,14 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 	}
 
 	//We about the handjobs
-	if (settings.hitboxes.hands)
+	if (g_Options.aimbot.hands)
 	{
 		hitboxes.emplace_back(HITBOX_RIGHT_HAND);
 		hitboxes.emplace_back(HITBOX_LEFT_HAND);
 	}
 
 	//Foot porn gang 
-	if (settings.hitboxes.feet)
+	if (g_Options.aimbot.feet)
 	{
 		hitboxes.emplace_back(HITBOX_RIGHT_FOOT);
 		hitboxes.emplace_back(HITBOX_LEFT_FOOT);
@@ -197,12 +195,12 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 
 			if (!g_LocalPlayer->CanSeePlayer(player, hitboxPos))
 			{
-				if (!settings.autowall.enabled)
+				if (!g_Options.aimbot.autowall)
 					continue;
 
 				const auto damage = int(Autowall::GetDamage(hitboxPos));
 
-				if (damage <= settings.autowall.min_damage)
+				if (damage <= g_Options.aimbot.autowallmin)
 					continue;
 			}
 
@@ -262,12 +260,12 @@ void CLegitbot::Run(CUserCmd* cmd)
 			}
 
 		}
-		if (settings.enablehc)
+		if (g_Options.aimbot.hc)
 		{
-			if (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread() < settings.hitchance)
+			if (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread() < g_Options.aimbot.hitchance)
 			{
 
-			if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
+			if (g_Options.aimbot.autofire && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
 				cmd->buttons |= IN_ATTACK;
 				const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
 				const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
@@ -283,8 +281,8 @@ void CLegitbot::Run(CUserCmd* cmd)
 			}
 
 	}
-		if (!settings.enablehc){
-			if (settings.autofire.enabled && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
+		if (!g_Options.aimbot.hc){
+			if (g_Options.aimbot.autofire && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
 				cmd->buttons |= IN_ATTACK;
 				const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
 				const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;

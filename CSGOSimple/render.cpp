@@ -77,18 +77,7 @@ void Render::ClearDrawList() {
 }
 
 void Render::BeginScene() {
-
-	static int definition_index = WEAPON_INVALID;
-
-	auto localPlayer = C_BasePlayer::GetPlayerByIndex(g_EngineClient->GetLocalPlayer());
-	if (g_EngineClient->IsInGame() && localPlayer && localPlayer->IsAlive() && localPlayer->m_hActiveWeapon() && localPlayer->m_hActiveWeapon()->IsGun())
-		definition_index = localPlayer->m_hActiveWeapon()->m_Item().m_iItemDefinitionIndex();
-	else
-		definition_index = WEAPON_INVALID;
-	if (definition_index == WEAPON_INVALID)definition_index = WEAPON_DEAGLE;
-	auto settings = &g_Options.weapons[definition_index].legit;
-
-	int a = settings->fov;
+	int a = g_Options.aimbot.fov;
 	int b = 12;
 	long long c = a * b;
 

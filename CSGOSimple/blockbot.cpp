@@ -78,6 +78,12 @@ void CBlockBot::draw() {
 }
 
 void CBlockBot::cmove(CUserCmd* pCmd) {
+
+    auto i = 1; i <= g_GlobalVars->maxClients; i++;
+
+    if (!C_BasePlayer::GetPlayerByIndex(i))
+        return;
+
     if (Target && Target->IsAlive()) {
         QAngle LocalAngles;
         g_EngineClient->GetViewAngles(&LocalAngles);

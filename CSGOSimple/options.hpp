@@ -43,124 +43,6 @@ public:
 	//operator T*() const { return value; }
 };
 
-struct legitbot_s
-{
-	bool enabled = false;
-	bool deathmatch = false;
-	bool silent = false;
-	bool silent2 = false;
-	bool hsilent = false;
-	bool enablehc = false;
-	int hitchance = 0;
-	bool flash_check = false;
-	bool smoke_check = false;
-	bool backtracking = false;
-
-	float fov = 0.f;
-	float silent_fov = 0.f;
-	float smooth = 1.f;
-
-	int shot_delay = 0;
-	int kill_delay = 0;
-
-
-
-	struct
-	{
-		
-
-		bool head = true;
-		bool chest = true;
-		bool pelvis = true;
-		bool arms = true;
-		bool feet = true;
-		bool hands = true;
-		bool legs = true;
-	} hitboxes;
-
-	struct
-	{
-		bool enabled = false;
-		int start = 1;
-		int type = 0;
-		int x = 100;
-		int y = 100;
-	} rcs;
-
-	struct
-	{
-		bool enabled = false;
-		int min_damage = 1;
-	} autowall;
-
-	struct
-	{
-		bool enabled = false;
-		int min_damage = 1;
-	} visible;
-
-	struct
-	{
-		bool enabled = false;
-		int ticks = 6;
-	} backtrack;
-
-	struct
-	{
-		bool enabled = false;
-		int hotkey = 0;
-	} autofire;
-	
-};
-
-
-struct aimbot_settings {
-	int autofire_key = 0;
-	bool enabled = false;
-	bool autofire = false;
-	bool on_key = true;
-	int key = 0;
-	bool deathmatch = false;
-	bool autopistol = false;
-	bool check_smoke = false;
-	bool check_flash = false;
-	bool check_jump = false;
-	bool autowall = false;
-	bool silent = false;
-	bool antiaimlock = false;
-	bool rcs = false;
-	bool rcs_fov_enabled = false;
-	bool rcs_smooth_enabled = false;
-	bool humanize = false;
-	float curviness = false;
-	struct {
-		bool enabled = false;
-		int ticks = 6;
-	} backtrack;
-	bool only_in_zoom = false;
-	int aim_type = 1;
-	int smooth_type;
-	int priority = 0;
-	int fov_type = 0;
-	int rcs_type = 0;
-	int hitbox = 1;
-	float fov = 0.f;
-	float silent_fov = 0.f;
-	float rcs_fov = 0.f;
-	float smooth = 1;
-	float rcs_smooth = 1;
-	int shot_delay = 0;
-	int kill_delay = 0;
-	int rcs_x = 100;
-	int rcs_y = 100;
-	int rcs_start = 1;
-	int min_damage = 1;
-};
-
-struct weapons
-{
-	legitbot_s legit;
-};
 struct statrack_setting
 {
 	int definition_index = 1;
@@ -189,8 +71,6 @@ struct item_setting
 class Options
 {
 public:
-	std::map<int, aimbot_settings> aimbot = {};
-	std::map<short, weapons> weapons;
 	struct
 	{
 
@@ -208,6 +88,35 @@ public:
 		// ESP
 		// 
 	//	bool esp_enabled = false;
+	
+	struct
+	{
+		bool enabled = false;
+		float fov = 0;
+		float smoof = 0;
+		int hitboxes = 0;
+		bool head = true;
+		bool chest = true;
+		bool pelvis = true;
+		bool arms = true;
+		bool feet = true;
+		bool hands = true;
+		bool legs = true;
+		bool hc = false;
+		int rcsstart = 1;
+		int hitchance = 0;
+		bool silent = false;
+		float silentfov = 0;
+		bool autofire = false;
+		bool autowall = false;
+		int autowallmin = 0;
+		bool rcs = false;
+		int rcstype = 0;
+		int x = 100;
+		int y = 100;
+	} aimbot;
+
+	int ebmode = 0;
 	bool blockbot = false;
 	int bbkey = 0;
 	bool fogchanga = false;

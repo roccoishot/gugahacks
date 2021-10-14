@@ -21,8 +21,6 @@ public:
 	bool IsEnabled(CUserCmd* cmd);
 	float GetFovToPlayer(QAngle viewAngle, QAngle aimAngle);
 
-	legitbot_s settings;
-
 	float GetFov();
 
 private:

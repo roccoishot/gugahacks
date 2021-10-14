@@ -353,76 +353,75 @@ void Menu::Render()
 			ImGui::SetCursorPos({ 21,65 });
 			ImGui::BeginChild("##1", { 166,520 });
 			{
-				auto settings = &g_Options.weapons[definition_index].legit;
 				float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
 				ImGui::Separator("Legitbot");
-				ImGui::Checkbox("Enabled", &settings->enabled);
+				ImGui::Checkbox("Enabled", &g_Options.aimbot.enabled);
 				ImGui::Text("Fov");
 				ImGui::Spacing();
-				ImGui::SliderFloat("##Fov", &settings->fov, 0.f, 20.f, "%.f");
+				ImGui::SliderFloat("##Fov", &g_Options.aimbot.fov, 0.f, 20.f, "%.f");
 				ImGui::Spacing();
 				ImGui::Text("Smooth");
 				ImGui::Spacing();
-				ImGui::SliderFloat("##Smooth", &settings->smooth, 1.f, 20.f, "%.f");
+				ImGui::SliderFloat("##Smooth", &g_Options.aimbot.smoof, 1.f, 20.f, "%.f");
 				ImGui::Spacing();
 				if (ImGui::BeginCombo("##hitbox_filter", "Hitboxes"))
 				{
-					ImGui::Selectable("Head", &settings->hitboxes.head, ImGuiSelectableFlags_DontClosePopups);
-					ImGui::Selectable("Chest", &settings->hitboxes.chest, ImGuiSelectableFlags_DontClosePopups);
-					ImGui::Selectable("Pelvis", &settings->hitboxes.pelvis, ImGuiSelectableFlags_DontClosePopups);
-					ImGui::Selectable("Arms", &settings->hitboxes.arms, ImGuiSelectableFlags_DontClosePopups);
-					ImGui::Selectable("Hands", &settings->hitboxes.hands, ImGuiSelectableFlags_DontClosePopups);
-					ImGui::Selectable("Legs", &settings->hitboxes.legs, ImGuiSelectableFlags_DontClosePopups);
-					ImGui::Selectable("Feet", &settings->hitboxes.feet, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Head", &g_Options.aimbot.head, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Chest", &g_Options.aimbot.chest, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Pelvis", &g_Options.aimbot.pelvis, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Arms", &g_Options.aimbot.arms, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Hands", &g_Options.aimbot.hands, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Legs", &g_Options.aimbot.legs, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable("Feet", &g_Options.aimbot.feet, ImGuiSelectableFlags_DontClosePopups);
 
 					ImGui::EndCombo();
 				}
 
 				ImGui::Separator("Others");
-				ImGui::Checkbox("Hitchance", &settings->enablehc);
-				if (settings->enablehc)
-					ImGui::SliderInt("Hitchance", &settings->hitchance, 1, 100, "%.f");
+				ImGui::Checkbox("Hitchance", &g_Options.aimbot.hc);
+				if (g_Options.aimbot.hc)
+					ImGui::SliderInt("Hitchance", &g_Options.aimbot.hitchance, 1, 100, "%.f");
 				ImGui::Checkbox("Backtrack", &g_Options.misc_backtrack);
 				if (g_Options.misc_backtrack) {
 					ImGui::SliderInt("Ticks", &g_Options.backtix, 0.f, 62.f, "%.f");
 				}
-				ImGui::Checkbox("Silent", &settings->silent2);
-				if (settings->silent2) {
+				ImGui::Checkbox("Silent", &g_Options.aimbot.silent);
+				if (g_Options.aimbot.silent) {
 					ImGui::Text("  Silent fov");
 					ImGui::Spacing();
-					ImGui::SliderFloat("##Silentfov", &settings->silent_fov, 0.f, 360.f, "%.f");
+					ImGui::SliderFloat("##Silentfov", &g_Options.aimbot.silentfov, 0.f, 360.f, "%.f");
 					ImGui::Spacing();
 				}
 				ImGui::Checkbox("Autoscope", &g_Options.autoscope);
-				ImGui::Checkbox("Autofire##autofire", &settings->autofire.enabled);
-				ImGui::Checkbox("Autowall##autowall", &settings->autowall.enabled);
-				if (settings->autowall.enabled) {
+				ImGui::Checkbox("Autofire##autofire", &g_Options.aimbot.autofire);
+				ImGui::Checkbox("Autowall##autowall", &g_Options.aimbot.autowall);
+				if (g_Options.aimbot.autowall) {
 					ImGui::Spacing();
 					ImGui::SameLine();
 					ImGui::Text("Min Damage");
 					ImGui::Spacing();
-					ImGui::SliderInt("##minDamage", &settings->autowall.min_damage, 1, 100, "%i");
+					ImGui::SliderInt("##minDamage", &g_Options.aimbot.autowallmin, 1, 100, "%i");
 				}
-					ImGui::Checkbox("RCS##rcs", &settings->rcs.enabled);
+					ImGui::Checkbox("RCS##rcs", &g_Options.aimbot.rcs);
 
 					const char* rcs_types[] = {
 						"Type: Legit",
 						"Type: HvH"
 					};
 
-					if (ImGui::BeginCombo("##type", rcs_types[settings->rcs.type], ImGuiComboFlags_NoArrowButton))
+					if (ImGui::BeginCombo("##type", rcs_types[g_Options.aimbot.rcstype], ImGuiComboFlags_NoArrowButton))
 					{
 						for (int i = 0; i < IM_ARRAYSIZE(rcs_types); i++)
 						{
-							if (ImGui::Selectable(rcs_types[i], i == settings->rcs.type))
-								settings->rcs.type = i;
+							if (ImGui::Selectable(rcs_types[i], i == g_Options.aimbot.rcstype))
+								g_Options.aimbot.rcstype = i;
 						}
 
 						ImGui::EndCombo();
 					}
-					ImGui::SliderInt("  X", &settings->rcs.x, 0, 100, "%i");
+					ImGui::SliderInt("  X", &g_Options.aimbot.x, 0, 100, "%i");
 					ImGui::Spacing();		ImGui::Spacing();		ImGui::Spacing();
-					ImGui::SliderInt("  Y", &settings->rcs.y, 0, 100, "%i");
+					ImGui::SliderInt("  Y", &g_Options.aimbot.y, 0, 100, "%i");
 				}
 				ImGui::EndChild();
 			}
@@ -731,7 +730,7 @@ void Menu::Render()
 			else if (tab == 3)
 			{
 				ImGui::SetCursorPos({ 31 + 188,65 });
-				ImGui::BeginChild("##3", { 166,420 /*nice*/ });
+				ImGui::BeginChild("##3", { 166,430});
 				{
 					ImGui::Separator("General");
 
@@ -813,11 +812,18 @@ void Menu::Render()
 					ImGui::Separator("Movement");
 					float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
 
+					const char* EbModes[] = {
+"OG",
+	"Experimental"
+					};
+
 					//NOT COOL!!!
 					ImGui::Checkbox("No Duck Cooldown", &g_Options.nocool);
 					ImGui::Checkbox("Bhop", &g_Options.misc_bhop);
 					ImGui::Checkbox("Autostrafe", &g_Options.autostrafe); ImGui::SameLine(group_w - 50);     ImGui::Hotkey(" ", &g_Options.AutoStafe_key);
 					ImGui::Checkbox("Edgebug", &g_Options.edge_bug); ImGui::SameLine(group_w - 50);          ImGui::Hotkey("  ", &g_Options.edge_bug_key);
+					if (g_Options.edge_bug)
+						ImGui::Combo("Eb Mode", &g_Options.ebmode, EbModes, IM_ARRAYSIZE(EbModes));
 					ImGui::Checkbox("Jumpbug", &g_Options.jump_bug); ImGui::SameLine(group_w - 50);          ImGui::Hotkey("   ", &g_Options.jump_bug_key);
 					ImGui::Checkbox("Edge jump", &g_Options.edgejump.enabled); ImGui::SameLine(group_w - 50); ImGui::Hotkey("    ", &g_Options.edgejump.hotkey);
 					ImGui::Checkbox("Blockbot", &g_Options.blockbot); ImGui::SameLine(group_w - 50); ImGui::Hotkey("                                                                                                                                                                                                                                                                                                                                      ", &g_Options.bbkey);

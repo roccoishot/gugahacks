@@ -81,6 +81,7 @@ namespace Hooks {
 		sequence_hook->~recv_prop_hook();
 
 	}
+
 	bool __fastcall send_net_msg(void* ecx, void* edx, INetMessage* msg, bool reliable, bool voice)
 	{
 		static auto oFireEvent = hk_netchannel.get_original<sendnetmsg_fn>(40);
@@ -187,8 +188,6 @@ namespace Hooks {
 			metallica->m_fnChangeCallbacks.m_Size = 0;
 			metallica->SetValue(0);
 		}
-
-		//Carlos Has one big ass penis no cap on the dead homies
 
 		static auto r_modelAmbientMin = g_CVar->FindVar("r_modelAmbientMin");
 		if (g_Options.amibence && r_modelAmbientMin->GetFloat() != g_Options.amibence * 0.05f) //-V550
@@ -589,6 +588,15 @@ namespace Hooks {
 		prediction->StartPrediction(cmd);
 		movement::edgebug(cmd);
 		g_Legitbot->Run(cmd);
+
+		if (g_Options.ebmode == 0) {
+
+			if (g_Options.edge_bug || GetAsyncKeyState(g_Options.edge_bug_key)) {
+
+				if (!(flags & FL_ONGROUND) && g_LocalPlayer->m_fFlags() & FL_ONGROUND)
+					cmd->buttons |= IN_DUCK;
+			}
+		}
 
 		prediction->EndPrediction();
 		if (g_Options.edgejump.enabled && GetAsyncKeyState(g_Options.edgejump.hotkey))

@@ -134,39 +134,36 @@ void Options::SetupWeapons()
 {
 	for (auto& [val, key] : config_names)
 	{
-		auto aimbot = &g_Options.weapons[val].legit;
-
 		if (val != WEAPON_KNIFE && val != WEAPON_KNIFE_T && val != GLOVE_T_SIDE)
 		{
-			SetupValue(aimbot->enabled, key, "Aimbot");
+			SetupValue(g_Options.aimbot.silent, key, "Aimbot");
 			//SetupValue(aimbot->deathmatch, key, "Deathmatch");
 			//SetupValue(aimbot->silent, key, "pSilent");
-			SetupValue(aimbot->silent2, key, "Silent");
+			SetupValue(g_Options.aimbot.silent, key, "Silent");
 
-			SetupValue(aimbot->fov, key, "Fov");
-			SetupValue(aimbot->silent_fov, key, "Silent Fov");
-			SetupValue(aimbot->smooth, key, "Smooth");
+			SetupValue(g_Options.aimbot.fov, key, "Fov");
+			SetupValue(g_Options.aimbot.silentfov, key, "Silent Fov");
+			SetupValue(g_Options.aimbot.smoof, key, "Smooth");
 
-			SetupValue(aimbot->hitboxes.head, key, "Head Hitbox");
-			SetupValue(aimbot->hitboxes.chest, key, "Chest Hitbox");
-			SetupValue(aimbot->hitboxes.pelvis, key, "Pelvis Hitbox");
-			SetupValue(aimbot->hitboxes.arms, key, "Arms Hitbox");
-			SetupValue(aimbot->hitboxes.hands, key, "Hands Hitbox");
-			SetupValue(aimbot->hitboxes.legs, key, "Legs Hitbox");
-			SetupValue(aimbot->hitboxes.feet, key, "Feet Hitbox");
+			SetupValue(g_Options.aimbot.head, key, "Head Hitbox");
+			SetupValue(g_Options.aimbot.chest, key, "Chest Hitbox");
+			SetupValue(g_Options.aimbot.pelvis, key, "Pelvis Hitbox");
+			SetupValue(g_Options.aimbot.arms, key, "Arms Hitbox");
+			SetupValue(g_Options.aimbot.hands, key, "Hands Hitbox");
+			SetupValue(g_Options.aimbot.legs, key, "Legs Hitbox");
+			SetupValue(g_Options.aimbot.feet, key, "Feet Hitbox");
 
-			SetupValue(aimbot->rcs.enabled, key, "RCS Enabled");
-			SetupValue(aimbot->rcs.type, key, "RCS Type");
-			SetupValue(aimbot->rcs.x, key, "RCS X");
-			SetupValue(aimbot->rcs.y, key, "RCS Y");
+			SetupValue(g_Options.aimbot.rcs, key, "RCS Enabled");
+			SetupValue(g_Options.aimbot.rcstype, key, "RCS Type");
+			SetupValue(g_Options.aimbot.x, key, "RCS X");
+			SetupValue(g_Options.aimbot.y, key, "RCS Y");
 
-			SetupValue(aimbot->autowall.enabled, key, "AutoWall Enabled");
-			SetupValue(aimbot->autowall.min_damage, key, "AutoWall MinDamage");
+			SetupValue(g_Options.aimbot.autowall, key, "AutoWall Enabled");
+			SetupValue(g_Options.aimbot.autowallmin, key, "AutoWall MinDamage");
 
-			SetupValue(aimbot->autofire.enabled, key, "AutoFire Enabled");
-			SetupValue(aimbot->autofire.hotkey, key, "AutoFire Hotkey");
-			SetupValue(aimbot->enablehc, key, "Hitchance Enable");
-			SetupValue(aimbot->hitchance, key, "Hitchance Value");
+			SetupValue(g_Options.aimbot.autofire, key, "AutoFire Enabled");
+			SetupValue(g_Options.aimbot.hc, key, "Hitchance Enable");
+			SetupValue(g_Options.aimbot.hitchance, key, "Hitchance");
 
 		}
 	}
@@ -271,6 +268,7 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
+	SetupValue(g_Options.ebmode, "Misc", "Edgebug Mode");
 	SetupValue(g_Options.blockbot, "Misc", "Blockbot");
 	SetupValue(g_Options.bbkey, "Misc", "BlockBot Key");
 	SetupValue(strapinfuh, "Misc", "Strap Info");
