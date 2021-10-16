@@ -72,6 +72,7 @@ namespace Utils {
      * @param name New name
      */
     void SetName(const char* name);
+    std::vector<int> GetObservervators(int playerId);
 
     void ViewRoll(const char* rollin);
 

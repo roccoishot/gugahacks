@@ -397,16 +397,6 @@ namespace Hooks {
 			GETITOUT->SetValue(1);
 		}
 
-		//Fat ass mf (Remove Visual Recoil)
-		if (g_Options.fatassmf == true) {
-			static auto fatshit = g_CVar->FindVar("weapon_recoil_view_punch_extra");
-			fatshit->SetValue("0");
-		}
-		if (g_Options.fatassmf == false) {
-			static auto fatshit = g_CVar->FindVar("weapon_recoil_view_punch_extra");
-			fatshit->SetValue("0.055");
-		}
-
 		//Fog
 		static auto fog_override = g_CVar->FindVar(crypt_str("fog_override")); //-V807
 		if (!g_Options.fogchanga)
@@ -450,6 +440,7 @@ namespace Hooks {
 
 		auto esp_drawlist = Render::Get().RenderScene();
 
+		Menu::Get().SpecList();
 		Menu::Get().HCDisplay();
 		Menu::Get().Render();
 
@@ -741,6 +732,26 @@ namespace Hooks {
 			//Fix Thirdperson Angles
 			if (Globals::m_cmd)
 				Misc::SetThirdpersonAngles(stage, Globals::m_cmd);
+
+			QAngle aim_punch_old;
+			QAngle view_punch_old;
+			QAngle* aim_punch = nullptr;
+			QAngle* view_punch = nullptr;
+
+			if (g_Options.fatassmf && stage == ClientFrameStage_t::FRAME_RENDER_START)
+			{
+				if (g_LocalPlayer && g_LocalPlayer->IsAlive())
+				{
+					aim_punch = &g_LocalPlayer->m_aimPunchAngle();
+					view_punch = &g_LocalPlayer->m_viewPunchAngle();
+
+					aim_punch_old = *aim_punch;
+					view_punch_old = *view_punch;
+
+					*aim_punch = QAngle(0, 0, 0);
+					*view_punch = QAngle(0, 0, 0);
+				}
+			}
 
 			//if (stage != ClientFrameStage_t::FRAME_RENDER_START && stage != ClientFrameStage_t::FRAME_RENDER_END)
 			//	return;

@@ -354,6 +354,49 @@ namespace Utils {
         nameConvar->SetValue(name);
     }
 
+    std::vector<int> GetObservervators(int playerId)
+    {
+        std::vector<int> SpectatorList;
+
+        C_BasePlayer* pPlayer = (C_BasePlayer*)g_EntityList->GetClientEntity(playerId);
+
+        if (!pPlayer)
+            return SpectatorList;
+
+        if (!pPlayer->IsAlive())
+        {
+            C_BasePlayer* pObserverTarget = (C_BasePlayer*)g_EntityList->GetClientEntityFromHandle(pPlayer->m_hObserverTarget());
+
+            if (!pObserverTarget)
+                return SpectatorList;
+
+            pPlayer = pObserverTarget;
+        }
+
+        for (int PlayerIndex = 0; PlayerIndex < 65; PlayerIndex++)
+        {
+            C_BasePlayer* pCheckPlayer = (C_BasePlayer*)g_EntityList->GetClientEntity(PlayerIndex);
+
+            if (!pCheckPlayer)
+                continue;
+
+            if (pCheckPlayer->IsDormant() || pCheckPlayer->IsAlive())
+                continue;
+
+            C_BasePlayer* pObserverTarget = (C_BasePlayer*)g_EntityList->GetClientEntityFromHandle(pCheckPlayer->m_hObserverTarget());
+
+            if (!pObserverTarget)
+                continue;
+
+            if (pPlayer != pObserverTarget)
+                continue;
+
+            SpectatorList.push_back(PlayerIndex);
+        }
+
+        return SpectatorList;
+    }
+
     bool IsDangerZone()
     {
         return g_GameTypes->GetCurrentGameType() == 6;

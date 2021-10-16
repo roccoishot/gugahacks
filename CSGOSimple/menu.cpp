@@ -17,6 +17,13 @@
 #include "render.hpp"
 #include "./features/item_definitions.h"
 #include "features/skins.h"
+#include "xor.h"
+#ifdef ENABLE_XOR
+#define XorStr _xor_ 
+#else
+#define XorStr
+#endif
+#pragma intrinsic(_ReturnAddress)  
 using namespace std;
 
 void ReadDirectory(const std::string& name, std::vector<std::string>& v)
@@ -141,23 +148,88 @@ bool Tab(const char* label, const ImVec2& size_arg, bool state)
 	return pressed;
 }
 
+void Menu::SpecList()
+{
+	if (!g_Options.speclist)
+		return;
+
+	ImGuiStyle* Style = &ImGui::GetStyle();
+	Style->WindowBorderSize = 0.5;
+	Style->FrameBorderSize = 0.5;
+	Style->ChildBorderSize = 0.5;
+	Style->WindowRounding = 0;
+	Style->ChildRounding = 0;
+	Style->FrameRounding = 0;
+	Style->ScrollbarSize = 6;
+	ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.500000f,0.500000f });
+	Style->ScrollbarRounding = 0;
+	Style->PopupRounding = 0;
+	Style->GrabRounding = 0;
+	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
+	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
+	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	ImGui::PushFont(g_SpectatorListFont);
+	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | NULL | NULL | NULL | NULL | NULL;
+
+	int specs = 0;
+	std::string spect = "";
+	int DrawIndex = 1;
+
+	for (int playerId : Utils::GetObservervators(g_LocalPlayer))
+	{
+		if (playerId == g_LocalPlayer)
+			continue;
+
+		C_BasePlayer* pPlayer = (C_BasePlayer*)g_EntityList->GetClientEntity(playerId);
+
+		if (!pPlayer)
+			continue;
+
+		player_info_t Pinfo;
+		g_EngineClient->GetPlayerInfo(playerId, &Pinfo);
+
+		if (Pinfo.fakeplayer)
+			continue;
+
+		spect += Pinfo.szName;
+		spect += "\n";
+		specs++;
+	}
+	bool misc_Spectators = true;
+
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 1.f, 1.f, 1.f));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+	if (ImGui::Begin("Spectator List", nullptr, flags))
+	{
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+
+		if (specs > 0) spect += u8"\n";     /*ЛАСТ*/
+		ImVec2 size = ImGui::CalcTextSize(spect.c_str());
+
+		ImGui::SetWindowSize(ImVec2(200, 45 + size.y));
+		ImGui::Separator("Spectator List");
+		if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive())
+			ImGui::Text(spect.c_str());
+			DrawIndex++;
+	}
+	ImGui::End();
+}
 
 void Menu::HCDisplay() {
 
 	if (!g_Options.strapinfuh)
-		return;
-
-	if (!g_EngineClient->IsInGame())
-		return;
-
-	if (!g_LocalPlayer)
-		return;
-
-	if (!g_LocalPlayer->IsAlive())
-		return;
-
-	auto weapon = g_LocalPlayer->m_hActiveWeapon();
-	if (!weapon || !weapon->IsGun())
 		return;
 
 	ImGuiStyle* Style = &ImGui::GetStyle();
@@ -193,24 +265,26 @@ void Menu::HCDisplay() {
 	ImGui::Begin("GUGAHACKS.SU STRAP INFUH", nullptr, flags);
 	ImGui::SetCursorPos({ 13.f,25.f });
 	ImGui::PushItemWidth(161.000000);
-	ImGui::Text("GUGAHACKS.SU STRAP INFUH");
+	ImGui::Separator("GUGAHACKS.SU STRAP INFUH");
 	ImGui::PopItemWidth();
 	ImGui::SetCursorPos({ 10.f,46.f });
 	ImGui::BeginChild("child0", { 261.f,110.f }, true);
 	ImGui::SetCursorPos({ 5.f,5.f });
 	ImGui::PushItemWidth(70.000000);
-	std::stringstream hc;
-	hc << "Innacuracy: " << (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread());
-	ImGui::Text(hc.str().c_str());
-	ImGui::PopItemWidth();
-	ImGui::PushItemWidth(70.000000);
-	ImGui::SetCursorPos({ 5.f,25.f });
-	ImGui::PushItemWidth(49.000000);
-	if (g_LocalPlayer->m_hActiveWeapon()->IsReloading()) {
-		ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.f), "Reloading...");
-	}
-	else {
-		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.f), "READY TO CUM!");
+	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive()) {
+		std::stringstream hc;
+		hc << "Innacuracy: " << (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread());
+		ImGui::Text(hc.str().c_str());
+		ImGui::PopItemWidth();
+		ImGui::PushItemWidth(70.000000);
+		ImGui::SetCursorPos({ 5.f,25.f });
+		ImGui::PushItemWidth(49.000000);
+		if (g_LocalPlayer->m_hActiveWeapon()->IsReloading()) {
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.f), "Reloading...");
+		}
+		else {
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.f), "READY TO CUM!");
+		}
 	}
 	ImGui::PopItemWidth();
 	ImGui::EndChild();
@@ -822,6 +896,7 @@ void Menu::Render()
 					ImGui::Checkbox("Blockbot", &g_Options.blockbot); ImGui::SameLine(group_w - 50); ImGui::Hotkey("                                                                                                                                                                                                                                                                                                                                      ", &g_Options.bbkey);
 					ImGui::Checkbox("Duck In Air", &g_Options.ducknair);
 					ImGui::Checkbox("EB Effects" ,&g_Options.ebdetection);
+					ImGui::Checkbox("Spectator List", &g_Options.speclist);
 					ImGui::Checkbox("Auto Accept", &g_Options.autoaccept);
 					ImGui::Separator("Test");
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);

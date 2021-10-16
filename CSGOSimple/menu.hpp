@@ -27,6 +27,7 @@ public:
 
     void Render();
     void  HCDisplay();
+    void  SpecList();
     void Toggle();
 
     bool IsVisible() const { return _visible; }

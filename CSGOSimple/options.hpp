@@ -116,6 +116,7 @@ public:
 		int y = 100;
 	} aimbot;
 
+	bool speclist = false;
 	bool noscope = false;
 	bool fovscope = false;
 	bool ebdetection = false;

@@ -127,7 +127,7 @@ void Render::BeginScene() {
 
 	int screenWidth, screenHeight;
 	g_EngineClient->GetScreenSize(screenWidth, screenHeight);
-	if (g_Options.noscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
+	if (g_Options.noscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_hActiveWeapon()->IsSniper() && g_LocalPlayer->m_bIsScoped()) {
 		Render::Get().RenderLine(screenWidth / 2, 0, screenWidth / 2, screenHeight, Color(0, 0, 0, 255), g_CVar->FindVar("cl_crosshair_sniper_width")->GetFloat());
 		Render::Get().RenderLine(0, screenHeight / 2, screenWidth, screenHeight / 2, Color(0, 0, 0, 255), g_CVar->FindVar("cl_crosshair_sniper_width")->GetFloat());
 	}
