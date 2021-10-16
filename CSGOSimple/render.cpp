@@ -57,7 +57,7 @@ void Render::GetFonts() {
 
 
 	// esp font
-	g_pDefaultFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(u8"C:\\Windows\\Fonts\\corbelb.ttf", 25.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+	g_pDefaultFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\corbelb.ttf", 12.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 	
 
 	// font for watermark; just example
@@ -96,23 +96,22 @@ void Render::BeginScene() {
 		}
 
 	if (g_Options.misc_watermark) {
-			std::string username = (" GUGAHACKER 8");
-			#define VERSION ("Made By Roccoishot, Sopmk, Levito, and You're Mother. |")
-			auto watermark = VERSION + username + (" | ");
-				watermark = VERSION + username + (" | ");
-				Render::Get().RenderText(watermark, 10, 5, 18.f, g_Options.menucolor, false, true, g_VeloFont);
+	#define VERSION ("| Made By Roccoishot, Sopmk, Levito, and You're Mother. |")
+		auto watermark = VERSION;
+		watermark = VERSION;
+		Render::Get().RenderText(watermark, 10, 5, 18.f, g_Options.menucolor, false, true, g_VeloFont);
 
-				if (g_EngineClient->IsInGame()) {
-					auto server = g_EngineClient->GetNetChannelInfo()->GetAddress();
-					if (!strcmp(server, ("loopback")))
-						server = ("Local server");
-					std::string username = (" GUGAHACKER 8");
-					#define VERSION ("Made By Roccoishot, Sopmk, Levito, and You're Mother. |")
-					auto watermark = VERSION + username + (" | ") + server + (" | ");
-					watermark = VERSION + username + (" | ") + server + (" | ");
-					Render::Get().RenderText(watermark, 10, 5, 18.f, g_Options.menucolor, false, true, g_VeloFont);
-				}
-			}
+		if (g_EngineClient->IsInGame()) {
+			auto server = g_EngineClient->GetNetChannelInfo()->GetAddress();
+			if (!strcmp(server, ("loopback")))
+				server = ("Local server");
+			std::string username = g_LocalPlayer->GetPlayerInfo().szName;
+#define VERSION ("| Made By Roccoishot, Sopmk, Levito, and You're Mother. | ")
+			auto watermark = VERSION + username + (" | ") + server + (" | ");
+			watermark = VERSION + username + (" | ") + server + (" | ");
+			Render::Get().RenderText(watermark, 10, 5, 18.f, g_Options.menucolor, false, true, g_VeloFont);
+		}
+	}
 
 	if (g_Options.enablebeta)
 		Render::Get().RenderText("USING TEST", 10, 35, 18.f, g_Options.menucolor, false, true, g_VeloFont);
@@ -128,6 +127,10 @@ void Render::BeginScene() {
 
 	int screenWidth, screenHeight;
 	g_EngineClient->GetScreenSize(screenWidth, screenHeight);
+	if (g_Options.noscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
+		Render::Get().RenderLine(screenWidth / 2, 0, screenWidth / 2, screenHeight, Color(0, 0, 0, 255), g_CVar->FindVar("cl_crosshair_sniper_width")->GetFloat());
+		Render::Get().RenderLine(0, screenHeight / 2, screenWidth, screenHeight / 2, Color(0, 0, 0, 255), g_CVar->FindVar("cl_crosshair_sniper_width")->GetFloat());
+	}
 
 	render_mutex.lock();
 	*draw_list_act = *draw_list;

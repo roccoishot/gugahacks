@@ -34,7 +34,6 @@ public:
 		bool Begin(C_BasePlayer * pl);
 		void RenderBox(C_BaseEntity* pl);
 		void RenderName(C_BaseEntity* pl);
-		void Skeleton(C_BaseEntity* pl);
 		void RenderWeaponName(C_BaseEntity* pl);
 		void RenderHealth(C_BaseEntity* pl);
 		void RenderArmour();
@@ -45,6 +44,7 @@ public:
 	void RenderPlantedC4(C_BaseEntity* ent);
 	void RenderItemEsp(C_BaseEntity* ent);
 	void ThirdPerson();
+	void ebdetection(float unpred_z, int unpred_flags);
 public:
 	void AddToDrawList();
 	void Render();

@@ -238,9 +238,39 @@ namespace Hooks {
 		}
 
 		//fov shiiit
-		static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
-		fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
-		fov_cs_debug->SetValue(g_Options.fovchangaaa);
+			if (!g_Options.fovscope && g_EngineClient->IsInGame() && !g_LocalPlayer->m_bIsScoped()) {
+				static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
+				fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
+				fov_cs_debug->SetValue(g_Options.fovchangaaa);
+			}
+			if (!g_Options.fovscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
+				static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
+				fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
+				fov_cs_debug->SetValue(0);
+			}
+				if (g_Options.fovscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
+				static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
+				fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
+				fov_cs_debug->SetValue(g_Options.fovchangaaa);
+				}
+
+		if (g_Options.noscope) {
+			if (g_EngineClient->IsInGame() && !g_LocalPlayer->m_bIsScoped()) {
+				static auto noscopa = g_CVar->FindVar("cl_drawhud");
+				noscopa->m_fnChangeCallbacks.m_Size = 0;
+				noscopa->SetValue(1);
+			}
+			if (g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
+				static auto noscopa = g_CVar->FindVar("cl_drawhud");
+				noscopa->m_fnChangeCallbacks.m_Size = 0;
+				noscopa->SetValue(0);
+			}
+		}
+		if (!g_Options.noscope) {
+			static auto noscopa = g_CVar->FindVar("cl_drawhud");
+			noscopa->m_fnChangeCallbacks.m_Size = 0;
+			noscopa->SetValue(1);
+		}
 
 		//Fake Ping Exploits
 		if (g_Options.fakepingkey == 0) {
@@ -584,8 +614,10 @@ namespace Hooks {
 
 		static auto prediction = new PredictionSystem();
 		auto flags = g_LocalPlayer->m_fFlags();
+		float eb = floor(g_LocalPlayer->m_vecVelocity().z);
 
 		prediction->StartPrediction(cmd);
+		Visuals::Get().ebdetection(eb, flags);
 		movement::edgebug(cmd);
 		g_Legitbot->Run(cmd);
 		prediction->EndPrediction();
@@ -613,6 +645,8 @@ namespace Hooks {
 		// https://github.com/spirthack/CSGOSimple/issues/69
 		if (g_Options.sniper_xhair && !g_LocalPlayer->m_bIsScoped())
 			g_CVar->FindVar("weapon_debug_spread_show")->SetValue(3);
+		if (g_Options.sniper_xhair && g_LocalPlayer->m_bIsScoped())
+			g_CVar->FindVar("weapon_debug_spread_show")->SetValue(0);
 		if (!g_Options.sniper_xhair)
 			g_CVar->FindVar("weapon_debug_spread_show")->SetValue(0);
 

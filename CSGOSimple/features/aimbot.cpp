@@ -254,7 +254,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 	{
 		if (g_Options.autoscope)
 		{
-			if (!g_LocalPlayer->m_bIsScoped() && !g_LocalPlayer->m_hActiveWeapon()->IsPistol() && g_LocalPlayer->m_hActiveWeapon()->IsSniper())
+			if (!g_LocalPlayer->m_bIsScoped() && g_LocalPlayer->m_hActiveWeapon()->IsSniper())
 			{
 				cmd->buttons |= IN_ZOOM;
 			}
@@ -293,7 +293,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 		}
 	}
 
-	if ((cmd->buttons & IN_ATTACK) /*&& !IsSilent()*/)
+	if (g_LocalPlayer->m_iShotsFired() >= 1)
 		RCS(angles, target);
 	last_punch = current_punch;
 
@@ -305,7 +305,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 	Math::FixAngles(angles);
 	cmd->viewangles = angles;
 
-	if (~IN_ATTACK)
+	if (!(g_LocalPlayer->m_iShotsFired() >= 1))
 		g_LocalPlayer->SetVAngles(current);
 
 	float oldForward;

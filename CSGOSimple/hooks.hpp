@@ -8,22 +8,22 @@
 
 namespace index
 {
-	constexpr auto EmitSound1               = 5;
-	constexpr auto EmitSound2               = 6;
-    constexpr auto EndScene                 = 42;
-    constexpr auto Reset                    = 16;
-    constexpr auto PaintTraverse            = 41;
-    constexpr auto CreateMove               = 24; // 22 dosent work anymore lol!
-	constexpr auto DrawModelExecute2        = 29;
-    constexpr auto PlaySound                = 82;
-    constexpr auto FrameStageNotify         = 37;
-    constexpr auto DrawModelExecute         = 21;
-    constexpr auto DoPostScreenSpaceEffects = 44;
-	constexpr auto SvCheatsGetBool          = 13;
-	constexpr auto OverrideView             = 18;
-	constexpr auto LockCursor               = 67;
-	constexpr auto RenderSmokeOverlay       = 41;
-	constexpr auto FireEvent                = 9;
+	constexpr auto EmitSound1 = 5;
+	constexpr auto EmitSound2 = 6;
+	constexpr auto EndScene = 42;
+	constexpr auto Reset = 16;
+	constexpr auto PaintTraverse = 41;
+	constexpr auto CreateMove = 24;
+	constexpr auto DrawModelExecute2 = 29;
+	constexpr auto PlaySound = 82;
+	constexpr auto FrameStageNotify = 37;
+	constexpr auto DrawModelExecute = 21;
+	constexpr auto DoPostScreenSpaceEffects = 44;
+	constexpr auto SvCheatsGetBool = 13;
+	constexpr auto OverrideView = 18;
+	constexpr auto LockCursor = 67;
+	constexpr auto RenderSmokeOverlay = 41;
+	constexpr auto FireEvent = 9;
 
 }
 

@@ -74,24 +74,24 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 		static QAngle LastRealAngle = QAngle(0, 0, 0);
 
 			if (GetKeyState(g_Options.invertaakey)) {
-				if (!bSendPacket && !(cmd->buttons & IN_ATTACK))
+				if (!bSendPacket && !(g_LocalPlayer->m_iShotsFired() >= 1))
 				{
 					static bool bFlip = true;
 					cmd->viewangles.yaw += 58.f;
 				}
-				if (bSendPacket && !(cmd->buttons & IN_ATTACK))
+				if (bSendPacket && !(g_LocalPlayer->m_iShotsFired() >= 1))
 				{
 					static bool bFlip = true;
 					cmd->viewangles.yaw += -58.f;
 				}
 			}
 			if (!GetKeyState(g_Options.invertaakey)) {
-				if (!bSendPacket && !(cmd->buttons & IN_ATTACK))
+				if (!bSendPacket && !(g_LocalPlayer->m_iShotsFired() >= 1))
 				{
 					static bool bFlip = false;
 					cmd->viewangles.yaw += 58.f;
 				}
-				if (bSendPacket && !(cmd->buttons & IN_ATTACK))
+				if (bSendPacket && !(g_LocalPlayer->m_iShotsFired() >= 1))
 				{
 					static bool bFlip = false;
 					cmd->viewangles.yaw += -58.f;

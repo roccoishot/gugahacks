@@ -141,6 +141,7 @@ bool Tab(const char* label, const ImVec2& size_arg, bool state)
 	return pressed;
 }
 
+
 void Menu::HCDisplay() {
 
 	if (!g_Options.strapinfuh)
@@ -155,7 +156,8 @@ void Menu::HCDisplay() {
 	if (!g_LocalPlayer->IsAlive())
 		return;
 
-	if (!(g_LocalPlayer->m_hActiveWeapon()))
+	auto weapon = g_LocalPlayer->m_hActiveWeapon();
+	if (!weapon || !weapon->IsGun())
 		return;
 
 	ImGuiStyle* Style = &ImGui::GetStyle();
@@ -180,10 +182,10 @@ void Menu::HCDisplay() {
 	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
 	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
 	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
 	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
 	ImGui::PushFont(g_SpectatorListFont);
 	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | NULL | NULL | NULL | NULL | NULL;
 
@@ -254,10 +256,10 @@ void Menu::Render()
 	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
 	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
 	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
 	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
 	ImGui::PushFont(g_SpectatorListFont);
 
 	ImGui::SetNextWindowPos(ImVec2{ 0, 0 }, ImGuiSetCond_Once);
@@ -526,12 +528,6 @@ void Menu::Render()
 					if (g_Options.chams_arms_ignorez) {
 						ImGui::Text("Arms XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Arms XQZ", &g_Options.color_chams_arms_occluded);
 					}
-					if (g_Options.chams_sleeve_enabled) {
-						ImGui::Text("Sleeve Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Sleeves", &g_Options.color_chams_sleeve_visible);
-					}
-					if (g_Options.chams_sleeve_ignorez) {
-						ImGui::Text("Sleeve Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Sleeves XQZ", &g_Options.color_chams_sleeve_occluded);
-					}
 					if (g_Options.chams_strap_enabled && g_Options.strap_material == 3) {
 						ImGui::Text("Double Strap"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Strap", &g_Options.glowcolorstrap);
 					}
@@ -583,11 +579,6 @@ void Menu::Render()
 							ImGui::Checkbox("Arms XQZ", &g_Options.chams_arms_ignorez);
 						}
 
-						ImGui::Checkbox("Sleeve Chams", &g_Options.chams_sleeve_enabled);
-						if (g_Options.chams_sleeve_enabled) {
-							ImGui::Checkbox("Sleeve XQZ", &g_Options.chams_arms_ignorez);
-						}
-
 						ImGui::Checkbox("Strap Chams", &g_Options.chams_strap_enabled);
 						if (g_Options.chams_arms_enabled) {
 							ImGui::Checkbox("Strap XQZ", &g_Options.chams_strap_ignorez);
@@ -635,6 +626,7 @@ void Menu::Render()
 					ImGui::Spacing();
 					ImGui::Separator("Others");
 					ImGui::Spacing();
+					ImGui::Checkbox("Fov In Scope", &g_Options.fovscope);
 					ImGui::Checkbox("Draw FOV", &g_Options.drawfov);
 					ImGui::Checkbox("Sniper crosshair", &g_Options.sniper_xhair);
 					ImGui::Checkbox("No flash", &g_Options.no_flash);
@@ -667,6 +659,7 @@ void Menu::Render()
 						ImGui::Selectable("Recoil", &g_Options.fatassmf, ImGuiSelectableFlags_DontClosePopups);
 						ImGui::Selectable("Processing", &g_Options.disablepro, ImGuiSelectableFlags_DontClosePopups);
 						ImGui::Selectable("Blur", &g_Options.removeblur, ImGuiSelectableFlags_DontClosePopups);
+						ImGui::Selectable("Scope", &g_Options.noscope, ImGuiSelectableFlags_DontClosePopups);
 
 						ImGui::EndCombo();
 					}
@@ -730,7 +723,7 @@ void Menu::Render()
 			else if (tab == 3)
 			{
 				ImGui::SetCursorPos({ 31 + 188,65 });
-				ImGui::BeginChild("##3", { 166,430});
+				ImGui::BeginChild("##3", { 166,420});
 				{
 					ImGui::Separator("General");
 
@@ -807,14 +800,14 @@ void Menu::Render()
 				ImGui::EndChild();
 
 				ImGui::SetCursorPos({ 417, 65 });
-				ImGui::BeginChild("##2", { 166, 315 });
+				ImGui::BeginChild("##2", { 166, 460 });
 				{
 					ImGui::Separator("Movement");
 					float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
 
 					const char* EbModes[] = {
 "OG",
-	"Experimental"
+"Experimental"
 					};
 
 					//NOT COOL!!!
@@ -828,6 +821,7 @@ void Menu::Render()
 					ImGui::Checkbox("Edge jump", &g_Options.edgejump.enabled); ImGui::SameLine(group_w - 50); ImGui::Hotkey("    ", &g_Options.edgejump.hotkey);
 					ImGui::Checkbox("Blockbot", &g_Options.blockbot); ImGui::SameLine(group_w - 50); ImGui::Hotkey("                                                                                                                                                                                                                                                                                                                                      ", &g_Options.bbkey);
 					ImGui::Checkbox("Duck In Air", &g_Options.ducknair);
+					ImGui::Checkbox("EB Effects" ,&g_Options.ebdetection);
 					ImGui::Checkbox("Auto Accept", &g_Options.autoaccept);
 					ImGui::Separator("Test");
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);

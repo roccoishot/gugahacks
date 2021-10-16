@@ -116,6 +116,9 @@ public:
 		int y = 100;
 	} aimbot;
 
+	bool noscope = false;
+	bool fovscope = false;
+	bool ebdetection = false;
 	int ebmode = 0;
 	bool blockbot = false;
 	int bbkey = 0;
@@ -162,9 +165,6 @@ public:
 		bool chams_player_ignorez = false;
 		bool chams_arms_enabled = false;
 		bool chams_arms_ignorez = false;
-
-		bool chams_sleeve_enabled = false;
-		bool chams_sleeve_ignorez = false;
 
 		bool chams_strap_enabled = false;
 		bool chams_strap_ignorez = false;
@@ -286,8 +286,6 @@ public:
 		Color color_chams_strap_occluded = { 255, 255, 255, 100 };	
 		Color color_chams_arms_visible= { 152,255,0,255 };
 		Color color_chams_arms_occluded= { 52,255,0,110 };
-		Color color_chams_sleeve_visible = { 255, 255, 255 };
-		Color color_chams_sleeve_occluded = { 255, 255, 255 };
 		Color player_enemy_visible_shine = { 255, 255, 255 };
 		Color glowcolor = { 255, 255, 255 };
 		Color glowcolorenemy = { 255, 255, 255 };

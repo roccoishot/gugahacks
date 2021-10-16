@@ -551,14 +551,20 @@ void ImGui::Separator(const char* label)
 	const auto size = ImGui::CalcTextSize(label);
 	auto draw_list = ImGui::GetWindowDrawList();
 	const auto width = ImGui::GetContentRegionAvailWidth();
-	;
+	
 	const auto cursor = ImGui::GetCursorScreenPos();
 	const auto pos = ImVec2(cursor.x + width / 2 - size.x / 2, cursor.y);
-	const auto col = ImGui::GetColorU32(ImGui::GetStyleColorVec4(ImGuiCol_Text));
-	draw_list->AddText(pos, col, label);
 
-	draw_list->AddLine(ImVec2(cursor.x, cursor.y + size.y / 2), ImVec2(pos.x - 5.f, cursor.y + size.y / 2), col);
-	draw_list->AddLine(ImVec2(pos.x + size.x + 5.f, cursor.y + size.y / 2), ImVec2(cursor.x + width, cursor.y + size.y / 2), col);
+	const auto start_col = ImGui::GetStyleColorVec4(ImGuiCol_Separator);
+	const auto col = ImGui::GetColorU32(start_col);
+	const auto col2 = ImGui::GetColorU32(ImVec4(start_col.x, start_col.y, start_col.z, 0));
+	
+	draw_list->AddText(pos, ImGui::GetColorU32(ImGui::GetStyleColorVec4(ImGuiCol_Text)), label);
+
+	// SEXY LOOKING RECT draw_list->AddRectFilledMultiColor(ImVec2(cursor.x, cursor.y + size.y / 2), ImVec2(pos.x - 5.f, (cursor.y + size.y / 2) + 2), col2, col, co2l, col);
+	
+	draw_list->AddRectFilledMultiColor(ImVec2(cursor.x, cursor.y + size.y / 2), ImVec2(pos.x - 5.f, (cursor.y + size.y / 2) + 2), col2, col, col, col2);
+	draw_list->AddRectFilledMultiColor(ImVec2(pos.x + size.x + 5.f, cursor.y + size.y / 2), ImVec2(cursor.x + width, (cursor.y + size.y / 2) + 2), col, col2, col2, col);
 
 	ImGui::NewLine();
 }

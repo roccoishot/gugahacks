@@ -136,7 +136,7 @@ void Options::SetupWeapons()
 	{
 		if (val != WEAPON_KNIFE && val != WEAPON_KNIFE_T && val != GLOVE_T_SIDE)
 		{
-			SetupValue(g_Options.aimbot.silent, key, "Aimbot");
+			SetupValue(g_Options.aimbot.enabled, key, "Aimbot");
 			//SetupValue(aimbot->deathmatch, key, "Deathmatch");
 			//SetupValue(aimbot->silent, key, "pSilent");
 			SetupValue(g_Options.aimbot.silent, key, "Silent");
@@ -185,6 +185,8 @@ void Options::SetupWeapons()
 
 void Options::SetupVisuals()
 {
+	SetupValue(noscope, "Visuals", "Remove Scope");
+	SetupValue(fovscope, "Visuals", "FOV In Scope");
 	SetupValue(flashkillcheck, "Visuals", "Flash Kill Check");
 	SetupValue(teamesp, "Visuals", "Team ESP");
 	SetupValue(teamchams, "Visuals", "Team Chams");
@@ -219,10 +221,6 @@ void Options::SetupVisuals()
 	SetupValue(chams_arms_ignorez, "Visuals", "Arms XYZ");
 	SetupColor(color_chams_arms_visible, "Arms Visible");
 	SetupColor(color_chams_arms_occluded, "Arms Occluded");
-	SetupValue(chams_sleeve_enabled, "Visuals", "Sleeves Enabled");
-	SetupValue(chams_sleeve_ignorez, "Visuals", "Sleeves XYZ");
-	SetupColor(color_chams_sleeve_visible, "Sleeves Visible");
-	SetupColor(color_chams_sleeve_occluded, "Sleeves Occluded");
 	SetupColor(color_name_player, "Name Color");
 	SetupColor(color_armour_player, "Armour Color");
 	SetupColor(color_esp_weapons, "Weapons Color");
@@ -319,6 +317,7 @@ void Options::SetupMisc()
 	SetupValue(misc_backtrack, "Misc", "Backtrack");
 	SetupValue(fakeping, "Misc", "Fake Ping");
 	SetupValue(fakepingzzz, "Misc", "Fake Ping Tix");
+	SetupValue(g_Options.ebdetection, "Misc", "Edge bug detect");
 	SetupValue(backtix, "Misc", "Backtrack Ticks");
 }
 

@@ -149,9 +149,9 @@ void Visuals::Player::RenderName(C_BaseEntity* pl)
 
 	//	Render::Get().RenderText(info.szName, ctx.feet_pos.x - sz.x / 2, ctx.head_pos.y - sz.y, 12.f, Color::White);
 	if (ctx.pl->m_iHealth() == 1 && g_Options.flashkillcheck)
-		Render::Get().RenderText(info.szName, ctx.bbox.left + (ctx.bbox.right - ctx.bbox.left - sz.x) / 2, (ctx.bbox.top - sz.y - 1), 0.f, Color(255, 0, 0), flPlayerAlpha[pl->EntIndex()]), false;
+		Render::Get().RenderText(info.szName, ctx.bbox.left + (ctx.bbox.right - ctx.bbox.left - sz.x) / 2, (ctx.bbox.top - sz.y - 1), 0.f, Color(255, 0, 0), false, false, g_pDefaultFont);
 	else
-	Render::Get().RenderText(info.szName, ctx.bbox.left + (ctx.bbox.right - ctx.bbox.left - sz.x) / 2, (ctx.bbox.top - sz.y - 1), 0.f, Color(g_Options.color_name_player), flPlayerAlpha[pl->EntIndex()]), false;
+	Render::Get().RenderText(info.szName, ctx.bbox.left + (ctx.bbox.right - ctx.bbox.left - sz.x) / 2, (ctx.bbox.top - sz.y - 1), 0.f, Color(g_Options.color_name_player), false, true, g_pDefaultFont);
 }
 
 //--------------------------------------------------------------------------------
@@ -514,3 +514,45 @@ void Visuals::AddToDrawList() {
 	}
 	speed();
 }
+
+bool edgebugged = false;
+int edgebugs = 0;
+
+class CHudChat
+{
+public:
+	void ChatPrintf(int iPlayerIndex, int iFilter, const char* fmt, ...)
+	{
+		CallVFunction<void(__cdecl*)(void*, int, int, const char*, ...)>(this, 27)(this, iPlayerIndex, iFilter, fmt);
+	}
+};
+
+void Visuals::ebdetection(float unpred_z, int unpred_flags) {
+	float zfarter = floor(g_LocalPlayer->m_vecVelocity().z);
+
+	if (unpred_z >= -7 || !g_LocalPlayer || zfarter != -7 || unpred_flags & FL_ONGROUND || g_LocalPlayer->m_nMoveType() == MOVETYPE_NOCLIP)
+		edgebugged = false;
+	else
+	{
+		edgebugged = true;
+		edgebugs++;
+
+		if (!g_EngineClient->IsInGame()) edgebugs = 0;
+
+		auto g_ChatElement = FindHudElement<CHudChat>("CHudChat");
+
+		if (g_Options.ebdetection) {
+			g_ChatElement->ChatPrintf(0, 0, (std::string(
+				" \x04"
+				"GUGAHACKS.SU"
+				" \x01"
+				"| edgebugged [")
+				+ std::to_string(edgebugs)
+				+ std::string("]")).c_str());
+			g_LocalPlayer->m_flHealthShotBoost() = g_GlobalVars->curtime + 0.5f;
+			g_EngineClient->ExecuteClientCmd("playvol buttons/arena_switch_press_02 0.6");
+		}
+
+	}
+}
+
