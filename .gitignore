@@ -149,3 +149,7 @@ build/Gugahacks/Release/Colormodulation.obj
 *.txt
 *.pdb
 build/Gugahacks/Release/Gugahacks.tlog/unsuccessfulbuild
+*.json
+.vs/Gugahacks/v17/.suo
+*.bin
+*.db
