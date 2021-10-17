@@ -267,7 +267,6 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
-	SetupValue(g_Options.speclist, "Visuals", "Spectator List");
 	SetupValue(g_Options.ebmode, "Misc", "Edgebug Mode");
 	SetupValue(g_Options.blockbot, "Misc", "Blockbot");
 	SetupValue(g_Options.bbkey, "Misc", "BlockBot Key");

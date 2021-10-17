@@ -704,7 +704,6 @@ void Menu::Render()
 					if (g_Options.clantag) {
 						ImGui::Combo("Type", &g_Options.clantagtype, ClantagTypes, IM_ARRAYSIZE(ClantagTypes));
 					}
-					ImGui::Checkbox("Spectator List", &g_Options.speclist);
 					ImGui::Checkbox("Auto Accept", &g_Options.autoaccept);
 					if (ImGui::Button("Change Name")) {
 						//NameChange
