@@ -185,6 +185,7 @@ void Options::SetupWeapons()
 
 void Options::SetupVisuals()
 {
+	SetupValue(faresp, "Visuals", "Far ESP");
 	SetupValue(noscope, "Visuals", "Remove Scope");
 	SetupValue(fovscope, "Visuals", "FOV In Scope");
 	SetupValue(flashkillcheck, "Visuals", "Flash Kill Check");
@@ -266,11 +267,10 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
-	SetupValue(g_Options.speclist, "Misc", "Spectator List");
+	SetupValue(g_Options.speclist, "Visuals", "Spectator List");
 	SetupValue(g_Options.ebmode, "Misc", "Edgebug Mode");
 	SetupValue(g_Options.blockbot, "Misc", "Blockbot");
 	SetupValue(g_Options.bbkey, "Misc", "BlockBot Key");
-	SetupValue(strapinfuh, "Misc", "Strap Info");
 	SetupValue(autoscope, "Aimbot", "Auto Scope");
 	SetupValue(slidewalk, "Test", "Fast Shiftwalk");
 	SetupValue(misc_chatspam, "Misc", "Chat Spam");
@@ -318,7 +318,7 @@ void Options::SetupMisc()
 	SetupValue(misc_backtrack, "Misc", "Backtrack");
 	SetupValue(fakeping, "Misc", "Fake Ping");
 	SetupValue(fakepingzzz, "Misc", "Fake Ping Tix");
-	SetupValue(g_Options.ebdetection, "Misc", "Edge bug detect");
+	SetupValue(g_Options.ebdetection, "Visuals", "EB Effects");
 	SetupValue(backtix, "Misc", "Backtrack Ticks");
 }
 

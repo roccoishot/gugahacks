@@ -298,19 +298,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 					}
 					fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 
-					constexpr int MAX_PATCHES = 5;
-
-					if (!g_Options.chams_player_enabled && !g_Options.chams_player_ignorez)
-					{
-						{
-							for (size_t k = 0; k < MAX_PATCHES; k++)
-							{
-								NULL;
-							}
-						}
-						return;
-					}
-					else
+					if (g_Options.chams_player_enabled && g_Options.chams_player_ignorez)
 					{
 						static IMaterial* player_enemies_type = nullptr;
 						if (g_Options.player_material == 0)
@@ -398,10 +386,6 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 								}
 
 							}
-						}
-						else
-						{
-							return;
 						}
 					}
 				}
@@ -507,12 +491,8 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 	if (is_weapon) {
 
-		if (is_arm) {
+		if (is_arm || is_sleeve)
 			return;
-		}
-		if (is_sleeve) {
-			return;
-		}
 
 		fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 		if (g_Options.strap_material == 2) {

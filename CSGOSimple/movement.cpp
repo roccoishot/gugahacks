@@ -1,6 +1,7 @@
 #include "movement.h"
 #include "OldPrediction.h"
 #include "menu.hpp"
+#include "features/bhop.hpp"
 
 class CHudChat
 {
@@ -14,7 +15,6 @@ public:
 void movement::edgebug(CUserCmd* cmd) {
     int backupflags = g_LocalPlayer->m_fFlags();
 
-    if (g_Options.edge_bug && GetAsyncKeyState(g_Options.edge_bug_key)) {
         if (g_Options.edge_bug && GetAsyncKeyState(g_Options.edge_bug_key))
         {
             g_CVar->FindVar("sv_min_jump_landing_sound")->SetValue("63464578");
@@ -60,8 +60,6 @@ void movement::edgebug(CUserCmd* cmd) {
             }
             //Stompthem Kay Very AngY!
         }
-    }
-
     if (g_Options.edge_bug && GetAsyncKeyState(g_Options.edge_bug_key)) {
         if (g_Options.ebmode == 0) {
             if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
@@ -71,14 +69,13 @@ void movement::edgebug(CUserCmd* cmd) {
 
     if (g_Options.edge_bug && GetAsyncKeyState(g_Options.edge_bug_key)) {
         if (g_Options.ebmode == 1) {
-            auto local = g_LocalPlayer;
-            float max_radias = DirectX::XM_PI * 2;
+            float max_radias = 128;
             float step = max_radias / 128;
-            float xThick = 32;
+            float xThick = 23;
             bool did_jump;
             bool edgebugz;
             bool unduck;
-            Vector pos = local->m_vecOrigin();
+            Vector pos = g_LocalPlayer->m_vecOrigin();
 
             for (float a = 0.f; a < max_radias; a += step)
             {
@@ -88,7 +85,7 @@ void movement::edgebug(CUserCmd* cmd) {
                 pt.z = pos.z;
 
                 Vector pt2 = pt;
-                pt2.z -= 4;
+                pt2.z -= 8;
 
                 trace_t edgebug;
                 trace_t fag;
@@ -97,13 +94,15 @@ void movement::edgebug(CUserCmd* cmd) {
                 ray.Init(pt, pt2);
 
                 CTraceFilter flt;
-                flt.pSkip = local;
+                flt.pSkip = g_LocalPlayer;
                 g_EngineTrace->TraceRay(ray, MASK_SOLID_BRUSHONLY, &flt, &fag);
 
                 if (ray.m_IsRay != 1.f && edgebug.fraction != 0.f)
                 {
+                    //Autostrafe that so that we be quick
+                    BunnyHop::EBStrafe(cmd);
                     did_jump = true;
-                    cmd->buttons |= in_duck; // duck
+                    cmd->buttons |= IN_DUCK;
                     unduck = true;
                     edgebugz = true;
                 }

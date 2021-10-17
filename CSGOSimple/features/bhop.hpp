@@ -7,5 +7,6 @@ namespace BunnyHop
 {
     void OnCreateMove(CUserCmd* cmd);
     void AutoStafe(CUserCmd* cmd);
+    void EBStrafe(CUserCmd* cmd);
 
 }

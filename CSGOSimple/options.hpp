@@ -116,6 +116,7 @@ public:
 		int y = 100;
 	} aimbot;
 
+	bool faresp = false;
 	bool speclist = false;
 	bool noscope = false;
 	bool fovscope = false;
@@ -173,7 +174,6 @@ public:
 		//
 		// MISC
 		//
-		bool strapinfuh = false;
 		int invertaakey = 0;
 		float propalpha = 1;
 		bool ducknair = false;

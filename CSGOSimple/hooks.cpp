@@ -251,8 +251,13 @@ namespace Hooks {
 				if (g_Options.fovscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
 				static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
 				fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
-				fov_cs_debug->SetValue(g_Options.fovchangaaa);
+				if (g_Options.fovchangaaa == 0) {
+					fov_cs_debug->SetValue("90");
 				}
+				else {
+					fov_cs_debug->SetValue(g_Options.fovchangaaa);
+				}
+			}
 
 		if (g_Options.noscope) {
 			if (g_EngineClient->IsInGame() && !g_LocalPlayer->m_bIsScoped()) {
@@ -397,6 +402,10 @@ namespace Hooks {
 			GETITOUT->SetValue(1);
 		}
 
+		//Far Esp
+		static auto faresp = g_CVar->FindVar("r_drawallrenderables");
+		faresp->SetValue(g_Options.faresp);
+
 		//Fog
 		static auto fog_override = g_CVar->FindVar(crypt_str("fog_override")); //-V807
 		if (!g_Options.fogchanga)
@@ -441,7 +450,6 @@ namespace Hooks {
 		auto esp_drawlist = Render::Get().RenderScene();
 
 		Menu::Get().SpecList();
-		Menu::Get().HCDisplay();
 		Menu::Get().Render();
 
 

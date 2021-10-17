@@ -26,7 +26,6 @@ public:
     void OnDeviceReset();
 
     void Render();
-    void  HCDisplay();
     void  SpecList();
     void Toggle();
 

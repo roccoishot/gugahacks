@@ -150,6 +150,16 @@ bool Tab(const char* label, const ImVec2& size_arg, bool state)
 
 void Menu::SpecList()
 {
+
+	if (!g_EngineClient->IsInGame())
+		return;
+
+	if (!g_LocalPlayer)
+		return;
+
+	if (!(g_LocalPlayer->IsAlive()))
+		return;
+
 	if (!g_Options.speclist)
 		return;
 
@@ -220,74 +230,9 @@ void Menu::SpecList()
 
 		ImGui::SetWindowSize(ImVec2(200, 45 + size.y));
 		ImGui::Separator("Spectator List");
-		if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive())
 			ImGui::Text(spect.c_str());
 			DrawIndex++;
 	}
-	ImGui::End();
-}
-
-void Menu::HCDisplay() {
-
-	if (!g_Options.strapinfuh)
-		return;
-
-	ImGuiStyle* Style = &ImGui::GetStyle();
-	Style->WindowBorderSize = 0.5;
-	Style->FrameBorderSize = 0.5;
-	Style->ChildBorderSize = 0.5;
-	Style->WindowRounding = 0;
-	Style->ChildRounding = 0;
-	Style->FrameRounding = 0;
-	Style->ScrollbarSize = 6;
-	ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.500000f,0.500000f });
-	Style->ScrollbarRounding = 0;
-	Style->PopupRounding = 0;
-	Style->GrabRounding = 0;
-	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
-	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22);
-	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
-	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
-	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	ImGui::PushFont(g_SpectatorListFont);
-	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | NULL | NULL | NULL | NULL | NULL;
-
-	ImGui::SetNextWindowSize({ 280.f,165.f });
-	ImGui::Begin("GUGAHACKS.SU STRAP INFUH", nullptr, flags);
-	ImGui::SetCursorPos({ 13.f,25.f });
-	ImGui::PushItemWidth(161.000000);
-	ImGui::Separator("GUGAHACKS.SU STRAP INFUH");
-	ImGui::PopItemWidth();
-	ImGui::SetCursorPos({ 10.f,46.f });
-	ImGui::BeginChild("child0", { 261.f,110.f }, true);
-	ImGui::SetCursorPos({ 5.f,5.f });
-	ImGui::PushItemWidth(70.000000);
-	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive()) {
-		std::stringstream hc;
-		hc << "Innacuracy: " << (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread());
-		ImGui::Text(hc.str().c_str());
-		ImGui::PopItemWidth();
-		ImGui::PushItemWidth(70.000000);
-		ImGui::SetCursorPos({ 5.f,25.f });
-		ImGui::PushItemWidth(49.000000);
-		if (g_LocalPlayer->m_hActiveWeapon()->IsReloading()) {
-			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.f), "Reloading...");
-		}
-		else {
-			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.f), "READY TO CUM!");
-		}
-	}
-	ImGui::PopItemWidth();
-	ImGui::EndChild();
 	ImGui::End();
 }
 
@@ -465,7 +410,7 @@ void Menu::Render()
 				if (g_Options.aimbot.silent) {
 					ImGui::Text("  Silent fov");
 					ImGui::Spacing();
-					ImGui::SliderFloat("##Silentfov", &g_Options.aimbot.silentfov, 0.f, 360.f, "%.f");
+					ImGui::SliderFloat("##Silentfov", &g_Options.aimbot.silentfov, 0.f, 180.f, "%.f");
 					ImGui::Spacing();
 				}
 				ImGui::Checkbox("Autoscope", &g_Options.autoscope);
@@ -510,6 +455,7 @@ void Menu::Render()
 					ImGui::Separator("ESP");
 					float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
 
+					ImGui::Checkbox("Far ESP", &g_Options.faresp);
 					ImGui::Checkbox("Team ESP", &g_Options.teamesp);
 					ImGui::Checkbox("Boxes", &g_Options.esp_player_boxes);
 					ImGui::Checkbox("Occluded ", &g_Options.esp_player_boxesOccluded);
@@ -654,7 +600,7 @@ void Menu::Render()
 						}
 
 						ImGui::Checkbox("Strap Chams", &g_Options.chams_strap_enabled);
-						if (g_Options.chams_arms_enabled) {
+						if (g_Options.chams_strap_enabled) {
 							ImGui::Checkbox("Strap XQZ", &g_Options.chams_strap_ignorez);
 						}
 					}
@@ -684,8 +630,8 @@ void Menu::Render()
 "Shine",
 "Animated",
 "Glow",
-"Double",
-"AdvancedAim"
+"Double"
+//"AdvancedAim"
 					};
 
 					ImGui::Combo("Player Mat", &g_Options.player_material, MatList, IM_ARRAYSIZE(MatList));
@@ -700,6 +646,7 @@ void Menu::Render()
 					ImGui::Spacing();
 					ImGui::Separator("Others");
 					ImGui::Spacing();
+					ImGui::Checkbox("EB Effects", &g_Options.ebdetection);
 					ImGui::Checkbox("Fov In Scope", &g_Options.fovscope);
 					ImGui::Checkbox("Draw FOV", &g_Options.drawfov);
 					ImGui::Checkbox("Sniper crosshair", &g_Options.sniper_xhair);
@@ -778,7 +725,7 @@ void Menu::Render()
 					ImGui::Spacing();
 					ImGui::SliderFloat("B Glow", &g_Options.worldglowb, 0, 1);
 					ImGui::Separator("Fog");
-					ImGui::Checkbox("Fog modulation", &g_Options.fogchanga);
+					ImGui::Checkbox("Fog Override", &g_Options.fogchanga);
 					ImGui::Spacing();
 					ImGui::SliderInt("Distance", &g_Options.fogfardamn, 0, 2500);
 					ImGui::Spacing();
@@ -845,6 +792,8 @@ void Menu::Render()
 					if (g_Options.clantag) {
 						ImGui::Combo("Type", &g_Options.clantagtype, ClantagTypes, IM_ARRAYSIZE(ClantagTypes));
 					}
+					ImGui::Checkbox("Spectator List", &g_Options.speclist);
+					ImGui::Checkbox("Auto Accept", &g_Options.autoaccept);
 					if (ImGui::Button("Change Name")) {
 						//NameChange
 						void NameChange(); {
@@ -895,14 +844,10 @@ void Menu::Render()
 					ImGui::Checkbox("Edge jump", &g_Options.edgejump.enabled); ImGui::SameLine(group_w - 50); ImGui::Hotkey("    ", &g_Options.edgejump.hotkey);
 					ImGui::Checkbox("Blockbot", &g_Options.blockbot); ImGui::SameLine(group_w - 50); ImGui::Hotkey("                                                                                                                                                                                                                                                                                                                                      ", &g_Options.bbkey);
 					ImGui::Checkbox("Duck In Air", &g_Options.ducknair);
-					ImGui::Checkbox("EB Effects" ,&g_Options.ebdetection);
-					ImGui::Checkbox("Spectator List", &g_Options.speclist);
-					ImGui::Checkbox("Auto Accept", &g_Options.autoaccept);
 					ImGui::Separator("Test");
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
 					if (g_Options.enablebeta) {
 						ImGui::Checkbox("Fast Shiftwalk Charge", &g_Options.slidewalk);
-						ImGui::Checkbox("Strap Info", &g_Options.strapinfuh);
 					}
 					ImGui::EndChild();
 				}
