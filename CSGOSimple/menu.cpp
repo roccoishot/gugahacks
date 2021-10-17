@@ -173,7 +173,6 @@ void Menu::Render()
 	Style->ChildRounding = 0;
 	Style->FrameRounding = 0;
 	Style->ScrollbarSize = 6;
-	ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.500000f,0.500000f });
 	Style->ScrollbarRounding = 0;
 	Style->PopupRounding = 0;
 	Style->GrabRounding = 0;
@@ -1167,24 +1166,4 @@ void Menu::Render()
 		ImGui::PushStyleColor(ImGuiCol_ResizeGripActive, ImVec4(0.780000f, 0.820000f, 1.000000f, 0.900000f));
 		ImGui::PushStyleColor(ImGuiCol_TextSelectedBg, ImVec4(0.000000f, 0.000000f, 1.000000f, 0.350000f));
 		ImGui::PushStyleColor(ImGuiCol_DragDropTarget, ImVec4(1.000000f, 1.000000f, 0.000000f, 0.900000f));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.000000f,6.000000f });
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.000000f,3.000000f });
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 8.000000f,4.000000f });
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, { 4.000000f,4.000000f });
-		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 21.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 1.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, 1.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_PopupBorderSize, 0.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 0.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarRounding, 0.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_GrabRounding, 0.000000f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, { 0.000000f,0.500000f });
-		ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.500000f,0.500000f });
-		ImGui::PushStyleVar(ImGuiStyleVar_SelectableTextAlign, { 0.500000f,0.500000f });
 	}

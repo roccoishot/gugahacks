@@ -53,7 +53,7 @@ void Render::GetFonts() {
 		0,
 	};
 	ImGuiIO& io = ImGui::GetIO();
-	g_SpectatorListFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\corbelb.ttf", 12.0f, &font_config, ranges);
+	g_SpectatorListFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\corbelb.ttf", 12.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 
 	// esp font
 	g_pDefaultFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\corbelb.ttf", 12.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
