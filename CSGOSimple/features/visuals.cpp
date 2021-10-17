@@ -437,6 +437,7 @@ void speed()
 		//	if (intspeed >= 280)
 			//	g_Render->RenderText(std::to_string(intspeed), screenWidth / 2, screenHeight - 100, 27.f, Color(170, 255, 0), false, false, g_VeloFont);
 
+		
 		//	else
 		if (g_Options.outline)
 			Render::Get().RenderText(std::to_string(intspeed), screenWidth / 2, screenHeight - 100, 27.f, Color(0, 0, 0, 255), false, true, g_VeloFont);
@@ -451,9 +452,9 @@ void speed()
 			if (lastjump >= 100 && g_Options.lastjump)
 			{
 				if (g_Options.lastjumpoutline)
-					Render::Get().RenderText(drawvel2, screenWidth / 2 + 45, screenHeight - 100, 27.f, Color(0, 0, 0), false, true, g_VeloFont);
+					Render::Get().RenderText(drawvel2, screenWidth / 2 + 60, screenHeight - 100, 27.f, Color(0, 0, 0), false, true, g_VeloFont);
 
-				Render::Get().RenderText(drawvel2, screenWidth / 2 + 45, screenHeight - 100, 27.f, g_Options.Velocitycol, false, false, g_VeloFont);
+				Render::Get().RenderText(drawvel2, screenWidth / 2 + 60, screenHeight - 100, 27.f, g_Options.Velocitycol, false, false, g_VeloFont);
 
 			}
 

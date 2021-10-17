@@ -46,7 +46,7 @@ namespace Hooks {
 		ConVar* sv_cheats_con = g_CVar->FindVar("sv_cheats");
 		sv_cheats.setup(sv_cheats_con);
 
-		
+
 		gameevents_hook.setup(g_GameEvents);
 		gameevents_hook.hook_index(index::FireEvent, hkFireEvent);
 		direct3d_hook.hook_index(index::EndScene, hkEndScene);
@@ -238,26 +238,26 @@ namespace Hooks {
 		}
 
 		//fov shiiit
-			if (!g_Options.fovscope && g_EngineClient->IsInGame() && !g_LocalPlayer->m_bIsScoped()) {
-				static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
-				fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
+		if (!g_Options.fovscope && g_EngineClient->IsInGame() && !g_LocalPlayer->m_bIsScoped()) {
+			static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
+			fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
+			fov_cs_debug->SetValue(g_Options.fovchangaaa);
+		}
+		if (!g_Options.fovscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
+			static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
+			fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
+			fov_cs_debug->SetValue(0);
+		}
+		if (g_Options.fovscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
+			static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
+			fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
+			if (g_Options.fovchangaaa == 0) {
+				fov_cs_debug->SetValue("90");
+			}
+			else {
 				fov_cs_debug->SetValue(g_Options.fovchangaaa);
 			}
-			if (!g_Options.fovscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
-				static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
-				fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
-				fov_cs_debug->SetValue(0);
-			}
-				if (g_Options.fovscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
-				static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
-				fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
-				if (g_Options.fovchangaaa == 0) {
-					fov_cs_debug->SetValue("90");
-				}
-				else {
-					fov_cs_debug->SetValue(g_Options.fovchangaaa);
-				}
-			}
+		}
 
 		if (g_Options.noscope) {
 			if (g_EngineClient->IsInGame() && !g_LocalPlayer->m_bIsScoped()) {
@@ -295,7 +295,7 @@ namespace Hooks {
 				unlag->m_fnChangeCallbacks.m_Size = 0;
 				unlag->SetValue("0.200");
 			}
-	}
+		}
 		if (!g_Options.fakepingkey == 0) {
 			if (GetAsyncKeyState(g_Options.fakepingkey)) {
 				if (g_Options.fakeping && g_EngineClient->IsInGame()) {
@@ -307,15 +307,15 @@ namespace Hooks {
 					unlag->SetValue(g_Options.fakepingzzz);
 				}
 			}
-				else {
-					static auto fakeping = g_CVar->FindVar("net_fakelag");
-					fakeping->m_fnChangeCallbacks.m_Size = 0;
-					fakeping->SetValue(0);
-					static auto unlag = g_CVar->FindVar("sv_maxunlag");
-					unlag->m_fnChangeCallbacks.m_Size = 0;
-					unlag->SetValue("0.200");
-				}
+			else {
+				static auto fakeping = g_CVar->FindVar("net_fakelag");
+				fakeping->m_fnChangeCallbacks.m_Size = 0;
+				fakeping->SetValue(0);
+				static auto unlag = g_CVar->FindVar("sv_maxunlag");
+				unlag->m_fnChangeCallbacks.m_Size = 0;
+				unlag->SetValue("0.200");
 			}
+		}
 
 		//Nade Prediction
 		static auto pnade = g_CVar->FindVar("cl_grenadepreview");
@@ -523,7 +523,7 @@ namespace Hooks {
 
 		//auto cmd = g_Input->GetUserCmd(sequence_number);
 		//auto verified = g_Input->GetVerifiedCmd(sequence_number);
-		
+
 		bool bSendPacket = true;
 
 		//Desync
@@ -563,16 +563,16 @@ namespace Hooks {
 		oldSideMove = cmd->sidemove;
 		if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
 			Misc::MovementFix(oldAngle, cmd, oldForward, oldSideMove);
-			Math::Normalize3(LastAngle);
-			if (g_Options.nocool)
+		Math::Normalize3(LastAngle);
+		if (g_Options.nocool)
 			cmd->buttons |= IN_BULLRUSH;
-			Math::CorrectMovement(cmd, oldAngle, cmd->viewangles);
+		Math::CorrectMovement(cmd, oldAngle, cmd->viewangles);
 		//verified->m_cmd = *cmd;
 		//verified->m_crc = cmd->GetChecksum();
 
 		if (!cmd || !cmd->command_number)
 			return;
-		
+
 		if (Menu::Get().IsVisible())
 			cmd->buttons &= ~IN_ATTACK;
 
@@ -581,17 +581,14 @@ namespace Hooks {
 		if (GetAsyncKeyState(g_Options.AutoStafe_key))
 			BunnyHop::AutoStafe(cmd);
 
+		movement::edgebug(cmd);
+
 		CViewSetup* vsView;
 		if (g_EngineClient->IsInGame() && vsView)
 			Visuals::Get().ThirdPerson();
 
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
 		{
-			if (g_Options.jump_bug && GetAsyncKeyState(g_Options.jump_bug_key)) {
-				if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
-					g_Options.misc_bhop2 = true;
-			}
-			else g_Options.misc_bhop2 = false;
 			movement::jumpbug(cmd);
 			Misc::SlowWalk(cmd);
 			CAntiAim::Get().CreateMove(cmd, bSendPacket);
@@ -614,11 +611,9 @@ namespace Hooks {
 		static auto prediction = new PredictionSystem();
 		auto flags = g_LocalPlayer->m_fFlags();
 		float eb = floor(g_LocalPlayer->m_vecVelocity().z);
-
 		prediction->StartPrediction(cmd);
-		Visuals::Get().ebdetection(eb, flags);
-		movement::edgebug(cmd);
 		g_Legitbot->Run(cmd);
+		Visuals::Get().ebdetection(eb, flags);
 		prediction->EndPrediction();
 		if (g_Options.edgejump.enabled && GetAsyncKeyState(g_Options.edgejump.hotkey))
 		{
@@ -685,7 +680,7 @@ namespace Hooks {
 				panelId = panel;
 			}
 		}
-		else if (panelId == panel) 
+		else if (panelId == panel)
 		{
 			//Ignore 50% cuz it called very often
 			static bool bSkip = false;
@@ -698,7 +693,7 @@ namespace Hooks {
 		}
 	}
 	//--------------------------------------------------------------------------------
-	void __fastcall hkEmitSound1(void* _this, int edx, IRecipientFilter& filter, int iEntIndex, int iChannel, const char* pSoundEntry, unsigned int nSoundEntryHash, const char *pSample, float flVolume, int nSeed, float flAttenuation, int iFlags, int iPitch, const Vector* pOrigin, const Vector* pDirection, void* pUtlVecOrigins, bool bUpdatePositions, float soundtime, int speakerentity, int unk) {
+	void __fastcall hkEmitSound1(void* _this, int edx, IRecipientFilter& filter, int iEntIndex, int iChannel, const char* pSoundEntry, unsigned int nSoundEntryHash, const char* pSample, float flVolume, int nSeed, float flAttenuation, int iFlags, int iPitch, const Vector* pOrigin, const Vector* pDirection, void* pUtlVecOrigins, bool bUpdatePositions, float soundtime, int speakerentity, int unk) {
 		static auto ofunc = sound_hook.get_original<decltype(&hkEmitSound1)>(index::EmitSound1);
 
 
@@ -892,7 +887,7 @@ namespace Hooks {
 		if (g_MdlRender->IsForcedMaterialOverride() &&
 			!strstr(pInfo.pModel->szName, "arms") &&
 			!strstr(pInfo.pModel->szName, "weapons/v_")) {
-			
+
 		}
 
 
@@ -904,7 +899,7 @@ namespace Hooks {
 	bool __fastcall hkSvCheatsGetBool(PVOID pConVar, void* edx)
 	{
 		static auto dwCAM_Think = Utils::PatternScan(GetModuleHandleW(L"client.dll"), "85 C0 75 30 38 86");
-		static auto ofunc = sv_cheats.get_original<bool(__thiscall *)(PVOID)>(13);
+		static auto ofunc = sv_cheats.get_original<bool(__thiscall*)(PVOID)>(13);
 		if (!ofunc)
 			return false;
 

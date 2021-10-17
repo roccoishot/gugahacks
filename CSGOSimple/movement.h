@@ -3,7 +3,7 @@
 #include "options.hpp"
 
 namespace movement {
-	void jumpbug(CUserCmd* pCmd);
+	void jumpbug(CUserCmd* cmd);
 	void edgebug(CUserCmd* cmd);
 
 }

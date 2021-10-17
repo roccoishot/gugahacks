@@ -270,7 +270,8 @@ public:
 
 		return fn(this, angle);
 	}
-
+	NETVAR(Vector, m_skybox3d_origin, "DT_BasePlayer", "DT_LocalPlayerExclusive", "DT_Local", "m_skybox3d.origin");
+	NETVAR(int, m_skybox3d_scale, "DT_BasePlayer", "DT_LocalPlayerExclusive", "DT_Local", "m_skybox3d.scale");
 	NETVAR(QAngle, m_angAbsAngles, "DT_BaseEntity", "m_angAbsAngles");
 	NETVAR(Vector, m_angAbsOrigin, "DT_BaseEntity", "m_angAbsOrigin");
 	NETVAR(float, m_flDuckSpeed, "DT_BaseEntity", "m_flDuckSpeed");

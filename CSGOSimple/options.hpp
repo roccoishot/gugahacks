@@ -186,6 +186,8 @@ public:
 		int ragebot_slowwalk_amt = 0;
 		int ragebot_slowwalk_key = 0;
 
+		int skybox_scale = 100;
+		int nightmode_value_power = 50;
 		bool antiobs = false;
 		bool drawfov = false;
 		int backtix = 0;

@@ -16,7 +16,7 @@ ImFont* g_VeloFont;
 ImFont* g_Fuck;
 ImFont* g_Cum;
 ImFont* g_SpectatorListFont;
-
+ImFont* g_Frotnite;
 ImDrawListSharedData _data;
 
 std::mutex render_mutex;
@@ -55,13 +55,12 @@ void Render::GetFonts() {
 	ImGuiIO& io = ImGui::GetIO();
 	g_SpectatorListFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\corbelb.ttf", 12.0f, &font_config, ranges);
 
-
 	// esp font
 	g_pDefaultFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\corbelb.ttf", 12.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 	
 
 	// font for watermark; just example
-	g_VeloFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(u8"C:\\Windows\\Fonts\\Arial.ttf", 30.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+	g_VeloFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(u8"C:\\Windows\\Fonts\\verdanab.ttf", 30.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 
 	// font for watermark; just example
 	g_Fuck = ImGui::GetIO().Fonts->AddFontFromFileTTF(u8"C:\\Windows\\Fonts\\Karla-Regular.ttf", 30.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());

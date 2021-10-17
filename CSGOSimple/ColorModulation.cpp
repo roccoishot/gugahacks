@@ -1,6 +1,19 @@
 #include "ColorModulation.h"
 #include "./valve_sdk/csgostructs.hpp"
 
+void CNightmode::UpdateWorldTextures()
+{
+	if (g_Options.colormodulate) {
+		if (!NightmodeDone) {
+			PerformNightmode();
+			NightmodeDone = true;
+		}
+		if (NightmodeDone)
+			return;
+	}
+}
+
+
 void CNightmode::PerformNightmode()
 {
 	for (MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i))
@@ -8,9 +21,6 @@ void CNightmode::PerformNightmode()
 		IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
 
 		if (!pMaterial)
-			continue;
-
-		if (!pMaterial->IsPrecached())
 			continue;
 
 		const char* group = pMaterial->GetTextureGroupName();
@@ -31,7 +41,7 @@ void CNightmode::PerformNightmode()
 			}
 
 		if (g_Options.colormodulate) {
-			if (strstr(group, ("World textures")))
+			if (strstr(group, ("World")))
 			{
 				pMaterial->ColorModulate(g_Options.colormodulation.r() * 0.00255, g_Options.colormodulation.g() * 0.00255, g_Options.colormodulation.b() * 0.00255);
 			}
@@ -44,8 +54,6 @@ void CNightmode::PerformNightmode()
 		if (g_Options.propmodulate && g_Options.colormodulate) {
 			if (strstr(group, ("StaticProp")))
 			{
-				static auto r_DrawSpecificStaticProp = g_CVar->FindVar(("r_DrawSpecificStaticProp"));
-				r_DrawSpecificStaticProp->SetValue(g_Options.propmodulate);
 				pMaterial->ColorModulate(g_Options.proprmodulation.r() * 0.00255 * 2, g_Options.proprmodulation.g() * 0.00255 * 2, g_Options.proprmodulation.b() * 0.00255 * 2);
 				pMaterial->AlphaModulate(g_Options.propalpha);
 			}

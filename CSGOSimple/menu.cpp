@@ -150,16 +150,6 @@ bool Tab(const char* label, const ImVec2& size_arg, bool state)
 
 void Menu::SpecList()
 {
-
-	if (!g_EngineClient->IsInGame())
-		return;
-
-	if (!g_LocalPlayer)
-		return;
-
-	if (!(g_LocalPlayer->IsAlive()))
-		return;
-
 	if (!g_Options.speclist)
 		return;
 
@@ -193,12 +183,15 @@ void Menu::SpecList()
 	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | NULL | NULL | NULL | NULL | NULL;
 
 	int specs = 0;
+	int modes = 0;
 	std::string spect = "";
+	std::string mode = "";
+	std::string gap = " | ";
 	int DrawIndex = 1;
 
-	for (int playerId : Utils::GetObservervators(g_LocalPlayer))
+	for (int playerId : Utils::GetObservervators(g_EngineClient->GetLocalPlayer()))
 	{
-		if (playerId == g_LocalPlayer)
+		if (playerId == g_EngineClient->GetLocalPlayer())
 			continue;
 
 		C_BasePlayer* pPlayer = (C_BasePlayer*)g_EntityList->GetClientEntity(playerId);
@@ -213,25 +206,60 @@ void Menu::SpecList()
 			continue;
 
 		spect += Pinfo.szName;
+		spect += "   ";
 		spect += "\n";
 		specs++;
+
+		if (spect != "")
+		{
+			Color PlayerObsColor;
+			switch (pPlayer->m_iObserverMode())
+			{
+			case 4:
+				mode += XorStr("Perspective");
+				break;
+			case 5:
+				mode += XorStr("3rd Person");
+				break;
+			case 6:
+				mode += XorStr("Free look");
+				break;
+			case 1:
+				mode += XorStr("Deathcam");
+				break;
+			case 2:
+				mode += XorStr("Freezecam");
+				break;
+			case 3:
+				mode += XorStr("Fixed");
+				break;
+			default:
+				break;
+			}
+
+			mode += "  ";
+			mode += "\n";
+			modes++;
+		}
 	}
 	bool misc_Spectators = true;
 
 	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 1.f, 1.f, 1.f));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
-	if (ImGui::Begin("Spectator List", nullptr, flags))
+	if (ImGui::Begin("Spectator List", &misc_Spectators, flags))
 	{
 		ImGui::PopStyleVar();
 		ImGui::PopStyleColor();
 
 		if (specs > 0) spect += u8"\n";     /*ЛАСТ*/
+		if (modes > 0) mode += u8"\n";
 		ImVec2 size = ImGui::CalcTextSize(spect.c_str());
 
-		ImGui::SetWindowSize(ImVec2(200, 45 + size.y));
+		ImGui::SetWindowSize(ImVec2(200, 50 + size.y));
 		ImGui::Separator("Spectator List");
-			ImGui::Text(spect.c_str());
-			DrawIndex++;
+		ImGui::Spacing();
+		ImGui::Text(spect.c_str()); ImGui::SameLine(); if (specs > 0) ImGui::Text(gap.c_str()); ImGui::SameLine(); ImGui::Text(mode.c_str());
+		DrawIndex++;
 	}
 	ImGui::End();
 }

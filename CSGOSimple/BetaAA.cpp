@@ -29,7 +29,7 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		return;
 	}
 
-	if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (cmd->buttons & IN_ATTACK))
+	if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && IN_ATTACK)
 	{
 		return;
 	}
