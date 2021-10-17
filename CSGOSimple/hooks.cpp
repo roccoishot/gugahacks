@@ -449,7 +449,6 @@ namespace Hooks {
 
 		auto esp_drawlist = Render::Get().RenderScene();
 
-		Menu::Get().SpecList();
 		Menu::Get().Render();
 
 
