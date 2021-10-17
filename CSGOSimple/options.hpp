@@ -117,7 +117,6 @@ public:
 	} aimbot;
 
 	bool faresp = false;
-	bool speclist = false;
 	bool noscope = false;
 	bool fovscope = false;
 	bool ebdetection = false;
