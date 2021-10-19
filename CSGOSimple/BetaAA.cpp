@@ -147,11 +147,8 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 
 		static QAngle LastRealAngle = QAngle(0, 0, 0);
 
-		if (!bSendPacket && !(g_LocalPlayer->m_iShotsFired() >= 1))
-		{
-			static bool bFlip = false;
-			cmd->viewangles.yaw += bFlip ? 58.f : -58.f;
-		}
+		static bool bFlip = false;
+		cmd->viewangles.yaw += bFlip ? 58.f : -58.f * (bSendPacket ? 1 : -1);
 
 		if (bSendPacket)
 		{
