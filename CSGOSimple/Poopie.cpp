@@ -93,7 +93,6 @@ void Misc::AutoStop(CUserCmd* cmd) {
 
     Vector forward;
     Math::AngleVectors(direction, forward);
-
     Vector right = (forward + 0.217812) * -speed;
     Vector left =  (forward + -0.217812) * -speed;
 
@@ -129,19 +128,19 @@ void Misc::AutoStop(CUserCmd* cmd) {
 
 void Misc::SilentWalk(CUserCmd* cmd)
 {
-    Vector moveDir = Vector(0.f, 0.f, 0.f);
-    float maxSpeed = 130.f;
-    int movetype = g_LocalPlayer->m_nMoveType();
-    bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
-    if (movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || InAir || cmd->buttons & IN_DUCK || !(cmd->buttons & IN_SPEED))
-        return;
-    moveDir.x = cmd->sidemove;
-    moveDir.y = cmd->forwardmove;
-    moveDir = Math::ClampMagnitude(moveDir, maxSpeed);
-    cmd->sidemove = moveDir.x;
-    cmd->forwardmove = moveDir.y;
-    if (!(g_LocalPlayer->m_vecVelocity().Length2D() > maxSpeed + 1))
-        cmd->buttons &= ~IN_SPEED;
+        Vector moveDir = Vector(0.f, 0.f, 0.f);
+        float maxSpeed = 130.f;
+        int movetype = g_LocalPlayer->m_nMoveType();
+        bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
+        if (movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || InAir || cmd->buttons & IN_DUCK || !(cmd->buttons & IN_SPEED))
+            return;
+        moveDir.x = cmd->sidemove;
+        moveDir.y = cmd->forwardmove;
+        moveDir = Math::ClampMagnitude(moveDir, maxSpeed);
+        cmd->sidemove = moveDir.x;
+        cmd->forwardmove = moveDir.y;
+        if (!(g_LocalPlayer->m_vecVelocity().Length2D() > maxSpeed + 1))
+            cmd->buttons &= ~IN_SPEED;
 }
 
 //--------------------------------------------------------------------------------

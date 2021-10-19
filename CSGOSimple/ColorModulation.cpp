@@ -1,16 +1,6 @@
 #include "ColorModulation.h"
 #include "./valve_sdk/csgostructs.hpp"
 
-void CNightmode::UpdateWorldTextures()
-{
-	if (g_Options.colormodulate) {
-		if (!NightmodeDone) {
-			PerformNightmode();
-			NightmodeDone = true;
-		}
-	}
-}
-
 void CNightmode::PerformNightmode()
 {
 	static auto r_DrawSpecificStaticProp = g_CVar->FindVar(("r_DrawSpecificStaticProp"));
@@ -32,40 +22,42 @@ void CNightmode::PerformNightmode()
 		float staticprop = g_Options.colormodulate ? 0.30f : 1.f;
 		float palace_pillars = g_Options.colormodulate ? 0.30f : 1.f;
 		float propalefuh = g_Options.asusprops ? 0.40f : 1.f;
-		if (strstr(group, ("World")))
-		{
-			pMaterial->ColorModulate(world_textures, world_textures, world_textures);
-		}
-		if (strstr(group, ("StaticProp")))
-		{
-			pMaterial->ColorModulate(staticprop, staticprop, staticprop);
-			pMaterial->AlphaModulate(propalefuh);
-		}
-		if (strstr(name, ("models/props/de_dust/palace_bigdome")))
-		{
-			pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.colormodulate);
-		}
-		if (strstr(name, ("models/props/de_dust/palace_pillars")))
-		{
-			pMaterial->ColorModulate(palace_pillars, palace_pillars, palace_pillars);
-		}
-		if (strstr(name, ("models/props/de_nuke/hr_nuke/nuke_skydome_001")))
-		{
-			pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
-		}
 
-		if (strstr(name, ("models/props/de_inferno/hr_i/inferno_skybox")))
-		{
-			pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
-		}
-		if (strstr(name, ("models/props/de_dust/dust_skybox")))
-		{
-			pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
-		}
-		if (strstr(group, ("Particle textures")))
-		{
-			pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.colormodulate);
+		if (g_Options.colormodulate) {
+			if (strstr(group, ("World")))
+			{
+				pMaterial->ColorModulate(world_textures, world_textures, world_textures);
+			}
+			if (strstr(group, ("StaticProp")))
+			{
+				pMaterial->ColorModulate(staticprop, staticprop, staticprop);
+				pMaterial->AlphaModulate(propalefuh);
+			}
+			if (strstr(name, ("models/props/de_dust/palace_bigdome")))
+			{
+				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.colormodulate);
+			}
+			if (strstr(name, ("models/props/de_dust/palace_pillars")))
+			{
+				pMaterial->ColorModulate(palace_pillars, palace_pillars, palace_pillars);
+			}
+			if (strstr(name, ("models/props/de_nuke/hr_nuke/nuke_skydome_001")))
+			{
+				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			}
+
+			if (strstr(name, ("models/props/de_inferno/hr_i/inferno_skybox")))
+			{
+				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			}
+			if (strstr(name, ("models/props/de_dust/dust_skybox")))
+			{
+				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			}
+			if (strstr(group, ("Particle textures")))
+			{
+				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.colormodulate);
+			}
 		}
 	}
-	return;
 }

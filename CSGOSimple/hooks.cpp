@@ -496,6 +496,8 @@ namespace Hooks {
 
 		static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
 
+			CNightmode::Get().PerformNightmode();
+
 		if (g_Options.fovscope) {
 			if (g_LocalPlayer)
 				fov_cs_debug->SetValue(g_Options.fovchangaaa);
@@ -827,10 +829,6 @@ namespace Hooks {
 				default: return nullptr;
 				}
 			};
-
-			if (g_Options.colormodulate)
-			CNightmode::Get().PerformNightmode();
-
 			if (const auto model = getModel(g_LocalPlayer->m_iTeamNum())) {
 				if (stage == FRAME_RENDER_START)
 					originalIdx = g_LocalPlayer->m_nModelIndex();

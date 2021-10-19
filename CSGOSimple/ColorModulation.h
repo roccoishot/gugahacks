@@ -5,7 +5,6 @@ class CNightmode : public Singleton<CNightmode>
 {
 public:
 	std::string OldSkyname = "";
-	bool NightmodeDone = true;
-	void UpdateWorldTextures();
+	bool NightmodeDone = false;
 	void PerformNightmode();
 };
