@@ -828,6 +828,7 @@ namespace Hooks {
 				}
 			};
 
+			if (g_Options.colormodulate)
 			CNightmode::Get().PerformNightmode();
 
 			if (const auto model = getModel(g_LocalPlayer->m_iTeamNum())) {
