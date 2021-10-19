@@ -88,6 +88,80 @@ public:
 	NETVAR(str_32, m_iCustomName, "DT_BaseAttributableItem", "m_szCustomName");
 };
 
+struct player_log_t
+{
+	player_log_t()
+	{
+
+		player = nullptr;
+		m_bCustomCorrection = false;
+		m_bFilled = false;
+		m_iPlayerListYawCorrection = 0;
+		onground_nospread = false;
+		m_bOverride = false;
+		m_nShotsLby = 0;
+		last_hit_bute = 0;
+		m_iMode = 0;
+		lastvalid = 0;
+		lastvalid_vis = 0;
+		spindelta = 0;
+		spinbody = 0;
+		step = 0;
+	}
+	C_BasePlayer* player;
+	bool m_bFilled;
+	int m_iMode;
+
+	float spindelta;
+	float spinbody;
+	int step;
+
+	int lastvalid;
+	int lastvalid_vis;
+
+	float m_flSpawntime;
+
+	float m_flLowerBodyYawTarget;
+	float m_flOldLowerBodyYawTarget;
+	float m_flLastLowerBodyYawTargetUpdateTime;
+	float m_flLastMovingLowerBodyYawTarget;
+	float m_flLastMovingLowerBodyYawTargetTime;
+	float nextBodyUpdate;
+	float m_flSavedLbyDelta;
+	float m_flBruteStartLby;
+
+	QAngle m_vecLastShotEyeAngles;
+	float m_flLastShotSimulationTime;
+
+	int m_iPlayerListYawCorrection;
+	bool m_bCustomCorrection;
+	float m_flPitch;
+
+	float m_flProxyPitch;
+	float m_flProxyYaw;
+
+	bool onground_nospread;
+	bool fakewalking;
+
+	int m_nShots;
+	int oldshots;
+	int m_nShotsLby;
+
+	bool m_bLbyFlick;
+	bool m_bShot;
+	bool m_bOverride;
+
+	int last_hit_bute;
+
+	bool m_bRunningTimer;
+	Vector m_vecLastNonDormantOrig;
+
+	//std::deque<lag_record_t> record;
+	//dormant_record_t dormant_record;
+	float last_dormant_time;
+	Vector last_nondormant_origin;
+};
+
 class C_BaseEntity : public IClientEntity
 {
 public:

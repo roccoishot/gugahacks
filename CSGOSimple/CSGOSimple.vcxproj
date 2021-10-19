@@ -123,7 +123,6 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="imgui\impl\imgui_impl_dx9.cpp" />
     <ClCompile Include="imgui\impl\imgui_impl_win32.cpp" />
-    <ClCompile Include="lagcompensation.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="movement.cpp" />
@@ -131,7 +130,6 @@
     <ClCompile Include="options.cpp" />
     <ClCompile Include="Poopie.cpp" />
     <ClCompile Include="render.cpp" />
-    <ClCompile Include="resolver.cpp" />
     <ClCompile Include="ui.cpp" />
     <ClCompile Include="valve_sdk\csgostructs.cpp" />
     <ClCompile Include="valve_sdk\sdk.cpp" />
@@ -164,7 +162,6 @@
     <ClInclude Include="helpers\prediction.hpp" />
     <ClInclude Include="imgui\impl\imgui_impl_dx9.h" />
     <ClInclude Include="imgui\impl\imgui_impl_win32.h" />
-    <ClInclude Include="lagcompesnation.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="movement.h" />
     <ClInclude Include="OldPrediction.h" />

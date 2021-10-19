@@ -15,7 +15,6 @@
 #include "./xor.h"
 #include "BetaAA.h"
 #include "OldPrediction.h"
-#include "lagcompesnation.h"
 #include "Globals.h"
 #include "Colormodulation.h"
 #include "movement.h"
@@ -237,46 +236,6 @@ namespace Hooks {
 			r_aspectratio->SetValue("0");
 		}
 
-		//fov shiiit
-		if (!g_Options.fovscope && g_EngineClient->IsInGame() && !g_LocalPlayer->m_bIsScoped()) {
-			static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
-			fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
-			fov_cs_debug->SetValue(g_Options.fovchangaaa);
-		}
-		if (!g_Options.fovscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
-			static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
-			fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
-			fov_cs_debug->SetValue(0);
-		}
-		if (g_Options.fovscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
-			static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
-			fov_cs_debug->m_fnChangeCallbacks.m_Size = 0;
-			if (g_Options.fovchangaaa == 0) {
-				fov_cs_debug->SetValue("90");
-			}
-			else {
-				fov_cs_debug->SetValue(g_Options.fovchangaaa);
-			}
-		}
-
-		if (g_Options.noscope) {
-			if (g_EngineClient->IsInGame() && !g_LocalPlayer->m_bIsScoped()) {
-				static auto noscopa = g_CVar->FindVar("cl_drawhud");
-				noscopa->m_fnChangeCallbacks.m_Size = 0;
-				noscopa->SetValue(1);
-			}
-			if (g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
-				static auto noscopa = g_CVar->FindVar("cl_drawhud");
-				noscopa->m_fnChangeCallbacks.m_Size = 0;
-				noscopa->SetValue(0);
-			}
-		}
-		if (!g_Options.noscope) {
-			static auto noscopa = g_CVar->FindVar("cl_drawhud");
-			noscopa->m_fnChangeCallbacks.m_Size = 0;
-			noscopa->SetValue(1);
-		}
-
 		//Fake Ping Exploits
 		if (g_Options.fakepingkey == 0) {
 			if (g_Options.fakeping == true && g_EngineClient->IsInGame()) {
@@ -450,6 +409,7 @@ namespace Hooks {
 		auto esp_drawlist = Render::Get().RenderScene();
 
 		Menu::Get().Render();
+		Menu::Get().SpecList();
 
 
 		ImGui::Render(esp_drawlist);
@@ -534,6 +494,34 @@ namespace Hooks {
 
 		IGameEvent* event;
 
+		static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
+
+		if (g_Options.fovscope) {
+			if (g_LocalPlayer)
+				fov_cs_debug->SetValue(g_Options.fovchangaaa);
+			if (g_Options.fovchangaaa == 0)
+				fov_cs_debug->SetValue("90");
+		}
+		if (!g_Options.fovscope) {
+			if (g_LocalPlayer)
+				fov_cs_debug->SetValue(g_Options.fovchangaaa);
+			if (g_LocalPlayer && g_LocalPlayer->m_bIsScoped())
+				fov_cs_debug->SetValue(0);
+		}
+
+			if (g_LocalPlayer && !g_LocalPlayer->m_bIsScoped() && g_Options.noscope) {
+				static auto noscopa = g_CVar->FindVar("cl_drawhud");
+				noscopa->SetValue(1);
+			}
+			if (g_LocalPlayer && g_LocalPlayer->m_bIsScoped() && g_Options.noscope) {
+				static auto noscopa = g_CVar->FindVar("cl_drawhud");
+				noscopa->SetValue(0);
+			}
+		if (!g_Options.noscope) {
+			static auto noscopa = g_CVar->FindVar("cl_drawhud");
+			noscopa->SetValue(1);
+		}
+
 		Globals::m_cmd = cmd;
 
 		if (g_Options.misc_backtrack) {
@@ -582,8 +570,7 @@ namespace Hooks {
 
 		movement::edgebug(cmd);
 
-		CViewSetup* vsView;
-		if (g_EngineClient->IsInGame() && vsView)
+		if (g_EngineClient->IsInGame())
 			Visuals::Get().ThirdPerson();
 
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
@@ -739,7 +726,6 @@ namespace Hooks {
 			QAngle view_punch_old;
 			QAngle* aim_punch = nullptr;
 			QAngle* view_punch = nullptr;
-
 			if (g_Options.fatassmf && stage == ClientFrameStage_t::FRAME_RENDER_START)
 			{
 				if (g_LocalPlayer && g_LocalPlayer->IsAlive())

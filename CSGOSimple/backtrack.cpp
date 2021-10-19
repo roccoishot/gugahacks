@@ -9,6 +9,30 @@
 #define TICK_INTERVAL			(g_GlobalVars->interval_per_tick)
 #define TIME_TO_TICKS( dt )		( (int)( 0.5f + (float)(dt) / TICK_INTERVAL ) )
 
+float LagFix()
+{
+	float updaterate = g_CVar->FindVar("cl_updaterate")->GetFloat();
+	auto minupdate = g_CVar->FindVar("sv_minupdaterate");
+	auto maxupdate = g_CVar->FindVar("sv_maxupdaterate");
+
+	if (minupdate && maxupdate)
+		updaterate = maxupdate->GetFloat();
+
+	float ratio = g_CVar->FindVar("cl_interp_ratio")->GetFloat();
+
+	if (ratio == 0)
+		ratio = 1.0f;
+
+	float lerp = g_CVar->FindVar("cl_interp")->GetFloat();
+	auto* cmin = g_CVar->FindVar("sv_client_min_interp_ratio");
+	auto* cmax = g_CVar->FindVar("sv_client_max_interp_ratio");
+
+	if (cmin && cmax && cmin->GetFloat() != 1)
+		ratio = std::clamp(ratio, cmin->GetFloat(), cmax->GetFloat());
+
+	return std::max(lerp, ratio / updaterate);
+}
+
 void TimeWarp::CreateMove(CUserCmd* cmd)
 {
 	int bestTargetIndex = -1;
@@ -65,6 +89,6 @@ void TimeWarp::CreateMove(CUserCmd* cmd)
 		}
 
 		if (bestTargetSimTime >= 0 && cmd->buttons & IN_ATTACK)
-			cmd->tick_count = TIME_TO_TICKS(bestTargetSimTime);
+			cmd->tick_count = TIME_TO_TICKS(bestTargetSimTime + LagFix());
 	}
 }

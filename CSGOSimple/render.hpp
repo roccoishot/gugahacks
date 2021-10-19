@@ -19,6 +19,7 @@ extern ImFont* g_MenuFont;
 extern ImFont* g_pDefaultFont;
 extern ImFont* g_VeloFont;
 extern ImFont* g_SpectatorListFont;
+extern ImFont* Cummed;
 
 
 class Vector;

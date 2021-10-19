@@ -26,6 +26,7 @@ public:
     void OnDeviceReset();
 
     void Render();
+    void SpecList();
     void Toggle();
 
     bool IsVisible() const { return _visible; }

@@ -228,16 +228,13 @@ void Options::SetupVisuals()
 	SetupValue(misc_thirdperson, "Visuals", "Thirdperson");
 	SetupValue(misc_thirdperson_dist, "Visuals", "Thirdperson Distance");
 	SetupValue(misc_thirdperson_key, "Visuals", "Thirdperson Key");
-	SetupColor(colormodulation, "World Color");
+	SetupValue(asusprops,"World", "Asus Props");
 	SetupValue(worldglowb, "Visuals", "World Glow Blue");
 	SetupValue(worldglowg, "Visuals", "World Glow Green");
 	SetupValue(worldglowr, "Visuals", "World Glow Red");
-	SetupColor(proprmodulation, "Prop Color");
 	SetupValue(fullbright, "Visuals", "Fullbright");
 	SetupValue(amibence, "Visuals", "Model Ambience");
 	SetupValue(colormodulate, "Visuals", "World Modulation");
-	SetupValue(propmodulate, "Visuals", "Prop Modulation");
-	SetupValue(propalpha, "Visuals", "Prop Alpha");
 	SetupValue(fovchangaaa, "Visuals", "World Fov");
 	SetupValue(aspectchange, "Visuals", "Aspect Ratio");
 	SetupValue(aspectratio, "Visuals", "Ratio");
@@ -267,13 +264,13 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
+	SetupValue(g_Options.speclist, "Misc", "Spectator List");
 	SetupValue(g_Options.ebmode, "Misc", "Edgebug Mode");
 	SetupValue(g_Options.blockbot, "Misc", "Blockbot");
 	SetupValue(g_Options.bbkey, "Misc", "BlockBot Key");
 	SetupValue(autoscope, "Aimbot", "Auto Scope");
 	SetupValue(slidewalk, "Test", "Fast Shiftwalk");
 	SetupValue(misc_chatspam, "Misc", "Chat Spam");
-	SetupValue(invertaakey, "Rage", "Invert AA Key");
 	SetupValue(rageresolver, "Rage", "Rage Resolver");
 	SetupValue(fakepingkey, "Rage", "Fake Ping Key");
 	SetupValue(ragebot_antiaim_pitch, "Rage", "AntiAim Pitch");

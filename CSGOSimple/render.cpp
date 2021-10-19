@@ -17,6 +17,7 @@ ImFont* g_Fuck;
 ImFont* g_Cum;
 ImFont* g_SpectatorListFont;
 ImFont* g_Frotnite;
+ImFont* Cummed;
 ImDrawListSharedData _data;
 
 std::mutex render_mutex;
@@ -67,6 +68,7 @@ void Render::GetFonts() {
 
 	g_Cum = ImGui::GetIO().Fonts->AddFontFromFileTTF(u8"C:\\Windows\\Fonts\\bahnschrift.ttf", 48.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 
+	Cummed = ImGui::GetIO().Fonts->AddFontFromFileTTF(u8"C:\\Windows\\Fonts\\corbelb.ttf", 12.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 }
 
 void Render::ClearDrawList() {
@@ -86,13 +88,6 @@ void Render::BeginScene() {
 	if (g_Options.bowlsfreshcut && g_EngineClient->IsInGame() && g_LocalPlayer->IsFlashed()) {
 		Render::Get().RenderText("FLASHED", 965, 545, 18.f, Color(120, 208, 255), false, true, g_VeloFont);
 	}
-
-	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive() && g_Options.ragebot_antiaim_desync && GetKeyState(g_Options.invertaakey)) {
-		Render::Get().RenderText("LEFT", 60, 500, 30.f, g_Options.menucolor, false, true, g_Cum);
-		}
-	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive() && g_Options.ragebot_antiaim_desync && !GetKeyState(g_Options.invertaakey)) {
-		Render::Get().RenderText("RIGHT", 60, 500, 30.f, g_Options.menucolor, false, true, g_Cum);
-		}
 
 	if (g_Options.misc_watermark) {
 	#define VERSION ("| Made By Roccoishot, Sopmk, and You're Mother. |")

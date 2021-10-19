@@ -116,6 +116,7 @@ public:
 		int y = 100;
 	} aimbot;
 
+	bool speclist = false;
 	bool faresp = false;
 	bool noscope = false;
 	bool fovscope = false;
@@ -130,13 +131,13 @@ public:
 	bool autoscope = false;
 	float amibence = 0;
 	bool slidewalk = false;
-	bool rageresolver = false;
+	bool rageresolver = true;
 	int fakepingkey = 0;
 	bool teamesp = false;
 	bool teamchams = false;
+	bool asusprops = false;
 		bool esp_enemies_only = false;
 		bool colormodulate = false;
-		bool propmodulate = false;
 		bool disablepro = false;
 		bool esp_player_boxes = false;
 		bool esp_player_boxesOccluded = false;
@@ -173,8 +174,6 @@ public:
 		//
 		// MISC
 		//
-		int invertaakey = 0;
-		float propalpha = 1;
 		bool ducknair = false;
 		bool fullbright = false;
 		bool misc_chatspam = false;
@@ -293,8 +292,6 @@ public:
 		Color glowcolorenemy = { 255, 255, 255 };
 		Color glowcolorarms = { 255, 255, 255 };
 		Color glowcolorstrap = { 255, 255, 255 };
-		Color colormodulation = { 0, 0, 0, 255 };
-		Color proprmodulation = { 0, 0, 0, 255 };
 		Color fogcoluh = { 255, 255, 255, 255 };
 		Color menucolor = { 255,255,255,255 };
 

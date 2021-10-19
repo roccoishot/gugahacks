@@ -148,6 +148,124 @@ bool Tab(const char* label, const ImVec2& size_arg, bool state)
 	return pressed;
 }
 
+void Menu::SpecList()
+{
+	if (!g_Options.speclist)
+		return;
+		
+	ImGuiStyle* Style = &ImGui::GetStyle();
+	Style->WindowBorderSize = 0.5;
+	Style->FrameBorderSize = 0.5;
+	Style->ChildBorderSize = 0.5;
+	Style->WindowRounding = 0;
+	Style->ChildRounding = 0;
+	Style->FrameRounding = 0;
+	Style->ScrollbarSize = 6;
+	ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, { 0.500000f,0.500000f });
+	Style->ScrollbarRounding = 0;
+	Style->PopupRounding = 0;
+	Style->GrabRounding = 0;
+	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
+	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
+	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	ImGui::PushFont(Cummed);
+	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | NULL | NULL | NULL | NULL | NULL;
+
+	int specs = 0;
+	int modes = 0;
+	std::string spect = "";
+	std::string mode = "";
+	std::string gap = " | ";
+	int DrawIndex = 1;
+
+	for (int playerId : Utils::GetObservervators(g_EngineClient->GetLocalPlayer()))
+	{
+		if (playerId == g_EngineClient->GetLocalPlayer())
+			continue;
+
+		C_BasePlayer* pPlayer = (C_BasePlayer*)g_EntityList->GetClientEntity(playerId);
+
+		if (!pPlayer)
+			continue;
+
+		player_info_t Pinfo;
+		g_EngineClient->GetPlayerInfo(playerId, &Pinfo);
+
+		if (Pinfo.fakeplayer)
+			continue;
+
+		spect += Pinfo.szName;
+		spect += "   ";
+		spect += "\n";
+		specs++;
+
+		if (spect != "")
+		{
+			Color PlayerObsColor;
+			switch (pPlayer->m_iObserverMode())
+			{
+			case 4:
+				mode += XorStr("Perspective");
+				break;
+			case 5:
+				mode += XorStr("3rd Person");
+				break;
+			case 6:
+				mode += XorStr("Free look");
+				break;
+			case 1:
+				mode += XorStr("Deathcam");
+				break;
+			case 2:
+				mode += XorStr("Freezecam");
+				break;
+			case 3:
+				mode += XorStr("Fixed");
+				break;
+			default:
+				break;
+			}
+
+			mode += "  ";
+			mode += "\n";
+			modes++;
+		}
+	}
+	bool misc_Spectators = true;
+
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 1.f, 1.f, 1.f));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+	if (ImGui::Begin("Spectator List", &misc_Spectators, flags))
+	{
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+
+		if (specs > 0) spect += u8"\n";     /*ЛАСТ*/
+		if (modes > 0) mode += u8"\n";
+		ImVec2 size = ImGui::CalcTextSize(spect.c_str());
+
+		ImGui::SetWindowSize(ImVec2(300, 100 + size.y));
+		ImGui::Separator("Spectator List");
+		ImGui::Spacing();
+		if (specs > 0) {
+			ImGui::Text(spect.c_str()); ImGui::SameLine(); ImGui::Text(" | "); ImGui::SameLine(); ImGui::Text(mode.c_str());
+		}
+		DrawIndex++;
+	}
+	ImGui::End();
+}
+
 void Menu::Render()
 {
 
@@ -252,7 +370,6 @@ void Menu::Render()
 				ImGui::Combo("Pitch", &g_Options.ragebot_antiaim_pitch, aa_pitch_list, IM_ARRAYSIZE(aa_pitch_list));
 				ImGui::Combo("Yaw", &g_Options.ragebot_antiaim_yaw, aa_yaw_list, IM_ARRAYSIZE(aa_yaw_list));
 				ImGui::Checkbox("Desync", &g_Options.ragebot_antiaim_desync);
-				ImGui::Text("Invert AA"); ImGui::SameLine(); ImGui::Hotkey("                                                                                                                      ", &g_Options.invertaakey);
 				ImGui::Checkbox("Break LBY", &g_Options.breaklby);
 				if (g_Options.ragebot_antiaim_yaw == 2) {
 					ImGui::SliderInt("Spin Speed", &g_Options.spinspeed, 1.f, 10.f, "%.f");
@@ -321,7 +438,7 @@ void Menu::Render()
 				if (g_Options.aimbot.silent) {
 					ImGui::Text("  Silent fov");
 					ImGui::Spacing();
-					ImGui::SliderFloat("##Silentfov", &g_Options.aimbot.silentfov, 0.f, 180.f, "%.f");
+					ImGui::SliderFloat("##Silentfov", &g_Options.aimbot.silentfov, 0.f, 360.f, "%.f");
 					ImGui::Spacing();
 				}
 				ImGui::Checkbox("Autoscope", &g_Options.autoscope);
@@ -618,16 +735,9 @@ void Menu::Render()
 					}
 					ImGui::Text("Model Ambience");
 					ImGui::SliderFloat("  ", &g_Options.amibence, 0, 1500);
-					ImGui::Checkbox("Color Modulation", &g_Options.colormodulate);
-					if (g_Options.colormodulate) {
-						ImGui::Text("World Color"); ImGui::SameLine(); ImGuiEx::ColorEdit4("World Color", &g_Options.colormodulation);
-						ImGui::Checkbox("Prop Modulation", &g_Options.propmodulate);
-						if (g_Options.propmodulate) {
-							ImGui::Text("Prop Color"); ImGui::SameLine(); ImGuiEx::ColorEdit4("Prop Color", &g_Options.proprmodulation);
-							ImGui::Text("Prop Alpha"); 
-							ImGui::SliderFloat("", &g_Options.propalpha, 0, 1);;
-						}
-					}
+					ImGui::Checkbox("Nightmode", &g_Options.colormodulate);
+					if (g_Options.colormodulate)
+					ImGui::Checkbox("Asus Props", &g_Options.asusprops);
 					ImGui::Separator("Glow");
 					ImGui::Spacing();
 					ImGui::SliderFloat("R Glow", &g_Options.worldglowr, 0, 1);
@@ -754,6 +864,7 @@ void Menu::Render()
 					ImGui::Checkbox("Edge jump", &g_Options.edgejump.enabled); ImGui::SameLine(group_w - 50); ImGui::Hotkey("    ", &g_Options.edgejump.hotkey);
 					ImGui::Checkbox("Blockbot", &g_Options.blockbot); ImGui::SameLine(group_w - 50); ImGui::Hotkey("                                                                                                                                                                                                                                                                                                                                      ", &g_Options.bbkey);
 					ImGui::Checkbox("Duck In Air", &g_Options.ducknair);
+					ImGui::Checkbox("Spectator List", &g_Options.speclist);
 					ImGui::Separator("Test");
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
 					if (g_Options.enablebeta) {
@@ -1118,6 +1229,7 @@ void Menu::Render()
 				}
 				ImGui::EndChild();
 			}
+			ImGui::PopFont();
 		}
 		ImGui::End();
 	}

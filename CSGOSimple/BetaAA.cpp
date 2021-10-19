@@ -1,6 +1,9 @@
 #include "./BetaAA.h"
 #include "./options.hpp"
 #include "./helpers/math.hpp"
+#include "options.hpp"
+#include "features/aimbot.hpp"
+#include "features/autowall.hpp"
 
 void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 {
@@ -29,7 +32,7 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		return;
 	}
 
-	if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && IN_ATTACK)
+	if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && cmd->buttons & IN_ATTACK)
 	{
 		return;
 	}
@@ -51,10 +54,81 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 	DoAntiAim(cmd, bSendPacket);
 }
 
+float WallThickness(Vector from, Vector to, C_BasePlayer* skip, C_BasePlayer* skip2)
+{
+	Vector endpos1, endpos2;
+
+	Ray_t ray;
+	ray.Init(from, to);
+
+	CTraceFilterSkipTwoEntities filter(skip, skip2);
+
+	trace_t trace1, trace2;
+	g_EngineTrace->TraceRay(ray, MASK_SHOT_BRUSHONLY, &filter, &trace1);
+
+	if (trace1.DidHit())
+		endpos1 = trace1.endpos;
+	else
+		return -1.f;
+
+	ray.Init(to, from);
+	g_EngineTrace->TraceRay(ray, MASK_SHOT_BRUSHONLY, &filter, &trace2);
+
+	if (trace2.DidHit())
+		endpos2 = trace2.endpos;
+
+	return endpos1.DistTo(endpos2);
+}
+
 void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 {
 	Yaw(cmd, false);
 	Pitch(cmd);
+
+	float best_rotation = 0.f;
+	auto local_eyeposition = g_LocalPlayer->GetEyePos();
+	auto head_position = g_LocalPlayer->GetHitboxPos(HITBOX_HEAD);
+	auto origin = g_LocalPlayer->m_vecOrigin();
+	float thickest = -1.f;
+
+	int i = 1; i < g_EngineClient->GetMaxClients(); i++;
+	auto pEntity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
+
+	float step = (2 * M_PI) / 8.f;
+
+	float radius = fabs(Vector(head_position - origin).Length2D());
+	for (float rotation = 0; rotation < (M_PI * 2.0); rotation += step)
+	{
+		if (!g_LocalPlayer->IsAlive())
+			return;
+
+		for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
+		{
+			auto pEntity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
+			if (!pEntity || !g_LocalPlayer) continue;
+			if (!pEntity->IsPlayer()) continue;
+			if (pEntity == g_LocalPlayer) continue;
+			if (pEntity->IsDormant()) continue;
+			if (!pEntity->IsAlive()) continue;
+			if (pEntity->m_iTeamNum() == g_LocalPlayer->m_iTeamNum()) continue;
+
+			if (!g_LocalPlayer->IsAlive())
+				return;
+
+			Vector newhead(radius * cos(rotation) + local_eyeposition.x, radius * sin(rotation) + local_eyeposition.y, local_eyeposition.z);
+
+			float thickness = WallThickness(pEntity->GetEyePos(), newhead, pEntity, g_LocalPlayer);
+
+			if (thickness > thickest)
+			{
+				thickest = thickness;
+				best_rotation = rotation;
+			}
+		}
+	}
+	
+	if (g_Options.ragebot_antiaim_yaw == 4)
+	cmd->viewangles.yaw = RAD2DEG(best_rotation);
 
 	if (g_Options.ragebot_antiaim_desync)
 	{
@@ -73,38 +147,18 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 
 		static QAngle LastRealAngle = QAngle(0, 0, 0);
 
-			if (GetKeyState(g_Options.invertaakey)) {
-				if (!bSendPacket && !(g_LocalPlayer->m_iShotsFired() >= 1))
-				{
-					static bool bFlip = true;
-					cmd->viewangles.yaw += 58.f;
-				}
-				if (bSendPacket && !(g_LocalPlayer->m_iShotsFired() >= 1))
-				{
-					static bool bFlip = true;
-					cmd->viewangles.yaw += -58.f;
-				}
-			}
-			if (!GetKeyState(g_Options.invertaakey)) {
-				if (!bSendPacket && !(g_LocalPlayer->m_iShotsFired() >= 1))
-				{
-					static bool bFlip = false;
-					cmd->viewangles.yaw += 58.f;
-				}
-				if (bSendPacket && !(g_LocalPlayer->m_iShotsFired() >= 1))
-				{
-					static bool bFlip = false;
-					cmd->viewangles.yaw += -58.f;
-				}
-			}
+		if (!bSendPacket && !(g_LocalPlayer->m_iShotsFired() >= 1))
+		{
+			static bool bFlip = false;
+			cmd->viewangles.yaw += bFlip ? 58.f : -58.f;
+		}
 
-			if (bSendPacket)
-			{
-				LastRealAngle = cmd->viewangles;
-			}
-
+		if (bSendPacket)
+		{
+			LastRealAngle = cmd->viewangles;
 		}
 	}
+}
 
 void CAntiAim::Pitch(CUserCmd* cmd)
 {
