@@ -133,7 +133,6 @@ public:
 	bool slidewalk = false;
 	bool rageresolver = true;
 	int fakepingkey = 0;
-	bool teamesp = false;
 	bool teamchams = false;
 	bool asusprops = false;
 		bool esp_enemies_only = false;
@@ -287,7 +286,7 @@ public:
 		Color color_chams_strap_occluded = { 255, 255, 255, 100 };	
 		Color color_chams_arms_visible= { 152,255,0,255 };
 		Color color_chams_arms_occluded= { 52,255,0,110 };
-		Color player_enemy_visible_shine = { 255, 255, 255 };
+		Color player_enemy_visible_shine = { 150, 150, 150 };
 		Color glowcolor = { 255, 255, 255 };
 		Color glowcolorenemy = { 255, 255, 255 };
 		Color glowcolorarms = { 255, 255, 255 };

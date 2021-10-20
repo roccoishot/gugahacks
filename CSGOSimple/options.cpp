@@ -189,8 +189,7 @@ void Options::SetupVisuals()
 	SetupValue(noscope, "Visuals", "Remove Scope");
 	SetupValue(fovscope, "Visuals", "FOV In Scope");
 	SetupValue(flashkillcheck, "Visuals", "Flash Kill Check");
-	SetupValue(teamesp, "Visuals", "Team ESP");
-	SetupValue(teamchams, "Visuals", "Team Chams");
+	SetupValue(teamchams, "Visuals", "Local Chams");
 	SetupValue(esp_player_boxes, "Visuals", "Boxes");
 	SetupValue(esp_player_boxesOccluded, "ESP", "Occluded");
 	SetupValue(esp_player_names, "Visuals", "Names");
@@ -201,7 +200,7 @@ void Options::SetupVisuals()
 	SetupValue(chams_player_enabled, "Visuals", "Chams Vis");
 	SetupValue(chams_player_ignorez, "Visuals", "Chams XYZ");
 	SetupValue(arms_material, "Visuals", "Arms Material");
-	SetupColor(glowcolor, "Double Color Team");
+	SetupColor(glowcolor, "Double Color Local");
 	SetupColor(glowcolorenemy, "Double Color Enemy");
 	SetupColor(glowcolorarms, "Double Color Arms");
 	SetupColor(glowcolorstrap, "Double Color Strap");
