@@ -25,19 +25,28 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 		if (backup)
 			materials.emplace_back(MaterialBackup(i, material));
 
-		material->AlphaModulate((float)255 / 255.0f);
+		if (g_Options.asusprops)
+		material->AlphaModulate((float)60 / 255.0f);
+		else {
+
+		}
 		material->ColorModulate((float)40 / 255.0f, (float)40 / 255.0f, (float)40 / 255.0f);
 	}
 }
 
 void nightmode::apply()
 {
-	if (!materials.empty())
-	{
-		for (auto i = 0; i < (int)materials.size(); i++) //-V202
-			modulate(materials[i].handle, materials[i].material);
+	if (g_Options.changemats == false) {
+		if (!materials.empty())
+		{
+			for (auto i = 0; i < (int)materials.size(); i++) //-V202
+				modulate(materials[i].handle, materials[i].material);
 
-		return;
+			return;
+		}
+
+		g_Options.changemats = true;
+
 	}
 
 	materials.clear();

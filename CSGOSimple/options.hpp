@@ -173,6 +173,7 @@ public:
 		//
 		// MISC
 		//
+		bool changemats = false;
 		bool teamesp = false;
 		bool ducknair = false;
 		bool fullbright = false;
