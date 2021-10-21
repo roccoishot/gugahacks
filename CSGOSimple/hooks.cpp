@@ -489,11 +489,22 @@ namespace Hooks {
 		Misc::ClanTag();
 
 		if (!cmd || !cmd->command_number)
+		{
+			oCreateMove(g_ClientMode, smt, cmd);
 			return;
+		}
 		QAngle oldAngle = cmd->viewangles;
 
 		IGameEvent* event;
 
+		if (!g_LocalPlayer->IsAlive())
+		{
+			oCreateMove(g_ClientMode, smt, cmd);
+			return;
+		}
+
+		uintptr_t* frame_ptr;
+		__asm mov frame_ptr, ebp;
 
 
 		static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
@@ -559,9 +570,6 @@ namespace Hooks {
 		//verified->m_cmd = *cmd;
 		//verified->m_crc = cmd->GetChecksum();
 
-		if (!cmd || !cmd->command_number)
-			return;
-
 		if (Menu::Get().IsVisible())
 			cmd->buttons &= ~IN_ATTACK;
 
@@ -613,7 +621,7 @@ namespace Hooks {
 		if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_Options.ducknair && !(cmd->buttons |= IN_DUCK))
 			cmd->buttons |= IN_DUCK;
 
-		// faggot code sopmk e
+		// bitch ass code sopmk e
 		if (int(Globals::real_angle * 1000))
 		{
 			if (!bSendPacket)
@@ -636,6 +644,9 @@ namespace Hooks {
 			g_BlockBot->cmove(cmd);
 			g_BlockBot->draw();
 		}
+
+		Globals::send_packet = bSendPacket;
+		*(bool*)(*frame_ptr - 0x1C) = bSendPacket;
 	}
 	//--------------------------------------------------------------------------------
 	__declspec(naked) void __fastcall hkCreateMove_Proxy(void* _this, int, int sequence_number, float input_sample_frametime, bool active)
