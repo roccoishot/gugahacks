@@ -311,6 +311,7 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd)
             {
                 if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
                 {
+
                     if (Globals::send_packet)
                     {
                         float calculated_lean = std::clamp(cmd->viewangles.yaw - g_LocalPlayer->m_flLowerBodyYawTarget(), -58.f, 58.f);

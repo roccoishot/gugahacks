@@ -494,8 +494,7 @@ namespace Hooks {
 
 		IGameEvent* event;
 
-		uintptr_t* frame_ptr;
-		__asm mov frame_ptr, ebp;
+
 
 		static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
 
@@ -639,7 +638,6 @@ namespace Hooks {
 		}
 
 		Globals::send_packet = bSendPacket;
-		*(bool*)(*frame_ptr - 0x1C) = bSendPacket;
 	}
 	//--------------------------------------------------------------------------------
 	__declspec(naked) void __fastcall hkCreateMove_Proxy(void* _this, int, int sequence_number, float input_sample_frametime, bool active)
