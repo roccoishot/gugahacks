@@ -494,9 +494,9 @@ namespace Hooks {
 
 		IGameEvent* event;
 
-		static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
 
-			CNightmode::Get().PerformNightmode();
+
+		static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
 
 		if (g_Options.fovscope) {
 			if (g_LocalPlayer)
@@ -829,6 +829,30 @@ namespace Hooks {
 				default: return nullptr;
 				}
 			};
+
+			MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i);
+			IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
+
+			if (strstr(pMaterial->GetName(), ("models/props/de_nuke/hr_nuke/nuke_skydome_001")))
+			{
+				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			}
+			if (strstr(pMaterial->GetName(), ("models/props/de_inferno/hr_i/inferno_skybox")))
+			{
+				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			}
+			if (strstr(pMaterial->GetName(), ("models/props/de_dust/dust_skybox")))
+			{
+				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			}
+
+			if (g_Options.colormodulate) {
+				CNightmode::Get().PerformNightmode();
+			}
+			else {
+
+			}
+
 			if (const auto model = getModel(g_LocalPlayer->m_iTeamNum())) {
 				if (stage == FRAME_RENDER_START)
 					originalIdx = g_LocalPlayer->m_nModelIndex();
@@ -968,7 +992,7 @@ namespace Hooks {
 		for (auto mat_s : vistasmoke_mats)
 		{
 			IMaterial* mat = g_MatSystem->FindMaterial(mat_s, TEXTURE_GROUP_OTHER);
-			mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, g_Options.no_smoke);
+			mat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.no_smoke);
 		}
 
 		Chams::Get().OnDrawModelExecute(pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);

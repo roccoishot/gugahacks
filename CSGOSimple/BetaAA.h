@@ -25,7 +25,10 @@ enum class PitchAntiAims : int
 	EMOTION,
 	DOWN,
 	UP,
-	ZERO
+	ZERO,
+	FAKEDOWN,
+	FAKEUP
+
 };
 
 class CAntiAim : public Singleton<CAntiAim>
@@ -42,7 +45,7 @@ public:
 	void SlideWalk(CUserCmd* cmd);
 private:
 	void DoAntiAim(CUserCmd* cmd, bool& bSendPacket);
-	void Pitch(CUserCmd* cmd);
+	void Pitch(CUserCmd* cmd, bool& bSendPacket);
 	void Yaw(CUserCmd* cmd, bool fake);
 	void YawAdd(CUserCmd* cmd, bool fake);
 	int GetFPS();

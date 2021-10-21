@@ -83,7 +83,7 @@ float WallThickness(Vector from, Vector to, C_BasePlayer* skip, C_BasePlayer* sk
 void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 {
 	Yaw(cmd, false);
-	Pitch(cmd);
+	Pitch(cmd, bSendPacket);
 
 	float best_rotation = 0.f;
 	auto local_eyeposition = g_LocalPlayer->GetEyePos();
@@ -157,8 +157,14 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 	}
 }
 
-void CAntiAim::Pitch(CUserCmd* cmd)
+void CAntiAim::Pitch(CUserCmd* cmd, bool& bSendPacket)
 {
+
+	static bool sw = false;
+	bSendPacket = sw;
+	sw = !sw;
+
+	static bool bFlip = false;
 	bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
 	bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
 	bool Standing = !Moving && !InAir;
@@ -182,6 +188,12 @@ void CAntiAim::Pitch(CUserCmd* cmd)
 
 	case PitchAntiAims::ZERO:
 		cmd->viewangles.pitch = 0.f;
+		break;
+	case PitchAntiAims::FAKEDOWN:
+		cmd->viewangles.pitch = bFlip ? 89.f : -89.f * (bSendPacket ? 1 : -1);
+		break;
+	case PitchAntiAims::FAKEUP:
+		cmd->viewangles.pitch = bFlip ? -89.f : 89.f * (bSendPacket ? 1 : -1);
 		break;
 	}
 }

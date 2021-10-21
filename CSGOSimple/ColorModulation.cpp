@@ -18,10 +18,11 @@ void CNightmode::PerformNightmode()
 
 		const char* group = pMaterial->GetTextureGroupName();
 		const char* name = pMaterial->GetName();
-		float world_textures = g_Options.colormodulate ? 0.10f : 1.f;
+
+		float world_textures = g_Options.colormodulate ? 0.30f : 1.f;
 		float staticprop = g_Options.colormodulate ? 0.30f : 1.f;
 		float palace_pillars = g_Options.colormodulate ? 0.30f : 1.f;
-		float propalefuh = g_Options.asusprops ? 0.40f : 1.f;
+		float propalefuh = g_Options.asusprops ? 0.60f : 1.f;
 
 		if (g_Options.colormodulate) {
 			if (strstr(group, ("World")))
@@ -33,6 +34,7 @@ void CNightmode::PerformNightmode()
 				pMaterial->ColorModulate(staticprop, staticprop, staticprop);
 				pMaterial->AlphaModulate(propalefuh);
 			}
+
 			if (strstr(name, ("models/props/de_dust/palace_bigdome")))
 			{
 				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.colormodulate);
@@ -41,23 +43,12 @@ void CNightmode::PerformNightmode()
 			{
 				pMaterial->ColorModulate(palace_pillars, palace_pillars, palace_pillars);
 			}
-			if (strstr(name, ("models/props/de_nuke/hr_nuke/nuke_skydome_001")))
-			{
-				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
-			}
 
-			if (strstr(name, ("models/props/de_inferno/hr_i/inferno_skybox")))
-			{
-				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
-			}
-			if (strstr(name, ("models/props/de_dust/dust_skybox")))
-			{
-				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
-			}
 			if (strstr(group, ("Particle textures")))
 			{
 				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.colormodulate);
 			}
+
+		}
 		}
 	}
-}

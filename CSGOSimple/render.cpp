@@ -111,7 +111,7 @@ void Render::BeginScene() {
 		Render::Get().RenderText("USING TEST", 10, 35, 18.f, g_Options.menucolor, false, true, g_VeloFont);
 
 	if (g_Options.backtix > 16)
-		Render::Get().RenderText("WARNING: This Backtrack Can Be Unstable!", 10, 65, 18.f, g_Options.menucolor, false, true, g_VeloFont);
+		Render::Get().RenderText("WARNING: This Backtrack Can Be Unstable!", 10, 65, 18.f, g_Options.menucolor, false, true, g_SpectatorListFont);
 		
 	if (g_Options.drawfov && c > 0)
 		Render::Get().RenderCircle(960.f, 540.f, c, 48, g_Options.menucolor, 1.3f);

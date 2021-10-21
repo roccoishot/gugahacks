@@ -189,7 +189,8 @@ void Options::SetupVisuals()
 	SetupValue(noscope, "Visuals", "Remove Scope");
 	SetupValue(fovscope, "Visuals", "FOV In Scope");
 	SetupValue(flashkillcheck, "Visuals", "Flash Kill Check");
-	SetupValue(teamchams, "Visuals", "Local Chams");
+	SetupValue(teamesp, "Visuals", "Team ESP");
+	SetupValue(teamchams, "Visuals", "Team Chams");
 	SetupValue(esp_player_boxes, "Visuals", "Boxes");
 	SetupValue(esp_player_boxesOccluded, "ESP", "Occluded");
 	SetupValue(esp_player_names, "Visuals", "Names");
@@ -200,7 +201,7 @@ void Options::SetupVisuals()
 	SetupValue(chams_player_enabled, "Visuals", "Chams Vis");
 	SetupValue(chams_player_ignorez, "Visuals", "Chams XYZ");
 	SetupValue(arms_material, "Visuals", "Arms Material");
-	SetupColor(glowcolor, "Double Color Local");
+	SetupColor(glowcolor, "Double Color Team");
 	SetupColor(glowcolorenemy, "Double Color Enemy");
 	SetupColor(glowcolorarms, "Double Color Arms");
 	SetupColor(glowcolorstrap, "Double Color Strap");
@@ -289,7 +290,7 @@ void Options::SetupMisc()
 	SetupValue(lastjumpoutline, "Misc", "Last jump outline");
 	SetupValue(autoaccept, "Misc", "Auto accept");
 	SetupValue(no_flash, "Misc", "No flash");
-	SetupValue(no_smoke, "Misc", "Filter smoke");
+	SetupValue(no_smoke, "Misc", "No smoke");
 	SetupValue(misc_bhop, "Misc", "Bunny hop");
 	SetupValue(autostrafe, "Misc", "Auto strafe");
 	SetupValue(AutoStafe_key, "Misc", "AutoStafe Key");

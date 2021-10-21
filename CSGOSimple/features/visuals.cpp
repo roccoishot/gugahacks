@@ -98,8 +98,16 @@ bool Visuals::Player::Begin(C_BasePlayer* pl)
 	ctx.is_enemy = g_LocalPlayer->m_iTeamNum() != pl->m_iTeamNum();
 	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, HITBOX_PELVIS);
 
+	if (g_Options.teamesp == false) {
 		if (!ctx.is_enemy)
 			return false;
+	};
+	if (g_Options.teamesp == true) {
+		if (!ctx.is_enemy)
+		{
+
+		}
+	};
 
 	if (!ctx.is_visible && !g_Options.esp_player_boxesOccluded)
 		return false;

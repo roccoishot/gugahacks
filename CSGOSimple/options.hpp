@@ -173,6 +173,7 @@ public:
 		//
 		// MISC
 		//
+		bool teamesp = false;
 		bool ducknair = false;
 		bool fullbright = false;
 		bool misc_chatspam = false;
@@ -286,7 +287,7 @@ public:
 		Color color_chams_strap_occluded = { 255, 255, 255, 100 };	
 		Color color_chams_arms_visible= { 152,255,0,255 };
 		Color color_chams_arms_occluded= { 52,255,0,110 };
-		Color player_enemy_visible_shine = { 150, 150, 150 };
+		Color player_enemy_visible_shine = { 5, 5, 5, 15 };
 		Color glowcolor = { 255, 255, 255 };
 		Color glowcolorenemy = { 255, 255, 255 };
 		Color glowcolorarms = { 255, 255, 255 };
