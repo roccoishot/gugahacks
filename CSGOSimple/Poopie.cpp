@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "BetaAA.h"
 #include "crypt_str.h"
+#include "Globals.h"
 
 std::string clantag0_ = (("GUGAHACKS.SU  "));
 std::string clantag1_ = (("dc.gg/URvWEkvYc5"));
@@ -303,10 +304,29 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd)
             if (stage != FRAME_RENDER_START)
                 return;
 
+            static QAngle stored_angles = cmd->viewangles;
+            static float stored_lean = 0.f; // when the cough syrup got me storing!!!!
+
             if (g_EngineClient->IsInGame() && g_LocalPlayer)
             {
                 if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
-                    g_LocalPlayer->SetVAngles(cmd->viewangles);
+                {
+                    if (Globals::send_packet)
+                    {
+                        float calculated_lean = std::clamp(cmd->viewangles.yaw - g_LocalPlayer->m_flLowerBodyYawTarget(), -58.f, 58.f);
+
+                        g_LocalPlayer->SetVAngles(cmd->viewangles);
+                        stored_angles = cmd->viewangles;
+
+                        stored_lean = calculated_lean;
+                        g_LocalPlayer->GetPlayerAnimState()->m_flGoalFeetYaw = calculated_lean;
+                    }
+                    else
+                    {
+                        g_LocalPlayer->SetVAngles(stored_angles);
+                        g_LocalPlayer->GetPlayerAnimState()->m_flGoalFeetYaw = stored_lean;
+                    }
+                }
             }
     }
 
