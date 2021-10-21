@@ -11,4 +11,5 @@ namespace Globals
 	bool WeaponTabValid = false;
 	CUserCmd* m_cmd = nullptr;
 	float real_angle, fake_angle = 0.f;
+	bool send_packet = false;
 }
