@@ -11,5 +11,4 @@ namespace Globals
 	extern bool WeaponTabValid;
 	extern CUserCmd* m_cmd;
 	extern float real_angle, fake_angle;
-	extern bool send_packet;
 }
