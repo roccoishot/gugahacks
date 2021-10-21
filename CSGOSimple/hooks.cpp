@@ -846,6 +846,10 @@ namespace Hooks {
 				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
 			}
 
+			if (g_Options.colormodulate) {
+				CNightmode::Get().PerformNightmode();
+			}
+
 			if (const auto model = getModel(g_LocalPlayer->m_iTeamNum())) {
 				if (stage == FRAME_RENDER_START)
 					originalIdx = g_LocalPlayer->m_nModelIndex();
@@ -856,24 +860,6 @@ namespace Hooks {
 
 				if (const auto ragdoll = g_LocalPlayer->get_entity_from_handle(g_LocalPlayer->m_hRagdoll()))
 					ragdoll->setModelIndex(idx);
-			}
-
-			if (stage == FRAME_RENDER_END)
-			{
-				static auto r_drawspecificstaticprop = g_CVar->FindVar(crypt_str("r_drawspecificstaticprop")); //-V807
-
-				if (r_drawspecificstaticprop->GetBool())
-					r_drawspecificstaticprop->SetValue(FALSE);
-
-				if (g_Options.misc_nightmode)
-				{
-					if (g_Options.misc_nightmode)
-						nightmode::Get().apply();
-					else
-						nightmode::Get().remove();
-
-					g_Options.changemats = false;
-				}
 			}
 		}
 		ofunc(g_CHLClient, edx, stage);
