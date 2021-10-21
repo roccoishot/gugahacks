@@ -214,7 +214,7 @@ int C_BasePlayer::GetSequenceActivity(int sequence)
 
 CCSGOPlayerAnimState *C_BasePlayer::GetPlayerAnimState()
 {
-	return *(CCSGOPlayerAnimState**)((DWORD)this + 0x3914);
+	return *(CCSGOPlayerAnimState**)((DWORD)this + 0x9960);
 }
 
 void C_BasePlayer::UpdateAnimationState(CCSGOPlayerAnimState *state, QAngle angle)
