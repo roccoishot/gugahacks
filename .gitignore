@@ -153,3 +153,7 @@ build/Gugahacks/Release/Gugahacks.tlog/unsuccessfulbuild
 .vs/Gugahacks/v17/.suo
 *.bin
 *.db
+*.db-shm
+*.db-wal
+*.opendb
+CSGOSimple/CSGOSimple.vcxproj
