@@ -14,6 +14,7 @@ namespace Misc
 	void Fakelag(CUserCmd* cmd, bool& bSendPacket);
 	void UpdateLBY(CUserCmd* cmd, bool& bSendPacket);
 	void ClanTag();
+	void NightmodeFix();
 	void SilentWalk(CUserCmd* cmd);
 	void AutoStop(CUserCmd* cmd);
 	void SlowWalk(CUserCmd* cmd);

@@ -143,8 +143,8 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 	//materials\models\inventory_items\dogtags\dogtags_lightray.vmt
 	// save for l8r //static IMaterial* pulse = g_MatSystem->FindMaterial("models/inventory_items/dogtags/dogtags_outline", TEXTURE_GROUP_OTHER);
-	static IMaterial* shine = g_MatSystem->FindMaterial("models/inventory_items/cologne_prediction/cologne_prediction_glass", TEXTURE_GROUP_OTHER);
-	static IMaterial* othershine = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", TEXTURE_GROUP_OTHER);
+	static IMaterial* shine = g_MatSystem->FindMaterial("models/inventory_items/cologne_prediction/cologne_prediction_glass", nullptr);
+	static IMaterial* othershine = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/gloss", nullptr);
 	static IMaterial* velvet = g_MatSystem->FindMaterial("models/inventory_items/trophy_majors/velvet", TEXTURE_GROUP_OTHER);
 	static IMaterial* shit = g_MatSystem->FindMaterial("glowOverlay", nullptr);
 	static IMaterial* dubble = g_MatSystem->FindMaterial("dev/glow_armsrace", TEXTURE_GROUP_MODEL);
@@ -395,10 +395,14 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 	}
 
 	if (is_arm || is_sleeve) {
+
+		if (is_player)
+			return;
+
 		fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 		if (g_Options.arms_material == 2) {
-			othershine->ColorModulate(g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
-			othershine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+			othershine->ColorModulate(g_Options.ohthuhshine[0] / 255.f, g_Options.ohthuhshine[1] / 255.f, g_Options.ohthuhshine[2] / 255.f);
+			othershine->AlphaModulate(g_Options.ohthuhshine[3] / 255.f);
 			g_StudioRender->ForcedMaterialOverride(othershine);
 		}
 		if (g_Options.arms_material == 3) {
@@ -445,12 +449,12 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 				if (g_Options.arms_material == 2)
 				{
-					othershine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+					othershine->AlphaModulate(g_Options.ohthuhshine[3] / 255.f);
 					bool bFound = false;
 					auto pVar = shine->FindVar("$envmaptint", &bFound);
 					if (bFound)
 					{
-						(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
+						(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.ohthuhshine[0] / 255.f, g_Options.ohthuhshine[1] / 255.f, g_Options.ohthuhshine[2] / 255.f);
 					}
 					g_MdlRender->ForcedMaterialOverride(othershine);
 				}

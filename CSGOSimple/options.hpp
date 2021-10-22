@@ -173,6 +173,7 @@ public:
 		//
 		// MISC
 		//
+		bool colormodulation = false;
 		bool changemats = false;
 		bool teamesp = false;
 		bool ducknair = false;
@@ -280,7 +281,7 @@ public:
 
 		Color color_armour_player = { 0, 0, 255 };
 		Color color_name_player = { 255, 255, 255 };
-		Color color_chams_player_ally_visible= { 0, 0, 255 };
+		Color color_chams_player_ally_visible= { 0, 0, 255, 255 };
 		Color color_chams_player_ally_occluded= { 165, 165, 255 };
 		Color color_chams_player_enemy_visible= { 152,255,0,255 };
 		Color color_chams_player_enemy_occluded= { 52,255,0,110 };
@@ -289,6 +290,7 @@ public:
 		Color color_chams_arms_visible= { 152,255,0,255 };
 		Color color_chams_arms_occluded= { 52,255,0,110 };
 		Color player_enemy_visible_shine = { 5, 5, 5, 15 };
+		Color ohthuhshine = { 5, 5, 5, 15 };
 		Color glowcolor = { 255, 255, 255 };
 		Color glowcolorenemy = { 255, 255, 255 };
 		Color glowcolorarms = { 255, 255, 255 };

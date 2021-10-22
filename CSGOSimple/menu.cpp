@@ -700,9 +700,12 @@ void Menu::Render()
 					}
 					ImGui::Text("Model Ambience");
 					ImGui::SliderFloat("  ", &g_Options.amibence, 0, 1500);
-					ImGui::Checkbox("Nightmode", &g_Options.colormodulate);
-					if (g_Options.colormodulate)
-					ImGui::Checkbox("Asus Props", &g_Options.asusprops);
+					ImGui::Checkbox("Color Modulation", &g_Options.colormodulation);
+					if (g_Options.colormodulation) {
+						ImGui::Checkbox("Nightmode", &g_Options.colormodulate);
+						if (g_Options.colormodulate)
+							ImGui::Checkbox("Asus Props", &g_Options.asusprops);
+					}
 					ImGui::Separator("Glow");
 					ImGui::Spacing();
 					ImGui::SliderFloat("R Glow", &g_Options.worldglowr, 0, 1);

@@ -9,6 +9,55 @@ std::string clantag2_ = (("GUGAHACKS"));
 std::string clantag3_ = (("  US.SKCAHAGUG"));
 std::string fart_ = ((" "));
 
+void Misc::NightmodeFix()
+{
+    static auto in_game = false;
+
+    if (g_EngineClient->IsInGame() && !in_game)
+    {
+        in_game = true;
+
+        g_Options.changemats = true;
+    }
+    else if (!g_EngineClient->IsInGame() && in_game)
+        in_game = false;
+
+    static auto player_enable = g_Options.chams_player_enabled;
+
+    if (player_enable != g_Options.chams_player_enabled)
+    {
+        player_enable = g_Options.chams_player_enabled;
+        g_Options.changemats = true;
+        return;
+    }
+
+    static auto setting = g_Options.colormodulate;
+
+    if (setting != g_Options.colormodulate)
+    {
+        setting = g_Options.colormodulate;
+        g_Options.changemats = true;
+        return;
+    }
+
+    static auto setting_world = 40.f;
+
+    if (setting_world != 40.f)
+    {
+        setting_world = 40.f;
+        g_Options.changemats = true;
+        return;
+    }
+
+    static auto setting_props = 75.f;
+
+    if (setting_props != 75.f)
+    {
+        setting_props = 75.f;
+        g_Options.changemats = true;
+    }
+}
+
 void Misc::ClanTag()
 {
     if (!g_Options.clantag)

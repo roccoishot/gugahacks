@@ -185,6 +185,7 @@ void Options::SetupWeapons()
 
 void Options::SetupVisuals()
 {
+	SetupValue(colormodulation, "World", "Color Modulation");
 	SetupValue(faresp, "Visuals", "Far ESP");
 	SetupValue(noscope, "Visuals", "Remove Scope");
 	SetupValue(fovscope, "Visuals", "FOV In Scope");

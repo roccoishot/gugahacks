@@ -69,7 +69,7 @@ void movement::edgebug(CUserCmd* cmd) {
                 //Stompthem Kay Very AngY!
             }
 
-            float max_radias = 128;
+            float max_radias = DirectX::XM_2PI;
             float step = max_radias / 128;
             float xThick = 23;
             bool did_jump;
