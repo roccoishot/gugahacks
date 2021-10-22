@@ -1,84 +1,54 @@
 #include "ColorModulation.h"
+#include "./valve_sdk/csgostructs.hpp"
 
-
-std::vector <MaterialBackup> materials;
-
-void nightmode::clear_stored_materials()
+void CNightmode::PerformNightmode()
 {
-	materials.clear();
-}
+	static auto r_DrawSpecificStaticProp = g_CVar->FindVar(("r_DrawSpecificStaticProp"));
+	r_DrawSpecificStaticProp->SetValue(g_Options.colormodulate);
 
-void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = false)
-{
-	auto name = material->GetTextureGroupName();
-
-	if (strstr(name, crypt_str("World")))
+	for (MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i))
 	{
-		if (backup)
-			materials.emplace_back(MaterialBackup(i, material));
+		IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
 
-		material->AlphaModulate((float)255 / 255.0f);
-		material->ColorModulate((float)40 / 255.0f, (float)40 / 255.0f, (float)40 / 255.0f);
-	}
-	else if (strstr(name, crypt_str("StaticProp")))
-	{
-		if (backup)
-			materials.emplace_back(MaterialBackup(i, material));
+		if (!pMaterial)
+			continue;
 
-		if (g_Options.asusprops)
-		material->AlphaModulate((float)60 / 255.0f);
-		else {
+		if (!pMaterial->IsPrecached())
+			continue;
+
+		const char* group = pMaterial->GetTextureGroupName();
+		const char* name = pMaterial->GetName();
+
+		float world_textures = g_Options.colormodulate ? 0.30f : 1.f;
+		float staticprop = g_Options.colormodulate ? 0.30f : 1.f;
+		float palace_pillars = g_Options.colormodulate ? 0.30f : 1.f;
+		float propalefuh = g_Options.asusprops ? 0.60f : 1.f;
+
+		if (g_Options.colormodulate) {
+			if (strstr(group, ("World")))
+			{
+				pMaterial->ColorModulate(world_textures, world_textures, world_textures);
+			}
+			if (strstr(group, ("StaticProp")))
+			{
+				pMaterial->ColorModulate(staticprop, staticprop, staticprop);
+				pMaterial->AlphaModulate(propalefuh);
+			}
+
+			if (strstr(name, ("models/props/de_dust/palace_bigdome")))
+			{
+				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.colormodulate);
+			}
+			if (strstr(name, ("models/props/de_dust/palace_pillars")))
+			{
+				pMaterial->ColorModulate(palace_pillars, palace_pillars, palace_pillars);
+			}
+
+			if (strstr(group, ("Particle textures")))
+			{
+				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.colormodulate);
+			}
 
 		}
-		material->ColorModulate((float)40 / 255.0f, (float)40 / 255.0f, (float)40 / 255.0f);
-	}
-}
-
-void nightmode::apply()
-{
-	if (g_Options.changemats == false) {
-		if (!materials.empty())
-		{
-			for (auto i = 0; i < (int)materials.size(); i++) //-V202
-				modulate(materials[i].handle, materials[i].material);
-
-			return;
 		}
-
-		g_Options.changemats = true;
-
 	}
-
-	materials.clear();
-	auto materialsystem = g_MatSystem;
-
-	for (auto i = materialsystem->FirstMaterial(); i != materialsystem->InvalidMaterial(); i = materialsystem->NextMaterial(i))
-	{
-		auto material = materialsystem->GetMaterial(i);
-
-		if (!material)
-			continue;
-
-		if (material->IsErrorMaterial())
-			continue;
-
-		modulate(i, material, true);
-	}
-}
-
-void nightmode::remove()
-{
-	for (auto i = 0; i < materials.size(); i++)
-	{
-		if (!materials[i].material)
-			continue;
-
-		if (materials[i].material->IsErrorMaterial())
-			continue;
-
-		materials[i].restore();
-		materials[i].material->Refresh();
-	}
-
-	materials.clear();
-}
