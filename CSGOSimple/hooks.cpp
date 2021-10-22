@@ -20,7 +20,6 @@
 #include "movement.h"
 #include "crypt_str.h"
 #include "blockbot.hpp"
-#include "lagcompesnation.h"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -585,7 +584,7 @@ namespace Hooks {
 		CPredictionSystem::Get().End(g_LocalPlayer);
 
 		if (g_Options.rageresolver) {
-			LagComp::Get().Run();
+			//LagComp::Get().Run();
 		}
 
 		Math::Normalize3(cmd->viewangles);
@@ -613,7 +612,8 @@ namespace Hooks {
 
 		if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_Options.ducknair && !(cmd->buttons |= IN_DUCK))
 			cmd->buttons |= IN_DUCK;
-		// bad code sopmk e
+
+		// faggot code sopmk e
 		if (int(Globals::real_angle * 1000))
 		{
 			if (!bSendPacket)

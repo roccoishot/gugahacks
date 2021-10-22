@@ -214,7 +214,7 @@ int C_BasePlayer::GetSequenceActivity(int sequence)
 
 CCSGOPlayerAnimState *C_BasePlayer::GetPlayerAnimState()
 {
-	return *(CCSGOPlayerAnimState**)((DWORD)this + 0x9960);
+	return *(CCSGOPlayerAnimState**)((DWORD)this + 0x3914);
 }
 
 void C_BasePlayer::UpdateAnimationState(CCSGOPlayerAnimState *state, QAngle angle)
@@ -419,7 +419,7 @@ bool C_BasePlayer::CanSeePlayer(C_BasePlayer* player, const Vector& pos)
 
 void C_BasePlayer::UpdateClientSideAnimation()
 {
-	return CallVFunction<void(__thiscall*)(void*)>(this, 224)(this); // VALVE_ADDED_FUNCS
+	return CallVFunction<void(__thiscall*)(void*)>(this, 224 + VALVE_ADDED_FUNCS)(this);
 }
 Vector C_BasePlayer::abs_origin()
 {

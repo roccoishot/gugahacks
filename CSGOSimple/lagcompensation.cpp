@@ -18,11 +18,9 @@ void LagComp::Run()
 		record.oldsimtime = player->m_flOldSimulationTime();
 		record.origin = player->m_vecOrigin();
 
-		resolver::Get().Resolve(player, record);
-
 		// valid amount of records
 		//if (records[player->EntIndex()].size() > 1)
-		/* {
+		{
 			auto cur_record = record; // records[player->EntIndex()].at(records[player->EntIndex()].size())
 			//auto prev_record = records[player->EntIndex()].at(records[player->EntIndex()].size() - 1);
 			//auto delta = cur_record.origin - prev_record.origin;
@@ -30,7 +28,7 @@ void LagComp::Run()
 			// make sure they arent breaking LC
 			//if (fabs(delta.Length()) < 4096.f) // are they? shit. nigga.
 			LagCompensate(player, cur_record);
-		}*/
+		}
 		//else
 		//	records[player->EntIndex()].push_back(record);
 	}

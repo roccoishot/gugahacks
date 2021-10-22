@@ -349,7 +349,7 @@ void Menu::Render()
 					ImGui::SliderInt("Ping", &g_Options.fakepingzzz, 1.f, 1000.f, "%.f");
 					ImGui::Text("On Key"); ImGui::SameLine(); ImGui::Hotkey("                                                                                             ", &g_Options.fakepingkey);
 				}
-				ImGui::Checkbox("Resolver", &g_Options.rageresolver);
+				//ImGui::Checkbox("Resolver", &g_Options.rageresolver);
 			}
 			ImGui::EndChild();
 		}

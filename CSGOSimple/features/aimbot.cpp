@@ -293,6 +293,22 @@ void CLegitbot::Run(CUserCmd* cmd)
 		}
 	}
 
+	//autorevolver
+	/*auto pWeapon = g_LocalPlayer->m_hActiveWeapon();
+	static int pasteme = 0;
+	pasteme++;
+	if (pasteme <= 14.5f) {
+		cmd->buttons |= IN_ATTACK;
+	}
+	else {
+		pasteme = 0;
+
+		float flPostponeFireReady = pWeapon->m_flPostponeFireReadyTime();
+		if (flPostponeFireReady > 0 && flPostponeFireReady < g_GlobalVars->curtime) {
+			cmd->buttons &= ~IN_ATTACK;
+		}
+	}*/
+
 	if ((cmd->buttons & IN_ATTACK) /*&& !IsSilent()*/)
 		RCS(angles, target);
 	last_punch = current_punch;
