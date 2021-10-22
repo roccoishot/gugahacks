@@ -419,7 +419,7 @@ bool C_BasePlayer::CanSeePlayer(C_BasePlayer* player, const Vector& pos)
 
 void C_BasePlayer::UpdateClientSideAnimation()
 {
-	return CallVFunction<void(__thiscall*)(void*)>(this, 224 + VALVE_ADDED_FUNCS)(this);
+	return CallVFunction<void(__thiscall*)(void*)>(this, 224)(this); // VALVE_ADDED_FUNCS
 }
 Vector C_BasePlayer::abs_origin()
 {

@@ -20,6 +20,7 @@
 #include "movement.h"
 #include "crypt_str.h"
 #include "blockbot.hpp"
+#include "lagcompesnation.h"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -584,7 +585,7 @@ namespace Hooks {
 		CPredictionSystem::Get().End(g_LocalPlayer);
 
 		if (g_Options.rageresolver) {
-			//LagComp::Get().Run();
+			LagComp::Get().Run();
 		}
 
 		Math::Normalize3(cmd->viewangles);
