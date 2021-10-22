@@ -311,22 +311,9 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd)
             {
                 if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
                 {
-
-                    if (Globals::send_packet)
-                    {
-                        float calculated_lean = std::clamp(cmd->viewangles.yaw - g_LocalPlayer->m_flLowerBodyYawTarget(), -58.f, 58.f);
-
-                        g_LocalPlayer->SetVAngles(cmd->viewangles);
-                        stored_angles = cmd->viewangles;
-
-                        stored_lean = calculated_lean;
-                        g_LocalPlayer->GetPlayerAnimState()->m_flGoalFeetYaw = calculated_lean;
-                    }
-                    else
-                    {
-                        g_LocalPlayer->SetVAngles(stored_angles);
-                        g_LocalPlayer->GetPlayerAnimState()->m_flGoalFeetYaw = stored_lean;
-                    }
+                    g_LocalPlayer->SetVAngles(cmd->viewangles);
+                    float calculated_lean = std::clamp(cmd->viewangles.yaw - g_LocalPlayer->m_flLowerBodyYawTarget(), -58.f, 58.f);
+                    g_LocalPlayer->GetPlayerAnimState()->m_flGoalFeetYaw = g_LocalPlayer->m_flLowerBodyYawTarget();
                 }
             }
     }

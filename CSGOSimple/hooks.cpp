@@ -613,7 +613,7 @@ namespace Hooks {
 		if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_Options.ducknair && !(cmd->buttons |= IN_DUCK))
 			cmd->buttons |= IN_DUCK;
 
-		// bad word (we are well mannered!) code sopmk e
+		// bad code sopmk e
 		if (int(Globals::real_angle * 1000))
 		{
 			if (!bSendPacket)
@@ -636,8 +636,6 @@ namespace Hooks {
 			g_BlockBot->cmove(cmd);
 			g_BlockBot->draw();
 		}
-
-		Globals::send_packet = bSendPacket;
 	}
 	//--------------------------------------------------------------------------------
 	__declspec(naked) void __fastcall hkCreateMove_Proxy(void* _this, int, int sequence_number, float input_sample_frametime, bool active)
