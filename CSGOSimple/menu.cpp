@@ -368,7 +368,7 @@ void Menu::Render()
 			ImGui::BeginChild("##1", { 166,520 });
 			{
 				float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
-				ImGui::Separator("Legitbot");
+				ImGui::Separator("Aimbot");
 				ImGui::Checkbox("Enabled", &g_Options.aimbot.enabled);
 				ImGui::Text("Fov");
 				ImGui::Spacing();
@@ -406,8 +406,8 @@ void Menu::Render()
 					ImGui::SliderFloat("##Silentfov", &g_Options.aimbot.silentfov, 0.f, 360.f, "%.f");
 					ImGui::Spacing();
 				}
-				ImGui::Checkbox("Autoscope", &g_Options.autoscope);
 				ImGui::Checkbox("Autofire##autofire", &g_Options.aimbot.autofire);
+				ImGui::Checkbox("Autorevolver", &g_Options.aimbot.autorevolver1);
 				ImGui::Checkbox("Autowall##autowall", &g_Options.aimbot.autowall);
 				if (g_Options.aimbot.autowall) {
 					ImGui::Spacing();

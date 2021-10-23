@@ -20,7 +20,7 @@ public:
 	void Run(CUserCmd* cmd);
 	bool IsEnabled(CUserCmd* cmd);
 	float GetFovToPlayer(QAngle viewAngle, QAngle aimAngle);
-
+	C_BasePlayer* target = nullptr;
 	float GetFov();
 
 private:
@@ -29,8 +29,6 @@ private:
 	void Smooth(QAngle currentAngle, QAngle aimAngle, QAngle& angle);
 	bool IsSilent();
 	C_BasePlayer* GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& fov, QAngle& angles);
-
-	C_BasePlayer* target = nullptr;
 
 	int lastShotTick;
 	int shotsFired;

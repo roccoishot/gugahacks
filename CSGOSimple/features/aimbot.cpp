@@ -42,7 +42,7 @@ bool CLegitbot::IsEnabled(CUserCmd* cmd)
 		if (!weapon->HasBullets())
 			return false;
 
-		return (cmd->buttons & IN_ATTACK) || (g_Options.aimbot.autofire);
+				return (cmd->buttons & IN_ATTACK) || (g_Options.aimbot.autofire);
 }
 
 void CLegitbot::Smooth(QAngle currentAngle, QAngle aimAngle, QAngle& angle)
@@ -219,6 +219,15 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 
 void CLegitbot::Run(CUserCmd* cmd)
 {
+	if (g_Options.aimbot.autorevolver1) {
+		if (g_LocalPlayer->IsAlive() && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)
+			g_Options.aimbot.autorevolver2 = true;
+		else
+			g_Options.aimbot.autorevolver2 = false;
+	}
+	else
+		g_Options.aimbot.autorevolver2 = false;
+
 	if (int(GetTickCount()) > lastShotTick + 50)
 		shotsFired = 0;
 
@@ -252,19 +261,47 @@ void CLegitbot::Run(CUserCmd* cmd)
 
 	if (GetClosestPlayer(cmd, bestBone, fov, angles))
 	{
-		if (g_Options.autoscope)
-		{
-			if (!g_LocalPlayer->m_bIsScoped() && !g_LocalPlayer->m_hActiveWeapon()->IsPistol() && g_LocalPlayer->m_hActiveWeapon()->IsSniper())
-			{
-				cmd->buttons |= IN_ZOOM;
-			}
-
-		}
 		if (g_Options.aimbot.hc)
 		{
 			if (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread() < g_Options.aimbot.hitchance)
 			{
 
+				if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
+					if (g_Options.aimbot.autofire && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
+						cmd->buttons |= IN_ATTACK2;
+						const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
+						const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
+
+						if (next_shot > 0)
+							cmd->buttons &= ~IN_ATTACK2;
+					}
+				}
+
+				if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
+					if (g_Options.aimbot.autofire && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
+						cmd->buttons |= IN_ATTACK;
+						const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
+						const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
+
+						if (next_shot > 0)
+							cmd->buttons &= ~IN_ATTACK;
+					}
+				}
+			}
+		}
+		if (!g_Options.aimbot.hc) {
+			if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
+				if (g_Options.aimbot.autofire && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
+					cmd->buttons |= IN_ATTACK2;
+					const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
+					const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
+
+					if (next_shot > 0)
+						cmd->buttons &= ~IN_ATTACK2;
+				}
+			}
+
+			if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
 				if (g_Options.aimbot.autofire && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
 					cmd->buttons |= IN_ATTACK;
 					const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
@@ -274,66 +311,59 @@ void CLegitbot::Run(CUserCmd* cmd)
 						cmd->buttons &= ~IN_ATTACK;
 				}
 			}
-
-			else
-			{
-				return;
-			}
-
-		}
-		if (!g_Options.aimbot.hc) {
-			if (g_Options.aimbot.autofire && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
-				cmd->buttons |= IN_ATTACK;
-				const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
-				const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
-
-				if (next_shot > 0)
-					cmd->buttons &= ~IN_ATTACK;
-			}
 		}
 	}
 
-	//autorevolver
-	/*auto pWeapon = g_LocalPlayer->m_hActiveWeapon();
-	static int pasteme = 0;
-	pasteme++;
-	if (pasteme <= 14.5f) {
-		cmd->buttons |= IN_ATTACK;
-	}
-	else {
-		pasteme = 0;
+			if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
+					auto pWeapon = g_LocalPlayer->m_hActiveWeapon();
+					static int pasteme = 0;
+					pasteme++;
+					if (pasteme <= 14.5f) {
+						cmd->buttons |= IN_ATTACK;
+					}
+					else {
+						pasteme = 0;
 
-		float flPostponeFireReady = pWeapon->m_flPostponeFireReadyTime();
-		if (flPostponeFireReady > 0 && flPostponeFireReady < g_GlobalVars->curtime) {
-			cmd->buttons &= ~IN_ATTACK;
-		}
-	}*/
+						float flPostponeFireReady = pWeapon->m_flPostponeFireReadyTime();
+						if (flPostponeFireReady > 0 && flPostponeFireReady < g_GlobalVars->curtime) {
+							cmd->buttons &= ~IN_ATTACK;
+						}
+					}
+				}
 
-	if ((cmd->buttons & IN_ATTACK) /*&& !IsSilent()*/)
-		RCS(angles, target);
-	last_punch = current_punch;
+			if (cmd->buttons & IN_ATTACK)
+				RCS(angles, target);
+			last_punch = current_punch;
 
-	if (!IsSilent())
-		Smooth(current, angles, angles);
+			if (!IsSilent())
+				Smooth(current, angles, angles);
 
-	Math::FixAngles(angles);
-	cmd->viewangles = angles;
-	if (!IsSilent())
-		g_EngineClient->SetViewAngles(&angles);
+			cmd->viewangles = angles;
+			if (!IsSilent())
+				g_EngineClient->SetViewAngles(&angles);
 
-	if (!(g_LocalPlayer->m_iShotsFired() >= 1))
-		g_LocalPlayer->SetVAngles(current);
+			if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
+					if (!(g_LocalPlayer->m_iShotsFired() >= 1))
+						g_LocalPlayer->SetVAngles(current);
+				}
 
-	float oldForward;
-	float oldSideMove;
-	oldForward = cmd->forwardmove;
-	oldSideMove = cmd->sidemove;
-	if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
-		Misc::MovementFix(current, cmd, oldForward, oldSideMove);
+			if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
+					if (!(cmd->buttons & IN_ATTACK2))
+						g_LocalPlayer->SetVAngles(current);
+				}
 
-	if (cmd->buttons & IN_ATTACK)
-	{
-		lastShotTick = GetTickCount();
-		shotsFired++;
-	}
+			Math::FixAngles(angles);
+
+			float oldForward;
+			float oldSideMove;
+			oldForward = cmd->forwardmove;
+			oldSideMove = cmd->sidemove;
+			if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
+				Misc::MovementFix(current, cmd, oldForward, oldSideMove);
+
+					if (cmd->buttons & IN_ATTACK)
+					{
+						lastShotTick = GetTickCount();
+						shotsFired++;
+					}
 }

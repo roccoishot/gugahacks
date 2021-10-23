@@ -32,10 +32,19 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		return;
 	}
 
-	if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && cmd->buttons & IN_ATTACK)
-	{
-		return;
-	}
+	if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
+			if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 1) || cmd->buttons & IN_ATTACK2)
+			{
+				return;
+			}
+		}
+
+	if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
+			if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 1) || cmd->buttons & IN_ATTACK)
+			{
+				return;
+			}
+		}
 
 	if (movetype == MOVETYPE_LADDER)
 	{
@@ -45,7 +54,7 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		return;
 	}
 
-	if (weapon->IsGrenade() && weapon->m_fThrowTime() > 0.1f)
+	if (weapon->IsGrenade())
 	{
 		bSendPacket = false;
 		return;
@@ -88,23 +97,16 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 	float best_rotation = 0.f;
 	auto local_eyeposition = g_LocalPlayer->GetEyePos();
 	auto head_position = g_LocalPlayer->GetHitboxPos(HITBOX_HEAD);
-	auto origin = g_LocalPlayer->m_vecOrigin();
 	float thickest = -1.f;
 
 	int i = 1; i < g_EngineClient->GetMaxClients(); i++;
 	auto pEntity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
 
-	float step = (2 * M_PI) / 8.f;
+	float step = (DirectX::XM_2PI) / 8.f;
 
-	float radius = fabs(Vector(head_position - origin).Length2D());
-	for (float rotation = 0; rotation < (M_PI * 2.0); rotation += step)
+	float radius = fabs(Vector(head_position - g_LocalPlayer->m_vecOrigin()).Length2D());
+	for (float rotation = 0; rotation < (DirectX::XM_2PI); rotation += step)
 	{
-		if (!g_LocalPlayer->IsAlive())
-			return;
-
-		for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
-		{
-			auto pEntity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
 			if (!pEntity || !g_LocalPlayer) continue;
 			if (!pEntity->IsPlayer()) continue;
 			if (pEntity == g_LocalPlayer) continue;
@@ -125,7 +127,6 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 				best_rotation = rotation;
 			}
 		}
-	}
 	
 	if (g_Options.ragebot_antiaim_yaw == 4)
 	cmd->viewangles.yaw = RAD2DEG(best_rotation);
@@ -147,8 +148,7 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 
 		static QAngle LastRealAngle = QAngle(0, 0, 0);
 
-		static bool bFlip = false;
-		cmd->viewangles.yaw += bFlip ? 58.f : -58.f * (bSendPacket ? 1 : -1);
+		cmd->viewangles.yaw += bSendPacket ? 58.f : -58.f;
 
 		if (bSendPacket)
 		{
@@ -190,10 +190,10 @@ void CAntiAim::Pitch(CUserCmd* cmd, bool& bSendPacket)
 		cmd->viewangles.pitch = 0.f;
 		break;
 	case PitchAntiAims::FAKEDOWN:
-		cmd->viewangles.pitch = bFlip ? 89.f : -89.f * (bSendPacket ? 1 : -1);
+		cmd->viewangles.pitch = bSendPacket ? 89.f : -89.f;
 		break;
 	case PitchAntiAims::FAKEUP:
-		cmd->viewangles.pitch = bFlip ? -89.f : 89.f * (bSendPacket ? 1 : -1);
+		cmd->viewangles.pitch = bSendPacket ? -89.f : 89.f;
 		break;
 	}
 }

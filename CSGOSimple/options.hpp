@@ -114,6 +114,8 @@ public:
 		int rcstype = 0;
 		int x = 100;
 		int y = 100;
+		bool autorevolver1 = false;
+		bool autorevolver2 = false;
 	} aimbot;
 
 	bool speclist = false;
@@ -128,7 +130,6 @@ public:
 	int fogfardamn = 0;
 	int fogdens = 0;
 	bool flashkillcheck = false;
-	bool autoscope = false;
 	float amibence = 0;
 	bool slidewalk = false;
 	bool rageresolver = true;

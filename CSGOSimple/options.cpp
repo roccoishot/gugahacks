@@ -145,15 +145,15 @@ void Options::SetupWeapons()
 			SetupValue(g_Options.aimbot.silentfov, key, "Silent Fov");
 			SetupValue(g_Options.aimbot.smoof, key, "Smooth");
 
-			SetupValue(g_Options.aimbot.head, key, "Head Hitbox");
-			SetupValue(g_Options.aimbot.chest, key, "Chest Hitbox");
-			SetupValue(g_Options.aimbot.pelvis, key, "Pelvis Hitbox");
-			SetupValue(g_Options.aimbot.arms, key, "Arms Hitbox");
-			SetupValue(g_Options.aimbot.hands, key, "Hands Hitbox");
-			SetupValue(g_Options.aimbot.legs, key, "Legs Hitbox");
-			SetupValue(g_Options.aimbot.feet, key, "Feet Hitbox");
+			SetupValue(g_Options.aimbot.head, key, "Head");
+			SetupValue(g_Options.aimbot.chest, key, "Chest");
+			SetupValue(g_Options.aimbot.pelvis, key, "Pelvis");
+			SetupValue(g_Options.aimbot.arms, key, "Arms");
+			SetupValue(g_Options.aimbot.hands, key, "Hands");
+			SetupValue(g_Options.aimbot.legs, key, "Legs");
+			SetupValue(g_Options.aimbot.feet, key, "Feet");
 
-			SetupValue(g_Options.aimbot.rcs, key, "RCS Enabled");
+			SetupValue(g_Options.aimbot.rcs, key, "RCS");
 			SetupValue(g_Options.aimbot.rcstype, key, "RCS Type");
 			SetupValue(g_Options.aimbot.x, key, "RCS X");
 			SetupValue(g_Options.aimbot.y, key, "RCS Y");
@@ -161,9 +161,10 @@ void Options::SetupWeapons()
 			SetupValue(g_Options.aimbot.autowall, key, "AutoWall Enabled");
 			SetupValue(g_Options.aimbot.autowallmin, key, "AutoWall MinDamage");
 
-			SetupValue(g_Options.aimbot.autofire, key, "AutoFire Enabled");
-			SetupValue(g_Options.aimbot.hc, key, "Hitchance Enable");
-			SetupValue(g_Options.aimbot.hitchance, key, "Hitchance");
+			SetupValue(g_Options.aimbot.autofire, key, "Autofire");
+			SetupValue(g_Options.aimbot.autorevolver1, key, "Autorevolver");
+			SetupValue(g_Options.aimbot.hc, key, "Hitchance");
+			SetupValue(g_Options.aimbot.hitchance, key, "Hitchance %");
 
 		}
 	}
@@ -176,8 +177,7 @@ void Options::SetupWeapons()
 		SetupValue(option.definition_override_index, val, "do_index");
 		SetupValue(option.definition_override_vector_index, val, "do_vec_index");
 		SetupValue(option.seed, val, "Seed");
-		//SetupValue(option.enable_stat_track, val, "stattrack");
-		//SetupValue(option.stat_trak, val, "stat_trak_val");
+		SetupValue(option.stat_trak, val, "stat_trak_val");
 		SetupValue(option.wear, val, "Wear");
 	}
 
@@ -269,7 +269,6 @@ void Options::SetupMisc()
 	SetupValue(g_Options.ebmode, "Misc", "Edgebug Mode");
 	SetupValue(g_Options.blockbot, "Misc", "Blockbot");
 	SetupValue(g_Options.bbkey, "Misc", "BlockBot Key");
-	SetupValue(autoscope, "Aimbot", "Auto Scope");
 	SetupValue(slidewalk, "Test", "Fast Shiftwalk");
 	SetupValue(misc_chatspam, "Misc", "Chat Spam");
 	SetupValue(rageresolver, "Rage", "Rage Resolver");
