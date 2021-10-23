@@ -192,6 +192,7 @@ void Options::SetupVisuals()
 	SetupValue(flashkillcheck, "Visuals", "Flash Kill Check");
 	SetupValue(teamesp, "Visuals", "Team ESP");
 	SetupValue(teamchams, "Visuals", "Team Chams");
+	SetupValue(localchams, "Visuals", "Local Chams");
 	SetupValue(esp_player_boxes, "Visuals", "Boxes");
 	SetupValue(esp_player_boxesOccluded, "ESP", "Occluded");
 	SetupValue(esp_player_names, "Visuals", "Names");
@@ -204,6 +205,7 @@ void Options::SetupVisuals()
 	SetupValue(arms_material, "Visuals", "Arms Material");
 	SetupColor(glowcolor, "Double Color Team");
 	SetupColor(glowcolorenemy, "Double Color Enemy");
+	SetupColor(glowcolorlocal, "Double Color Local");
 	SetupColor(glowcolorarms, "Double Color Arms");
 	SetupColor(glowcolorstrap, "Double Color Strap");
 	SetupValue(player_material, "Visuals", "Player Material");
@@ -212,6 +214,8 @@ void Options::SetupVisuals()
 	SetupColor(color_esp_enemy_occluded, "Enemies Occluded");
 	SetupColor(color_chams_player_enemy_visible, "Enemy Visible Chams");
 	SetupColor(color_chams_player_enemy_occluded, "Enemy Occluded Chams");
+	SetupColor(color_chams_player_local_visible, "Local Visible Chams");
+	SetupColor(color_chams_player_local_occluded, "Local Occluded Chams");
 	SetupColor(color_chams_player_ally_visible, "Ally Visible");
 	SetupColor(color_chams_player_ally_occluded, "Ally Occluded");
 	SetupColor(color_chams_strap_visible, "Strap Visible");

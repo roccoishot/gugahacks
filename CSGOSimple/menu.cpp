@@ -517,6 +517,15 @@ void Menu::Render()
 					if (g_Options.player_material == 6 && g_Options.teamchams) {
 						ImGui::Text("Double Team"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Team", &g_Options.glowcolor);
 					}
+					if (g_Options.player_material == 4 && g_Options.localchams) {
+						ImGui::Text("Double Local"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Local", &g_Options.glowcolorlocal);
+					}
+					if (g_Options.player_material == 5 && g_Options.localchams) {
+						ImGui::Text("Double Local"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Local", &g_Options.glowcolorlocal);
+					}
+					if (g_Options.player_material == 6 && g_Options.localchams) {
+						ImGui::Text("Double Local"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Local", &g_Options.glowcolorlocal);
+					}
 					if (g_Options.chams_player_ignorez) {
 						ImGui::Text("Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemy Occluded ", &g_Options.color_chams_player_enemy_occluded);
 					}
@@ -525,6 +534,12 @@ void Menu::Render()
 					}
 					if (g_Options.chams_player_ignorez && g_Options.teamchams) {
 						ImGui::Text("Team Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Team Occluded ", &g_Options.color_chams_player_ally_occluded);
+					}
+					if (g_Options.chams_player_enabled && g_Options.localchams) {
+						ImGui::Text("Local Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Kill Visible ", &g_Options.color_chams_player_local_visible);
+					}
+					if (g_Options.chams_player_ignorez && g_Options.localchams) {
+						ImGui::Text("Local Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Kill Occluded ", &g_Options.color_chams_player_local_occluded);
 					}
 					if (g_Options.chams_arms_enabled && g_Options.arms_material == 3) {
 						ImGui::Text("Double Arms"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Arms", &g_Options.glowcolorarms);
@@ -587,6 +602,7 @@ void Menu::Render()
 					if (g_Options.chams_player_enabled) {
 						ImGui::Checkbox("Occluded", &g_Options.chams_player_ignorez);
 						ImGui::Checkbox("Team Chams", &g_Options.teamchams);
+						ImGui::Checkbox("Local Chams", &g_Options.localchams);
 						ImGui::Checkbox("Arms Chams", &g_Options.chams_arms_enabled);
 						if (g_Options.chams_arms_enabled) {
 							ImGui::Checkbox("Arms XQZ", &g_Options.chams_arms_ignorez);

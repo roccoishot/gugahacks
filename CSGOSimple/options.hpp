@@ -134,6 +134,7 @@ public:
 	bool slidewalk = false;
 	bool rageresolver = true;
 	int fakepingkey = 0;
+	bool localchams = false;
 	bool teamchams = false;
 	bool asusprops = false;
 		bool esp_enemies_only = false;
@@ -284,6 +285,10 @@ public:
 		Color color_name_player = { 255, 255, 255 };
 		Color color_chams_player_ally_visible= { 0, 0, 255, 255 };
 		Color color_chams_player_ally_occluded= { 165, 165, 255 };
+
+		Color color_chams_player_local_visible = { 255, 130, 0, 255 };
+		Color color_chams_player_local_occluded = { 155, 30, 0, 170 };
+
 		Color color_chams_player_enemy_visible= { 152,255,0,255 };
 		Color color_chams_player_enemy_occluded= { 52,255,0,110 };
 		Color color_chams_strap_visible = { 255, 255, 255, 255 };
@@ -294,6 +299,7 @@ public:
 		Color ohthuhshine = { 5, 5, 5, 15 };
 		Color glowcolor = { 255, 255, 255 };
 		Color glowcolorenemy = { 255, 255, 255 };
+		Color glowcolorlocal = { 255, 255, 255 };
 		Color glowcolorarms = { 255, 255, 255 };
 		Color glowcolorstrap = { 255, 255, 255 };
 		Color fogcoluh = { 255, 255, 255, 255 };
