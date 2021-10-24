@@ -6,8 +6,7 @@ enum class YawAntiAims : int
 	NONE,
 	BACKWARDS,
 	SPINBOT,
-	LOWER_BODY,
-	FREESTANDING
+	LOWER_BODY
 };
 
 enum class YawAddAntiAims : int

@@ -24,7 +24,12 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 		if (backup)
 			materials.emplace_back(MaterialBackup(i, material));
 
-		material->AlphaModulate((float)255 / 255.0f);
+		if (g_Options.asusprops) {
+			material->AlphaModulate((float)160 / 255.0f);
+		}
+		else {
+			material->AlphaModulate((float)255 / 255.0f);
+		}
 		material->ColorModulate((float)75 / 255.0f, (float)75 / 255.0f, (float)75 / 255.0f);
 	}
 }

@@ -137,7 +137,7 @@ public:
 	bool localchams = false;
 	bool teamchams = false;
 	bool asusprops = false;
-		bool esp_enemies_only = false;
+		bool enemychams = false;
 		bool colormodulate = false;
 		bool disablepro = false;
 		bool esp_player_boxes = false;
@@ -258,22 +258,22 @@ public:
 		// 
 		// COLORS
 		// 
-		Color color_esp_ally_visible= {0, 0, 255};
+		Color color_esp_ally_visible= {0, 0, 255, 255};
 		Color color_esp_enemy_visible= { 152,255,0,255 };
-		Color color_esp_ally_occluded= {165, 165, 255};
+		Color color_esp_ally_occluded= {165, 165, 255, 255 };
 		Color color_esp_enemy_occluded= {52,255,0,110 };
-		Color color_esp_weapons= {255, 255, 255};
-		Color color_esp_defuse= {100, 100, 255};
+		Color color_esp_weapons= {255, 255, 255, 255 };
+		Color color_esp_defuse= {100, 100, 255, 255 };
 		Color color_esp_c4= {255, 0, 0};
 		Color color_esp_item= {0, 0, 0};
-		Color Velocitycol = { 0, 0, 0 };
+		Color Velocitycol = { 0, 0, 0 , 255 };
 
 		Color color_glow_ally= {255, 255, 255};
 		Color color_glow_allyOC= {255, 255, 255};
 
 		Color color_glow_enemy= {255, 255, 255};
 		Color color_glow_enemyOC= {255, 255, 255};
-		Color color_dropped_weapons = { 255, 224, 48 };
+		Color color_dropped_weapons = { 255, 224, 48 , 255};
 
 		Color color_glow_chickens= {0, 0, 0};
 		Color color_glow_c4_carrier= {0, 0, 0};
@@ -281,8 +281,8 @@ public:
 		Color color_glow_defuse= {0, 0, 0};
 		Color color_glow_weapons= {0, 0, 0};
 
-		Color color_armour_player = { 0, 0, 255 };
-		Color color_name_player = { 255, 255, 255 };
+		Color color_armour_player = { 0, 0, 255, 255 };
+		Color color_name_player = { 255, 255, 255, 255 };
 		Color color_chams_player_ally_visible= { 0, 0, 255, 255 };
 		Color color_chams_player_ally_occluded= { 165, 165, 255 };
 
@@ -295,8 +295,8 @@ public:
 		Color color_chams_strap_occluded = { 255, 255, 255, 100 };	
 		Color color_chams_arms_visible= { 152,255,0,255 };
 		Color color_chams_arms_occluded= { 52,255,0,110 };
-		Color player_enemy_visible_shine = { 5, 5, 5, 15 };
-		Color ohthuhshine = { 5, 5, 5, 15 };
+		Color player_enemy_visible_shine = { 240, 240, 240, 255 };
+		Color ohthuhshine = { 255, 255, 255, 255 };
 		Color glowcolor = { 255, 255, 255 };
 		Color glowcolorenemy = { 255, 255, 255 };
 		Color glowcolorlocal = { 255, 255, 255 };

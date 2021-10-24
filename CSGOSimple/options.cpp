@@ -209,7 +209,6 @@ void Options::SetupVisuals()
 	SetupColor(glowcolorarms, "Double Color Arms");
 	SetupColor(glowcolorstrap, "Double Color Strap");
 	SetupValue(player_material, "Visuals", "Player Material");
-	SetupColor(player_enemy_visible_shine, "Color Visible");
 	SetupColor(color_esp_enemy_visible, "Enemies Visible");
 	SetupColor(color_esp_enemy_occluded, "Enemies Occluded");
 	SetupColor(color_chams_player_enemy_visible, "Enemy Visible Chams");

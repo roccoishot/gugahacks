@@ -91,7 +91,7 @@ float WallThickness(Vector from, Vector to, C_BasePlayer* skip, C_BasePlayer* sk
 
 void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 {
-	Yaw(cmd, false);
+	Yaw(cmd, true);
 	Pitch(cmd, bSendPacket);
 
 	float best_rotation = 0.f;
@@ -128,8 +128,11 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 			}
 		}
 	
-	if (g_Options.ragebot_antiaim_yaw == 4)
+	if (g_Options.ragebot_antiaim_yaw == 4 && !g_Options.ragebot_antiaim_desync)
 	cmd->viewangles.yaw = RAD2DEG(best_rotation);
+
+	if (g_Options.ragebot_antiaim_yaw == 4 && g_Options.ragebot_antiaim_desync)
+	cmd->viewangles.yaw = RAD2DEG(best_rotation - 58.f);
 
 	if (g_Options.ragebot_antiaim_desync)
 	{
@@ -220,22 +223,6 @@ void CAntiAim::Yaw(CUserCmd* cmd, bool fake)
 	case YawAntiAims::LOWER_BODY:
 		cmd->viewangles.yaw = g_LocalPlayer->m_flLowerBodyYawTarget();
 		break;
-	case YawAntiAims::FREESTANDING:
-	{
-		float ang = 0.f;
-		bool canuse = Freestanding(g_LocalPlayer, ang);
-
-		if (!canuse)
-		{
-			cmd->viewangles.yaw -= 180.f;
-		}
-		else
-		{
-			cmd->viewangles.yaw = ang;
-		}
-
-		break;
-	}
 	}
 }
 
