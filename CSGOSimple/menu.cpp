@@ -339,6 +339,7 @@ void Menu::Render()
 				if (g_Options.ragebot_antiaim_yaw == 2) {
 					ImGui::SliderInt("Spin Speed", &g_Options.spinspeed, 1.f, 10.f, "%.f");
 				}
+				ImGui::Text("Invert AA Key"); ImGui::SameLine(); ImGui::Hotkey("                                                                                                                                                                                 ", &g_Options.invertaa);
 				ImGui::Separator("Others");
 				ImGui::Text("Slowwalk Key"); ImGui::SameLine(); ImGui::Hotkey("                                                            ", &g_Options.ragebot_slowwalk_key);
 				ImGui::Spacing();
@@ -406,6 +407,7 @@ void Menu::Render()
 					ImGui::SliderFloat("##Silentfov", &g_Options.aimbot.silentfov, 0.f, 360.f, "%.f");
 					ImGui::Spacing();
 				}
+				ImGui::Checkbox("Fast Aimbot", &g_Options.aimbot.fastaimbot);
 				ImGui::Checkbox("Autofire##autofire", &g_Options.aimbot.autofire);
 				ImGui::Checkbox("Autorevolver", &g_Options.aimbot.autorevolver1);
 				ImGui::Checkbox("Autowall##autowall", &g_Options.aimbot.autowall);

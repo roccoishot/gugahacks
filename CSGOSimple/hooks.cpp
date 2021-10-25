@@ -20,6 +20,7 @@
 #include "movement.h"
 #include "crypt_str.h"
 #include "blockbot.hpp"
+#include "FixSkyboxes.h"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -486,7 +487,7 @@ namespace Hooks {
 		bool bSendPacket = true;
 
 		//Desync
-		Misc::ClanTag();
+		Misc::Get().ClanTag();
 
 		if (!cmd || !cmd->command_number)
 			return;
@@ -494,8 +495,11 @@ namespace Hooks {
 
 		IGameEvent* event;
 
+		if (g_Options.sky_changer)
+		Fixed::Get().PerformNightmode();
+
 		if (g_Options.colormodulation)
-		Misc::NightmodeFix();
+			Misc::Get().NightmodeFix();
 
 		static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
 
@@ -532,15 +536,11 @@ namespace Hooks {
 		}
 
 		if (g_Options.misc_chatspam) {
-			Misc::ChatSpama(cmd);
-		}
-
-		if (g_Options.fakelag) {
-			Misc::Fakelag(cmd, bSendPacket);
+			Misc::Get().ChatSpama(cmd);
 		}
 
 		if (g_Options.slidewalk)
-			Misc::SilentWalk(cmd);
+			Misc::Get().SilentWalk(cmd);
 
 		QAngle LastAngle = QAngle(0, 0, 0);
 		Math::Normalize3(cmd->viewangles);
@@ -552,7 +552,7 @@ namespace Hooks {
 		oldForward = cmd->forwardmove;
 		oldSideMove = cmd->sidemove;
 		if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
-			Misc::MovementFix(oldAngle, cmd, oldForward, oldSideMove);
+			Misc::Get().MovementFix(oldAngle, cmd, oldForward, oldSideMove);
 		Math::Normalize3(LastAngle);
 		if (g_Options.nocool)
 			cmd->buttons |= IN_BULLRUSH;
@@ -578,15 +578,12 @@ namespace Hooks {
 
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
 		{
+			Misc::Get().FakeLag(cmd, bSendPacket);
 			movement::jumpbug(cmd);
-			Misc::SlowWalk(cmd);
+			Misc::Get().SlowWalk(cmd);
 			CAntiAim::Get().CreateMove(cmd, bSendPacket);
 		}
 		CPredictionSystem::Get().End(g_LocalPlayer);
-
-		if (g_Options.rageresolver) {
-			//LagComp::Get().Run();
-		}
 
 		Math::Normalize3(cmd->viewangles);
 		Math::ClampAngles(cmd->viewangles);
@@ -595,7 +592,7 @@ namespace Hooks {
 		oldForward = cmd->forwardmove;
 		oldSideMove = cmd->sidemove;
 		if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
-			Misc::MovementFix(oldAngle, cmd, oldForward, oldSideMove);
+			Misc::Get().MovementFix(oldAngle, cmd, oldForward, oldSideMove);
 
 		static auto prediction = new PredictionSystem();
 		auto flags = g_LocalPlayer->m_fFlags();
@@ -723,7 +720,7 @@ namespace Hooks {
 		if (g_EngineClient->IsInGame()) {
 			//Fix Thirdperson Angles
 			if (Globals::m_cmd)
-				Misc::SetThirdpersonAngles(stage, Globals::m_cmd);
+				Misc::Get().SetThirdpersonAngles(stage, Globals::m_cmd);
 
 			QAngle aim_punch_old;
 			QAngle view_punch_old;
@@ -830,22 +827,6 @@ namespace Hooks {
 				default: return nullptr;
 				}
 			};
-
-			MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i);
-			IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
-
-			if (strstr(pMaterial->GetName(), ("models/props/de_nuke/hr_nuke/nuke_skydome_001")))
-			{
-				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
-			}
-			if (strstr(pMaterial->GetName(), ("models/props/de_inferno/hr_i/inferno_skybox")))
-			{
-				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
-			}
-			if (strstr(pMaterial->GetName(), ("models/props/de_dust/dust_skybox")))
-			{
-				pMaterial->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
-			}
 
 			if (const auto model = getModel(g_LocalPlayer->m_iTeamNum())) {
 				if (stage == FRAME_RENDER_START)

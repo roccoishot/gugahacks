@@ -17,7 +17,7 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 			materials.emplace_back(MaterialBackup(i, material));
 
 		material->AlphaModulate((float)255 / 255.0f);
-		material->ColorModulate((float)40 / 255.0f, (float)40 / 255.0f, (float)40 / 255.0f);
+		material->ColorModulate((float)30 / 255.0f, (float)30 / 255.0f, (float)30 / 255.0f);
 	}
 	else if (strstr(name, crypt_str("StaticProp")))
 	{
@@ -25,12 +25,12 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 			materials.emplace_back(MaterialBackup(i, material));
 
 		if (g_Options.asusprops) {
-			material->AlphaModulate((float)160 / 255.0f);
+			material->AlphaModulate((float)200 / 255.0f);
 		}
-		else {
+		if (!g_Options.asusprops) {
 			material->AlphaModulate((float)255 / 255.0f);
 		}
-		material->ColorModulate((float)75 / 255.0f, (float)75 / 255.0f, (float)75 / 255.0f);
+		material->ColorModulate((float)100 / 255.0f, (float)100 / 255.0f, (float)100 / 255.0f);
 	}
 }
 

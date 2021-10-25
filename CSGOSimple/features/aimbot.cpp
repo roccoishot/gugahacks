@@ -359,7 +359,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 			oldForward = cmd->forwardmove;
 			oldSideMove = cmd->sidemove;
 			if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
-				Misc::MovementFix(current, cmd, oldForward, oldSideMove);
+				Misc::Get().MovementFix(current, cmd, oldForward, oldSideMove);
 
 					if (cmd->buttons & IN_ATTACK)
 					{

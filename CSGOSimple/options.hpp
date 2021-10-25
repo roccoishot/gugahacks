@@ -116,8 +116,10 @@ public:
 		int y = 100;
 		bool autorevolver1 = false;
 		bool autorevolver2 = false;
+		bool fastaimbot = false;
 	} aimbot;
 
+	int invertaa = 0;
 	bool speclist = false;
 	bool faresp = false;
 	bool noscope = false;
@@ -295,7 +297,7 @@ public:
 		Color color_chams_strap_occluded = { 255, 255, 255, 100 };	
 		Color color_chams_arms_visible= { 152,255,0,255 };
 		Color color_chams_arms_occluded= { 52,255,0,110 };
-		Color player_enemy_visible_shine = { 240, 240, 240, 255 };
+		Color player_enemy_visible_shine = { 180, 180, 180, 255 };
 		Color ohthuhshine = { 255, 255, 255, 255 };
 		Color glowcolor = { 255, 255, 255 };
 		Color glowcolorenemy = { 255, 255, 255 };

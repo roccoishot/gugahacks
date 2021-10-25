@@ -3,11 +3,63 @@
 #include "BetaAA.h"
 #include "crypt_str.h"
 
-std::string clantag0_ = (("GUGAHACKS.SU  "));
-std::string clantag1_ = (("dc.gg/URvWEkvYc5"));
-std::string clantag2_ = (("GUGAHACKS"));
-std::string clantag3_ = (("  US.SKCAHAGUG"));
-std::string fart_ = ((" "));
+void Misc::FakeLag(CUserCmd* cmd, bool& bSendPacket)
+{
+    if (!g_LocalPlayer || !g_LocalPlayer->IsAlive()) return;
+
+    int choked_commands = g_ClientState->iChokedCommands + 1;
+    static bool WasLastInFakelag = false;
+
+    bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1f || (cmd->sidemove != 0.f || cmd->forwardmove != 0.f);
+    bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
+    bool Standing = !Moving && !InAir;
+    int ticks = 16;
+    int mode = 0;
+
+    if (ticks == 0)
+        return;
+
+    switch (mode)
+    {
+    case 0:
+        if (choked_commands <= ticks)
+        {
+            WasLastInFakelag = true;
+            bSendPacket = false;
+        }
+        else
+        {
+            WasLastInFakelag = false;
+        }
+        break;
+    case 1:
+        int PacketsToChoke = 0;
+        if (g_LocalPlayer->m_vecVelocity().Length() > 0.f)
+        {
+            PacketsToChoke = (int)(64.f / g_GlobalVars->interval_per_tick / g_LocalPlayer->m_vecVelocity().Length()) + 1;
+            if (PacketsToChoke >= 16)
+            {
+                PacketsToChoke = 15;
+            }
+
+            if (PacketsToChoke >= ticks)
+            {
+                PacketsToChoke = ticks;
+            }
+        }
+
+        if (choked_commands <= PacketsToChoke)
+        {
+            WasLastInFakelag = true;
+            bSendPacket = false;
+        }
+        else
+        {
+            WasLastInFakelag = false;
+        }
+        break;
+    }
+}
 
 void Misc::NightmodeFix()
 {
@@ -60,51 +112,208 @@ void Misc::NightmodeFix()
 
 void Misc::ClanTag()
 {
-    if (!g_Options.clantag)
+    static auto removed = false;
+
+    if (!g_Options.clantag && !removed)
+    {
+        removed = true;
+        Utils::SetClantag(crypt_str(""));
         return;
+    }
 
-    if (!g_EngineClient->IsInGame())
-        return;
+    if (g_Options.clantag)
+    {
+        auto nci = g_EngineClient->GetNetChannelInfo();
 
-        static size_t lastTime = 0;
+        if (!nci)
+            return;
 
-        if (g_Options.clantagtype == 0) {
-            if (GetTickCount() > lastTime)
-            {
-                clantag0_ += clantag0_.at(0);
-                clantag0_.erase(0, 1);
+        static auto time = -1;
 
-                Utils::SetClantag(clantag0_.c_str());
+        auto ticks = TIME_TO_TICKS(nci->GetAvgLatency(FLOW_OUTGOING)) + (float)g_GlobalVars->tickcount; //-V807
+        auto intervals = 0.5f / g_GlobalVars->interval_per_tick;
 
-                lastTime = GetTickCount() + 650;
-            }
-        }
-        if (g_Options.clantagtype == 1) {
-            if (GetTickCount() > lastTime)
-            {
-                Utils::SetClantag(clantag1_.c_str());
-                lastTime = GetTickCount() + 650;
-            }
-        }
-        if (g_Options.clantagtype == 2) {
-            if (GetTickCount() > lastTime)
-            {
-                Utils::SetClantag(clantag2_.c_str());
-                lastTime = GetTickCount() + 650;
-            }
-        }
-        if (g_Options.clantagtype == 3) {
-            if (GetTickCount() > lastTime)
-            {
-                clantag3_ += clantag3_.at(0);
-                clantag3_.erase(0, 1);
+        auto main_time = (int)(ticks / intervals) % 22;
 
-                Utils::SetClantag(clantag3_.c_str());
+        if (main_time != time && !g_ClientState->iChokedCommands)
+        {
+            auto tag = crypt_str("");
 
-                lastTime = GetTickCount() + 650;
-            }
+            "Animated",
+                "Discord",
+                "Static",
+                "Reverse";
+                if (g_Options.clantagtype == 0) {
+                    switch (main_time)
+                    {
+                    case 0:
+                        tag = crypt_str("GUGAHACKS.SU "); //-V1037
+                        break;
+                    case 1:
+                        tag = crypt_str("UGAHACKS.SU ");
+                        break;
+                    case 2:
+                        tag = crypt_str("GAHACKS.SU ");
+                        break;
+                    case 3:
+                        tag = crypt_str("AHACKS.SU ");
+                        break;
+                    case 4:
+                        tag = crypt_str("HACKS.SU ");
+                        break;
+                    case 5:
+                        tag = crypt_str("ACKS.SU ");
+                        break;
+                    case 6:
+                        tag = crypt_str("CKS.SU ");
+                        break;
+                    case 7:
+                        tag = crypt_str("KS.SU ");
+                        break;
+                    case 8:
+                        tag = crypt_str("S.SU ");
+                        break;
+                    case 9:
+                        tag = crypt_str(".SU ");
+                        break;
+                    case 10:
+                        tag = crypt_str("SU");
+                        break;
+                    case 11:
+                        tag = crypt_str("U");
+                        break;
+                    case 13:
+                        tag = crypt_str("SU");
+                        break;
+                    case 14:
+                        tag = crypt_str(".SU");
+                        break;
+                    case 15:
+                        tag = crypt_str("S.SU");
+                        break;
+                    case 16:
+                        tag = crypt_str("KS.SU");
+                        break;
+                    case 17:
+                        tag = crypt_str("CKS.SU");
+                        break;
+                    case 18:
+                        tag = crypt_str("ACKS.SU");
+                        break;
+                    case 19:
+                        tag = crypt_str("HACKS.SU");
+                        break;
+                    case 20:
+                        tag = crypt_str("AHACKS.SU");
+                        break;
+                    case 21:
+                        tag = crypt_str("GAHACKS.SU");
+                        break;
+                    case 22:
+                        tag = crypt_str("UGAHACKS.SU");
+                        break;
+                    case 23:
+                        tag = crypt_str("GUGAHACKS.SU ");
+                        break;
+                    }
+
+                    Utils::SetClantag(tag);
+                    time = main_time;
+                }
+
+                if (g_Options.clantagtype == 1) {
+                    Utils::SetClantag("dc.gg/URvWEkvYc5");
+                    time = main_time;
+                }
+
+                if (g_Options.clantagtype == 2) {
+                    Utils::SetClantag("GUGAHACKS");
+                    time = main_time;
+                }
+
+                if (g_Options.clantagtype == 3) {
+                    switch (main_time)
+                    {
+                    case 0:
+                        tag = crypt_str("US.SKCAHAGUG "); //-V1037
+                        break;
+                    case 1:
+                        tag = crypt_str("S.SKCAHAGUG ");
+                        break;
+                    case 2:
+                        tag = crypt_str(".SKCAHAGUG ");
+                        break;
+                    case 3:
+                        tag = crypt_str("SKCAHAGUG ");
+                        break;
+                    case 4:
+                        tag = crypt_str("KCAHAGUG ");
+                        break;
+                    case 5:
+                        tag = crypt_str("CAHAGUG ");
+                        break;
+                    case 6:
+                        tag = crypt_str("AHAGUG ");
+                        break;
+                    case 7:
+                        tag = crypt_str("HAGUG ");
+                        break;
+                    case 8:
+                        tag = crypt_str("AGUG ");
+                        break;
+                    case 9:
+                        tag = crypt_str("GUG ");
+                        break;
+                    case 10:
+                        tag = crypt_str("UG");
+                        break;
+                    case 11:
+                        tag = crypt_str("G");
+                        break;
+                    case 13:
+                        tag = crypt_str("UG");
+                        break;
+                    case 14:
+                        tag = crypt_str("GUG");
+                        break;
+                    case 15:
+                        tag = crypt_str("AGUG");
+                        break;
+                    case 16:
+                        tag = crypt_str("HAGUG");
+                        break;
+                    case 17:
+                        tag = crypt_str("AHAGUG");
+                        break;
+                    case 18:
+                        tag = crypt_str("CAHAGUG");
+                        break;
+                    case 19:
+                        tag = crypt_str("KCAHAGUG");
+                        break;
+                    case 20:
+                        tag = crypt_str("SKCAHAGUG");
+                        break;
+                    case 21:
+                        tag = crypt_str(".SKCAHAGUG");
+                        break;
+                    case 22:
+                        tag = crypt_str("S.SKCAHAGUG");
+                        break;
+                    case 23:
+                        tag = crypt_str("US.SKCAHAGUG ");
+                        break;
+                    }
+
+                    Utils::SetClantag(tag);
+                    time = main_time;
+                }
+
+
+            removed = false;
         }
     }
+}
 
 bool break_lby = false;
 float next_update = 0;
@@ -193,24 +402,6 @@ void Misc::SilentWalk(CUserCmd* cmd)
 }
 
 //--------------------------------------------------------------------------------
-void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
-    int chockepack = 0;
-    if (!g_LocalPlayer)
-        return;
-
-    auto NetChannel = g_EngineClient->GetNetChannel();
-    if (!NetChannel)
-        return;
-    bSendPacket = false;
-
-    if (!g_EngineClient->IsVoiceRecording())
-    chockepack = g_Options.faketicks;
-
-    if (g_EngineClient->IsVoiceRecording())
-        chockepack = 1;
-
-    bSendPacket = (NetChannel->m_nChokedPackets >= chockepack);
-}
 //--------------------------------------------------------------------------------
 
 void Misc::MovementFixxa(CUserCmd* m_Cmd, QAngle wish_angle, QAngle old_angles) {

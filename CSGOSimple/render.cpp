@@ -107,11 +107,18 @@ void Render::BeginScene() {
 		}
 	}
 
+	if (GetKeyState(g_Options.invertaa) && g_Options.ragebot_antiaim_desync && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive()) {
+		Render::Get().RenderText("INVERTED", 10, 80, 18.f, g_Options.menucolor, false, true, g_VeloFont);
+	}
+	else {
+		Render::Get().RenderText(" ", 10, 80, 18.f, g_Options.menucolor, false, true, g_VeloFont);
+	}
+
 	if (g_Options.enablebeta)
 		Render::Get().RenderText("USING TEST", 10, 35, 18.f, g_Options.menucolor, false, true, g_VeloFont);
 
 	if (g_Options.backtix > 16)
-		Render::Get().RenderText("WARNING: This Backtrack Can Be Unstable!", 10, 65, 18.f, g_Options.menucolor, false, true, g_SpectatorListFont);
+		Render::Get().RenderText("WARNING: This Backtrack Can Be Unstable!", 10, 65, 18.f, g_Options.menucolor, false, true, g_VeloFont);
 		
 	if (g_Options.drawfov && c > 0)
 		Render::Get().RenderCircle(960.f, 540.f, c, 48, g_Options.menucolor, 1.3f);

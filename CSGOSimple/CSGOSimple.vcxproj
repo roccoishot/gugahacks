@@ -111,6 +111,7 @@
     <ClCompile Include="features\parser.cpp" />
     <ClCompile Include="features\skins.cpp" />
     <ClCompile Include="features\visuals.cpp" />
+    <ClCompile Include="FixSkyboxes.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="helpers\input.cpp" />
     <ClCompile Include="helpers\math.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="features\Misc.hpp" />
     <ClInclude Include="features\parser.h" />
     <ClInclude Include="features\skins.h" />
+    <ClInclude Include="FixSkyboxes.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="helpers\prediction.hpp" />
     <ClInclude Include="imgui\impl\imgui_impl_dx9.h" />

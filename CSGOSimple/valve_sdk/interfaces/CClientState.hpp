@@ -67,6 +67,7 @@ public:
     uint32_t m_nMaxClients;         //0x0310
     char pad_0314[18940];           //0x0314
     Vector viewangles;              //0x4D10
+    int                iChokedCommands;        //0x4D30
 }; //Size: 0x4D1C
 
 #pragma pack(pop)

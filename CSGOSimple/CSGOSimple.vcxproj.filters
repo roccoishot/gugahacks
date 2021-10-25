@@ -170,6 +170,9 @@
     <ClCompile Include="blockbot.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
+    <ClCompile Include="FixSkyboxes.cpp">
+      <Filter>Source Files\features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="valve_sdk\misc\BaseHandle.hpp">
@@ -482,6 +485,9 @@
       <Filter>Source Files\SDK</Filter>
     </ClInclude>
     <ClInclude Include="blockbot.hpp">
+      <Filter>Source Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="FixSkyboxes.h">
       <Filter>Source Files\features</Filter>
     </ClInclude>
   </ItemGroup>

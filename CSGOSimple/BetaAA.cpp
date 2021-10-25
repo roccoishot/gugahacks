@@ -32,19 +32,34 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		return;
 	}
 
-	if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
-			if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 1) || cmd->buttons & IN_ATTACK2)
+	if (g_Options.aimbot.fastaimbot) {
+		if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
+			if (weapon->m_flNextSecondaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 1))
 			{
 				return;
 			}
 		}
-
-	if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
-			if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 1) || cmd->buttons & IN_ATTACK)
+		if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
+			if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 2))
 			{
 				return;
 			}
 		}
+	}
+	if (!g_Options.aimbot.fastaimbot) {
+		if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
+			if (weapon->m_flNextSecondaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 1) || cmd->buttons & IN_ATTACK2)
+			{
+				return;
+			}
+		}
+		if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
+			if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 2) || cmd->buttons & IN_ATTACK)
+			{
+				return;
+			}
+		}
+	}
 
 	if (movetype == MOVETYPE_LADDER)
 	{
@@ -128,35 +143,57 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 			}
 		}
 	
-	if (g_Options.ragebot_antiaim_yaw == 4 && !g_Options.ragebot_antiaim_desync)
-	cmd->viewangles.yaw = RAD2DEG(best_rotation);
-
-	if (g_Options.ragebot_antiaim_yaw == 4 && g_Options.ragebot_antiaim_desync)
-	cmd->viewangles.yaw = RAD2DEG(best_rotation - 58.f);
+	if (g_Options.ragebot_antiaim_yaw == 4)
+	cmd->viewangles.yaw += RAD2DEG(best_rotation + 180.f);
 
 	if (g_Options.ragebot_antiaim_desync)
 	{
-		bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1f || (cmd->sidemove != 0.f || cmd->forwardmove != 0.f);
-		bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
-		bool Standing = !Moving && !InAir;
+		float next_update = 0;
+		float server_time = g_GlobalVars->interval_per_tick * g_LocalPlayer->m_nTickBase();
+		float speed = g_LocalPlayer->m_vecVelocity().LengthSqr();
 
-		int FakeLagTicks = g_Options.faketicks;
+		if (speed > 0.1)
+			next_update = server_time + 0.22;
 
-		if (FakeLagTicks == 0)
+		if (!g_Options.ragebot_antiaim_desync)
+			return;
+
+		if (cmd->buttons & IN_ATTACK)
+			return;
+
+		auto old_viewangles = cmd->viewangles;
+		auto old_forwardmove = cmd->forwardmove;
+		auto old_sidemove = cmd->sidemove;
+
+		auto lby = g_EngineClient->GetNetChannel();
+
+		if (!lby)
+			return;
+
+		bool balls = false;
+
+		if (GetKeyState(g_Options.invertaa))
+			balls = true;
+		else if (!(GetKeyState(g_Options.invertaa)))
+			balls = false;
+
+
+		if (lby->m_nChokedPackets != true)
 		{
-			static bool sw = false;
-			bSendPacket = sw;
-			sw = !sw;
+			bSendPacket = cmd->command_number % 2 ? true : false;
 		}
 
-		static QAngle LastRealAngle = QAngle(0, 0, 0);
-
-		cmd->viewangles.yaw += bSendPacket ? 58.f : -58.f;
-
-		if (bSendPacket)
+		if (next_update && lby->m_nChokedPackets != true)
 		{
-			LastRealAngle = cmd->viewangles;
+			cmd->viewangles.yaw += 360.f;
 		}
+		if (!bSendPacket)
+		{
+			cmd->viewangles.yaw += balls ? 58.f : -58.f;
+
+		}
+		else
+			cmd->viewangles.yaw += 360.f;
 	}
 }
 

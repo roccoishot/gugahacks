@@ -7,11 +7,11 @@
 class C_BasePlayer;
 class CUserCmd;
 
-namespace Misc
-{
+class Misc : public  Singleton< Misc > {
+public:
+	void FakeLag(CUserCmd* cmd, bool& bSendPacket);
 	void MovementFixxa(CUserCmd* m_Cmd, QAngle wish_angle, QAngle old_angles);
 	void MovementFix(QAngle vOldAngles, CUserCmd* pCmd, float fOldForward, float fOldSidemove);
-	void Fakelag(CUserCmd* cmd, bool& bSendPacket);
 	void UpdateLBY(CUserCmd* cmd, bool& bSendPacket);
 	void ClanTag();
 	void NightmodeFix();
@@ -20,4 +20,4 @@ namespace Misc
 	void SlowWalk(CUserCmd* cmd);
 	void ChatSpama(CUserCmd* cmd);
 	void SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd);
-}
+};
