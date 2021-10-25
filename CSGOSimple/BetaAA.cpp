@@ -144,7 +144,7 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 		}
 	
 	if (g_Options.ragebot_antiaim_yaw == 4)
-	cmd->viewangles.yaw += RAD2DEG(best_rotation + 180.f);
+	cmd->viewangles.yaw += RAD2DEG(best_rotation);
 
 	if (g_Options.ragebot_antiaim_desync)
 	{

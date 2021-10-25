@@ -578,6 +578,7 @@ namespace Hooks {
 
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
 		{
+			Misc::Get().AutoStop(cmd);
 			Misc::Get().FakeLag(cmd, bSendPacket);
 			movement::jumpbug(cmd);
 			Misc::Get().SlowWalk(cmd);
