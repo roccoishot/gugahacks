@@ -465,13 +465,13 @@ void Menu::Render()
 					ImGui::Checkbox("Viewmodel Changer", &g_Options.enablechanger);
 					if (g_Options.enablechanger) {
 						ImGui::Spacing();
-						ImGui::SliderInt("FOV", &g_Options.viewmodel_fov, 0, 120, "%.f");
+						ImGui::SliderInt("FOV", &g_Options.viewmodel_fov, 0.0, 120.0, "%.f");
 						ImGui::Spacing();
-						ImGui::SliderInt("X", &g_Options.viewmodel_offset_x, -20, 20, "%.f");
+						ImGui::SliderInt("X", &g_Options.viewmodel_offset_x, -20.0, 20.0, "%.f");
 						ImGui::Spacing();
-						ImGui::SliderInt("Y", &g_Options.viewmodel_offset_y, -20, 20, "%.f");
+						ImGui::SliderInt("Y", &g_Options.viewmodel_offset_y, -20.0, 20.0, "%.f");
 						ImGui::Spacing();
-						ImGui::SliderInt("Z", &g_Options.viewmodel_offset_z, -20, 20, "%.f");
+						ImGui::SliderInt("Z", &g_Options.viewmodel_offset_z, -20.0, 20.0, "%.f");
 					};
 
 				}
