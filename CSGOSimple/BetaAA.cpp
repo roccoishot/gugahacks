@@ -139,7 +139,7 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 			if (thickness > thickest)
 			{
 				thickest = thickness;
-				best_rotation = rotation;
+				best_rotation = (rotation + 180.f);
 			}
 		}
 	
@@ -230,10 +230,10 @@ void CAntiAim::Pitch(CUserCmd* cmd, bool& bSendPacket)
 		cmd->viewangles.pitch = 0.f;
 		break;
 	case PitchAntiAims::FAKEDOWN:
-		cmd->viewangles.pitch = bSendPacket ? 89.f : -89.f;
+		cmd->viewangles.pitch = bSendPacket ? -89.f : 89.f;
 		break;
 	case PitchAntiAims::FAKEUP:
-		cmd->viewangles.pitch = bSendPacket ? -89.f : 89.f;
+		cmd->viewangles.pitch = bSendPacket ? 89.f : -89.f;
 		break;
 	}
 }

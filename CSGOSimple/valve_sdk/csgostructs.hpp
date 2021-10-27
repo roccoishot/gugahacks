@@ -3,6 +3,7 @@
 #include "sdk.hpp"
 #include <array>
 #include "../helpers/utils.hpp"
+#include "../crypt_str.h"
 
 #define NETVAR(type, name, table, netvar)                           \
     type& name##() const {                                          \
@@ -191,7 +192,6 @@ public:
 	NETVAR(bool, m_bSpotted, "DT_BaseEntity", "m_bSpotted");
 	NETVAR(float_t, m_flC4Blow, "DT_PlantedC4", "m_flC4Blow");
 	NETVAR(int, m_hRagdoll, "CCSPlayer", "m_hRagdoll")
-
 
 	const matrix3x4_t& m_rgflCoordinateFrame()
 	{
