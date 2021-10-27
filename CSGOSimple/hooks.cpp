@@ -20,6 +20,7 @@
 #include "movement.h"
 #include "crypt_str.h"
 #include "blockbot.hpp"
+#include "lagcompensation.h"
 #include "FixSkyboxes.h"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
@@ -575,6 +576,8 @@ namespace Hooks {
 
 		if (g_EngineClient->IsInGame())
 			Visuals::Get().ThirdPerson();
+
+			//LagComp::Get().Run();
 
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
 		{

@@ -216,7 +216,6 @@ void Menu::SpecList()
 	{
 		ImGui::PopStyleVar();
 		ImGui::PopStyleColor();
-
 		if (specs > 0) spect += u8"\n";     /*ЛАСТ*/
 		if (modes > 0) mode += u8"\n";
 		ImVec2 size = ImGui::CalcTextSize(spect.c_str());
@@ -225,6 +224,7 @@ void Menu::SpecList()
 		ImGui::Separator("Spectator List");
 		ImGui::Text(spect.c_str());
 		DrawIndex++;
+		ImGui::PopFont();
 	}
 	ImGui::End();
 }

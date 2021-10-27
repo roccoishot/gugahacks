@@ -173,6 +173,12 @@
     <ClCompile Include="FixSkyboxes.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
+    <ClCompile Include="lagcompensation.cpp">
+      <Filter>Source Files\features</Filter>
+    </ClCompile>
+    <ClCompile Include="resolver.cpp">
+      <Filter>Source Files\features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="valve_sdk\misc\BaseHandle.hpp">
@@ -488,6 +494,9 @@
       <Filter>Source Files\features</Filter>
     </ClInclude>
     <ClInclude Include="FixSkyboxes.h">
+      <Filter>Source Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="lagcompensation.h">
       <Filter>Source Files\features</Filter>
     </ClInclude>
   </ItemGroup>
