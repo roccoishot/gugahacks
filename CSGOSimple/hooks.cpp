@@ -22,6 +22,7 @@
 #include "blockbot.hpp"
 #include "lagcompensation.h"
 #include "FixSkyboxes.h"
+#include "ragebot/ragebot.hpp"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -485,7 +486,9 @@ namespace Hooks {
 		//auto cmd = g_Input->GetUserCmd(sequence_number);
 		//auto verified = g_Input->GetVerifiedCmd(sequence_number);
 
-		bool bSendPacket = true;
+		uintptr_t* fp;
+		__asm mov fp, ebp;
+		bool* bSendPacket = (bool*)(*fp - 0x1C);
 
 		//Desync
 		Misc::Get().ClanTag();
@@ -579,13 +582,15 @@ namespace Hooks {
 
 			//LagComp::Get().Run();
 
+		CRageBot::Get().PrecacheShit();
+
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
 		{
-			Misc::Get().AutoStop(cmd);
-			Misc::Get().FakeLag(cmd, bSendPacket);
+			CRageBot::Get().CreateMove(cmd, *bSendPacket);
+			Misc::Get().FakeLag(cmd, *bSendPacket);
 			movement::jumpbug(cmd);
 			Misc::Get().SlowWalk(cmd);
-			CAntiAim::Get().CreateMove(cmd, bSendPacket);
+			CAntiAim::Get().CreateMove(cmd, *bSendPacket);
 		}
 		CPredictionSystem::Get().End(g_LocalPlayer);
 

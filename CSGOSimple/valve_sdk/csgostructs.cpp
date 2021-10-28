@@ -96,6 +96,70 @@ bool C_BaseCombatWeapon::IsGun()
 	}
 }
 
+bool C_BaseCombatWeapon::IsMashineGun()
+{
+	return GetCSWeaponData()->weaponType == WEAPONTYPE_MACHINEGUN;
+}
+
+bool C_BaseCombatWeapon::IsSMG()
+{
+	switch (GetCSWeaponData()->weaponType)
+	{
+	case WEAPONTYPE_SUBMACHINEGUN:
+		return true;
+	default:
+		return false;
+	}
+}
+
+bool C_BaseCombatWeapon::IsZeus()
+{
+	if (this->m_Item().m_iItemDefinitionIndex() == WEAPON_TASER)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool C_BaseCombatWeapon::IsAuto()
+{
+	auto id = this->m_iItemDefinitionIndex();
+	if (id == WEAPON_G3SG1 || id == WEAPON_SCAR20)
+		return true;
+	return false;
+}
+
+bool C_BaseCombatWeapon::IsShotgun()
+{
+	auto id = this->m_iItemDefinitionIndex();
+	if (id == WEAPON_MAG7 || id == WEAPON_SAWEDOFF || id == WEAPON_XM1014 || id == WEAPON_NOVA)
+		return true;
+	return false;
+}
+
+bool C_BaseCombatWeapon::IsAutomaticGun()
+{
+	switch (GetCSWeaponData()->weaponType)
+	{
+	case WEAPONTYPE_RIFLE:
+		return true;
+	case WEAPONTYPE_SUBMACHINEGUN:
+		return true;
+	case WEAPONTYPE_SHOTGUN:
+		return true;
+	case WEAPONTYPE_MACHINEGUN:
+		return true;
+	default:
+		return false;
+	}
+}
+
+bool C_BaseCombatWeapon::IsBallistic()
+{
+	auto id = this->m_iItemDefinitionIndex();
+	return (id == WEAPON_AUG || id == WEAPON_SG556);
+}
+
 bool C_BaseCombatWeapon::IsKnife()
 {
 	if (this->m_Item().m_iItemDefinitionIndex() == WEAPON_TASER) return false;
@@ -287,6 +351,10 @@ bool C_BasePlayer::IsFlashed()
 {
 	static auto m_flFlashMaxAlpha = NetvarSys::Get().GetOffset("DT_CSPlayer", "m_flFlashMaxAlpha");
 	return *(float*)((uintptr_t)this + m_flFlashMaxAlpha - 0x8) > 200.0;
+}
+bool C_BasePlayer::IsTeammate()
+{
+	return !Utils::IsDangerZone() && this != g_LocalPlayer && this->m_iTeamNum() == g_LocalPlayer->m_iTeamNum();
 }
 bool C_BasePlayer::IsEnemy()
 {

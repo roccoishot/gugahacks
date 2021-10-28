@@ -179,6 +179,12 @@
     <ClCompile Include="resolver.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
+    <ClCompile Include="ragebot\ragebot.cpp">
+      <Filter>Source Files\features</Filter>
+    </ClCompile>
+    <ClCompile Include="rageawall.cpp">
+      <Filter>Source Files\features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="valve_sdk\misc\BaseHandle.hpp">
@@ -497,6 +503,12 @@
       <Filter>Source Files\features</Filter>
     </ClInclude>
     <ClInclude Include="lagcompensation.h">
+      <Filter>Source Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="ragebot\ragebot.hpp">
+      <Filter>Source Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="rageawall.h">
       <Filter>Source Files\features</Filter>
     </ClInclude>
   </ItemGroup>

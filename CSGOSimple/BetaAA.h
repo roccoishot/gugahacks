@@ -24,9 +24,7 @@ enum class PitchAntiAims : int
 	EMOTION,
 	DOWN,
 	UP,
-	ZERO,
-	FAKEDOWN,
-	FAKEUP
+	ZERO
 
 };
 

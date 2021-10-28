@@ -307,7 +307,147 @@ void Menu::Render()
 		if (Tab("SKINS", { 125,35 }, tab == 4))
 			tab = 4;
 
+		const char* selectiontypes[] = {
+	"Closest to crosshair",
+	"Health"
+		};
+		const char* items[] = {
+	"Legit",
+	"Rage",
+	"Other"
+		};
+
+		const char* aa_pitch_list[] = {
+			"None",
+			"Emotion",
+			"Down",
+			"Up",
+			"Zero"
+		};
+
+		const char* aa_yaw_list[] = {
+			"None",
+			"Backwards",
+			"Spinbot",
+			"Lowerbody",
+			"Freestanding"
+		};
+
+		const char* hitboxes[] = {
+			"Head",
+			"Neck",
+			"Chest",
+			"Pelvis",
+			"Stomach",
+			"Arms",
+			"Legs",
+			"Foot",
+		};
+
+		enum WEAPON_GROUPS {
+			PISTOLS,
+			RIFLES,
+			SHOTGUNS,
+			SCOUT,
+			AUTO,
+			AWP,
+			SMG,
+			UNKNOWN
+		};
+
 		if (tab == 5) {
+
+				/*static int selected = 0;
+
+				if (ImGui::ButtonSelectable(XorStr("Globals"), ImVec2(220, 40), selected == 0, g_SpectatorListFont, g_SpectatorListFont))
+					selected = 0;
+				ImGui::SameLine();
+				if (ImGui::ButtonSelectable(XorStr("Weapon"), ImVec2(220, 40), selected == 1, g_SpectatorListFont, g_SpectatorListFont))
+					selected = 1;
+
+				if (selected == 0)
+				{
+					ImGui::BeginGroup();
+					{
+						ImGui::PushItemWidth(152);
+						ImGui::Checkbox(XorStr("Enable Ragebot"), &g_Options.ragebot_enabled);
+						ImGui::Checkbox(XorStr("Auto zeus"), &g_Options.ragebot_autozeus);
+						ImGui::Text(XorStr("FOV"));
+						ImGui::SliderInt(XorStr("##FOV"), &g_Options.ragebot_fov, 0, 180);
+						ImGui::PopItemWidth();
+					}
+					ImGui::EndGroup();
+				}
+				else if (selected == 1) {
+					static int curGroup = 0;
+					if (ImGui::ButtonSelectable("Pistols", ImVec2(55, 25), curGroup == WEAPON_GROUPS::PISTOLS)) curGroup = WEAPON_GROUPS::PISTOLS;
+					ImGui::SameLine();
+					if (ImGui::ButtonSelectable("Rifles", ImVec2(55, 25), curGroup == WEAPON_GROUPS::RIFLES)) curGroup = WEAPON_GROUPS::RIFLES;
+					ImGui::SameLine();
+					if (ImGui::ButtonSelectable("SMG", ImVec2(55, 25), curGroup == WEAPON_GROUPS::SMG)) curGroup = WEAPON_GROUPS::SMG;
+					ImGui::SameLine();
+					if (ImGui::ButtonSelectable("Shotguns", ImVec2(55, 25), curGroup == WEAPON_GROUPS::SHOTGUNS)) curGroup = WEAPON_GROUPS::SHOTGUNS;
+					ImGui::SameLine();
+					if (ImGui::ButtonSelectable("Scout", ImVec2(55, 25), curGroup == WEAPON_GROUPS::SCOUT)) curGroup = WEAPON_GROUPS::SCOUT;
+					ImGui::SameLine();
+					if (ImGui::ButtonSelectable("Auto", ImVec2(55, 25), curGroup == WEAPON_GROUPS::AUTO)) curGroup = WEAPON_GROUPS::AUTO;
+					ImGui::SameLine();
+					if (ImGui::ButtonSelectable("AWP", ImVec2(55, 25), curGroup == WEAPON_GROUPS::AWP)) curGroup = WEAPON_GROUPS::AWP;
+					ImGui::BeginGroup();
+					{
+						ImGui::PushItemWidth(142);
+
+						ImGui::Checkbox(XorStr("Auto Scope"), &g_Options.ragebot_autoscope[curGroup]);
+						ImGui::Checkbox(XorStr("Auto Stop"), &g_Options.ragebot_autostop[curGroup]);
+						ImGui::Checkbox(XorStr("Auto Crouch"), &g_Options.ragebot_autocrouch[curGroup]);
+
+						ImGui::SliderFloat(XorStr("Hitchance"), &g_Options.ragebot_hitchance[curGroup], 0.f, 100.f);
+						ImGui::SliderFloat(XorStr("Min Damage"), &g_Options.ragebot_mindamage[curGroup], 0.f, 100.f);
+						ImGui::SliderInt(XorStr("Baim after x shots"), &g_Options.ragebot_baim_after_shots[curGroup], 0, 10);
+
+						ImGui::Combo("Target Selection", &g_Options.ragebot_selection[curGroup], selectiontypes, IM_ARRAYSIZE(selectiontypes));
+
+						static std::string prevValue = "Select";
+						if (ImGui::BeginCombo("Hitscan", "Select", 0))
+						{
+							//prevValue = "Hitscan";
+							std::vector<std::string> vec;
+							for (size_t i = 0; i < IM_ARRAYSIZE(hitboxes); i++)
+							{
+								ImGui::Selectable(hitboxes[i], &g_Options.ragebot_hitbox[i][curGroup], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups);
+								if (g_Options.ragebot_hitbox[i][curGroup])
+									vec.push_back(hitboxes[i]);
+							}
+
+							for (size_t i = 0; i < vec.size(); i++)
+							{
+								if (vec.size() == 1)
+									prevValue += vec.at(i);
+								else if (i != vec.size())
+									prevValue += vec.at(i) + ", ";
+								else
+									prevValue += vec.at(i);
+							}
+							ImGui::EndCombo();
+						}
+						ImGui::PopItemWidth();
+					}
+					ImGui::EndGroup();
+
+					ImGui::SameLine();
+
+					ImGui::BeginGroup();
+					{
+						ImGui::PushItemWidth(142);
+						ImGui::Text("Multipoint Scale");
+						for (int i = 0; i < 8; i++) {
+							if (g_Options.ragebot_hitbox[i])
+								ImGui::SliderFloat(hitboxes[i], &g_Options.ragebot_hitbox_multipoint_scale[i][curGroup], 0.f, 1.f);
+						}
+						ImGui::PopItemWidth();
+					}
+					ImGui::EndGroup();
+				}*/
 			ImGui::SetCursorPos({ 21,65 });
 			ImGui::BeginChild("##1", { 255,520 });
 			{
@@ -317,9 +457,7 @@ void Menu::Render()
 "Offset",
 "Down",
 "Up",
-"Zero",
-"Fake Up",
-"Fake Down"
+"Zero"
 
 				};
 

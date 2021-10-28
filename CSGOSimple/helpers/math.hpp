@@ -23,6 +23,8 @@ namespace Math
 		i >>= 1;
 		return *(float*)&i;
 	}
+	float RandomFloat(float min, float max);
+	void VectorAngles1337(const Vector& forward, Vector& up, QAngle& angles);
 	float VectorDistance(const Vector& v1, const Vector& v2);
 	float DistancePointToLine(Vector Point, Vector LineOrigin, Vector Dir);
 	QAngle CalcAngle(const Vector& src, const Vector& dst);

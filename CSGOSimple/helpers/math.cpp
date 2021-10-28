@@ -4,6 +4,45 @@
 
 namespace Math
 {
+
+    float RandomFloat(float min, float max)
+    {
+        static auto ranFloat = reinterpret_cast<float(*)(float, float)>(GetProcAddress(GetModuleHandleW(L"vstdlib.dll"), "RandomFloat"));
+        if (ranFloat)
+        {
+            return ranFloat(min, max);
+        }
+        else
+        {
+            return 0.f;
+        }
+    }
+    Vector CrossProduct2(const Vector& a, const Vector& b)
+    {
+        return Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+    }
+    void VectorAngles1337(const Vector& forward, Vector& up, QAngle& angles)
+    {
+        Vector left = CrossProduct2(up, forward);
+        left.NormalizeInPlace();
+
+        float forwardDist = forward.Length2D();
+
+        if (forwardDist > 0.001f)
+        {
+            angles.pitch = atan2f(-forward.z, forwardDist) * 180 / PI_F;
+            angles.yaw = atan2f(forward.y, forward.x) * 180 / PI_F;
+
+            float upZ = (left.y * forward.x) - (left.x * forward.y);
+            angles.roll = atan2f(left.z, upZ) * 180 / PI_F;
+        }
+        else
+        {
+            angles.pitch = atan2f(-forward.z, forwardDist) * 180 / PI_F;
+            angles.yaw = atan2f(-left.x, left.y) * 180 / PI_F;
+            angles.roll = 0;
+        }
+    }
 	//--------------------------------------------------------------------------------
 	float VectorDistance(const Vector& v1, const Vector& v2)
 	{

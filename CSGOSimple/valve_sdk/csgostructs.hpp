@@ -279,9 +279,16 @@ public:
 	bool IsPistol();
 	bool IsSniper();
 	bool IsGun();
+	bool IsZeus();
+	bool IsAutomaticGun();
+	bool IsMashineGun();
+	bool IsSMG();
+	bool IsAuto();
+	bool IsShotgun();
+	bool IsBallistic();
+	void UpdateAccuracyPenalty();
 	float GetInaccuracy();
 	float GetSpread();
-	void UpdateAccuracyPenalty();
 	CUtlVector<IRefCounted*>& m_CustomMaterials();
 	bool* m_bCustomMaterialInitialized();
 
@@ -401,6 +408,7 @@ public:
 	bool		  IsFlashed();
 	bool		  IsEnemy();
 	bool          HasC4();
+	bool IsTeammate();
 	Vector        GetHitboxPos(int hitbox_id);
 	mstudiobbox_t * GetHitbox(int hitbox_id);
 	bool          GetHitboxPos(int hitbox, Vector &output);

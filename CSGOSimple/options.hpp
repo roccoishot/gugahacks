@@ -119,6 +119,20 @@ public:
 		bool fastaimbot = false;
 	} aimbot;
 
+	bool ragebot_enabled = false;
+	bool ragebot_backtrack = false;
+	int ragebot_fov = 0;
+	bool ragebot_autozeus = false;
+
+	bool ragebot_hitbox[8][9] = { false, false, false, false, false, false, false, false };
+	float ragebot_hitbox_multipoint_scale[8][9] = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
+	int ragebot_selection[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	bool ragebot_autoscope[9] = { false, false, false, false, false, false, false, false };
+	bool ragebot_autostop[9] = { false, false, false, false, false, false, false, false };
+	bool ragebot_autocrouch[9] = { false, false, false, false, false, false, false, false };
+	float ragebot_mindamage[9] = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
+	float ragebot_hitchance[9] = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
+	int ragebot_baim_after_shots[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	int invertaa = 0;
 	bool speclist = false;
 	bool faresp = false;

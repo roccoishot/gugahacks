@@ -902,6 +902,25 @@ bool ImGui::ImageButton(ImTextureID user_texture_id, const ImVec2& size, const I
     return pressed;
 }
 
+bool ImGui::ButtonSelectable(const char* label, const ImVec2& size_arg, bool selected, ImFont* des, ImFont* sel)
+{
+    PushStyleColor(ImGuiCol_Text, selected ? ImVec4(1.f, 0.00f, 0.00f, 1.00f) : ImVec4(1.f, 1.00f, 1.00f, 1.00f));
+    PushStyleColor(ImGuiCol_Button, ImVec4(0.07f, 0.07f, 0.07f, 1.00f));
+    PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.07f, 0.07f, 0.07f, 1.00f));
+    PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.07f, 0.07f, 0.07f, 1.00f));
+
+    PushFont(selected ? sel/*sel*/ : sel);
+    auto ret = ButtonEx(label, size_arg, 0);
+    PopFont();
+
+    PopStyleColor();
+    PopStyleColor();
+    PopStyleColor();
+    PopStyleColor();
+
+    return ret;
+}
+
 bool ImGui::Checkbox(const char* label, bool* v)
 {
     ImGuiWindow* window = GetCurrentWindow();

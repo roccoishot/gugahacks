@@ -59,6 +59,15 @@ public:
         return (src.x != x) || (src.y != y) || (src.z != z);
     }
 
+    Vector Vector::operator-(float fl) const
+    {
+        return Vector(x - fl, y - fl, z - fl);
+    }
+    Vector Vector::operator+(float fl) const
+    {
+        return Vector(x + fl, y + fl, z + fl);
+    }
+
     Vector& operator+=(const Vector& v)
     {
         x += v.x; y += v.y; z += v.z;
@@ -156,6 +165,18 @@ public:
         delta.z = z - vOther.z;
 
         return delta.LengthSqr();
+    }
+    void VectorCrossProduct(const Vector& a, const Vector& b, Vector& result)
+    {
+        result.x = a.y * b.z - a.z * b.y;
+        result.y = a.z * b.x - a.x * b.z;
+        result.z = a.x * b.y - a.y * b.x;
+    }
+    Vector Cross(const Vector& vOther)
+    {
+        Vector res;
+        VectorCrossProduct(*this, vOther, res);
+        return res;
     }
     float Dot(const Vector& vOther) const
     {

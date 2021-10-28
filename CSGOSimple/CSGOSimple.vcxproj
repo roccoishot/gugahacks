@@ -131,6 +131,8 @@
     <ClCompile Include="OldPrediction.cpp" />
     <ClCompile Include="options.cpp" />
     <ClCompile Include="Poopie.cpp" />
+    <ClCompile Include="rageawall.cpp" />
+    <ClCompile Include="ragebot\ragebot.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="resolver.cpp" />
     <ClCompile Include="ui.cpp" />
@@ -171,6 +173,8 @@
     <ClInclude Include="movement.h" />
     <ClInclude Include="OldPrediction.h" />
     <ClInclude Include="Platform.h" />
+    <ClInclude Include="rageawall.h" />
+    <ClInclude Include="ragebot\ragebot.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="valve_sdk\interfaces\IGameTypes.hpp" />
     <ClInclude Include="valve_sdk\interfaces\IStudioRender.hpp" />

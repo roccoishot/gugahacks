@@ -7,6 +7,10 @@
 
 void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 {
+	uintptr_t* fp;
+	__asm mov fp, ebp;
+	bSendPacket = (bool*)(*fp - 0x1C);
+
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
 	{
 		return;
@@ -106,6 +110,11 @@ float WallThickness(Vector from, Vector to, C_BasePlayer* skip, C_BasePlayer* sk
 
 void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 {
+
+	uintptr_t* fp;
+	__asm mov fp, ebp;
+	bSendPacket = (bool*)(*fp - 0x1C);
+
 	Yaw(cmd, true);
 	Pitch(cmd, bSendPacket);
 
@@ -200,9 +209,9 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 void CAntiAim::Pitch(CUserCmd* cmd, bool& bSendPacket)
 {
 
-	static bool sw = false;
-	bSendPacket = sw;
-	sw = !sw;
+	uintptr_t* fp;
+	__asm mov fp, ebp;
+	bSendPacket = (bool*)(*fp - 0x1C);
 
 	static bool bFlip = false;
 	bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
@@ -228,12 +237,6 @@ void CAntiAim::Pitch(CUserCmd* cmd, bool& bSendPacket)
 
 	case PitchAntiAims::ZERO:
 		cmd->viewangles.pitch = 0.f;
-		break;
-	case PitchAntiAims::FAKEDOWN:
-		cmd->viewangles.pitch = bSendPacket ? -89.f : 89.f;
-		break;
-	case PitchAntiAims::FAKEUP:
-		cmd->viewangles.pitch = bSendPacket ? 89.f : -89.f;
 		break;
 	}
 }
