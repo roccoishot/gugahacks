@@ -342,7 +342,7 @@ void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {
 }
 
 void Misc::AutoStop(CUserCmd* cmd) {
-    Vector velocity = g_LocalPlayer->m_vecVelocity();
+    /*Vector velocity = g_LocalPlayer->m_vecVelocity();
     QAngle direction;
 
     Math::VectorAngles(velocity, direction);
@@ -357,12 +357,18 @@ void Misc::AutoStop(CUserCmd* cmd) {
 
     Vector source = forward * -speed;
 
-    if (!(cmd->buttons & IN_MOVERIGHT || cmd->buttons & IN_MOVELEFT)) {
+    if (!(cmd->buttons & IN_MOVERIGHT)) {
         cmd->sidemove = source.y;
     }
-    if (!(cmd->buttons & IN_FORWARD || cmd->buttons & IN_BACK)) {
+    if (!(cmd->buttons & IN_MOVELEFT)) {
+        cmd->sidemove = source.y;
+    }
+    if (!(cmd->buttons & IN_FORWARD)) {
         cmd->forwardmove = source.x;
     }
+    if (!(cmd->buttons & IN_BACK)) {
+        cmd->forwardmove = source.x;
+    }*/
 }
 
 void Misc::SilentWalk(CUserCmd* cmd)
