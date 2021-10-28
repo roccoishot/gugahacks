@@ -2,6 +2,8 @@
 
 namespace Globals
 {
+	extern QAngle aim_punch_old;
+	extern QAngle view_punch_old;
 	extern QAngle LastAngle;
 	extern bool ThirdPersponToggle;
 	extern bool Unload;

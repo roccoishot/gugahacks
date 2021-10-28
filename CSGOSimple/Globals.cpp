@@ -2,6 +2,8 @@
 #include "helpers/utils.hpp"
 namespace Globals
 {
+	QAngle aim_punch_old;
+	QAngle view_punch_old;
 	QAngle LastAngle = QAngle(0, 0, 0);
 	bool ThirdPersponToggle = true;
 	bool Unload = false;

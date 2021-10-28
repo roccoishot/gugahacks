@@ -502,9 +502,6 @@ namespace Hooks {
 		if (g_Options.sky_changer)
 		Fixed::Get().PerformNightmode();
 
-		if (g_Options.colormodulation)
-			Misc::Get().NightmodeFix();
-
 		static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
 
 		if (g_Options.fovscope) {
@@ -669,6 +666,10 @@ namespace Hooks {
 		static auto oPaintTraverse = vguipanel_hook.get_original<decltype(&hkPaintTraverse)>(index::PaintTraverse);
 
 		oPaintTraverse(g_VGuiPanel, edx, panel, forceRepaint, allowForce);
+
+		if (g_Options.colormodulation)
+			Misc::Get().NightmodeFix();
+
 		if (!panelId) {
 			const auto panelName = g_VGuiPanel->GetName(panel);
 			if (!strcmp(panelName, "FocusOverlayPanel")) {
@@ -727,12 +728,11 @@ namespace Hooks {
 		static auto ofunc = hlclient_hook.get_original<decltype(&hkFrameStageNotify)>(index::FrameStageNotify);
 
 		if (g_EngineClient->IsInGame()) {
+			nightmode::Get().clear_stored_materials();
 			//Fix Thirdperson Angles
 			if (Globals::m_cmd)
 				Misc::Get().SetThirdpersonAngles(stage, Globals::m_cmd);
 
-			QAngle aim_punch_old;
-			QAngle view_punch_old;
 			QAngle* aim_punch = nullptr;
 			QAngle* view_punch = nullptr;
 			if (g_Options.fatassmf && stage == ClientFrameStage_t::FRAME_RENDER_START)
@@ -742,8 +742,8 @@ namespace Hooks {
 					aim_punch = &g_LocalPlayer->m_aimPunchAngle();
 					view_punch = &g_LocalPlayer->m_viewPunchAngle();
 
-					aim_punch_old = *aim_punch;
-					view_punch_old = *view_punch;
+					Globals::aim_punch_old = *aim_punch;
+					Globals::view_punch_old = *view_punch;
 
 					*aim_punch = QAngle(0, 0, 0);
 					*view_punch = QAngle(0, 0, 0);

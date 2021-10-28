@@ -7,10 +7,6 @@
 
 void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 {
-	uintptr_t* fp;
-	__asm mov fp, ebp;
-	bSendPacket = (bool*)(*fp - 0x1C);
-
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
 	{
 		return;
@@ -155,6 +151,9 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 	if (g_Options.ragebot_antiaim_yaw == 4)
 	cmd->viewangles.yaw += RAD2DEG(best_rotation);
 
+	__asm mov fp, ebp;
+	bool bSendPacket2 = (bool*)(*fp - 0x1C);
+
 	if (g_Options.ragebot_antiaim_desync)
 	{
 		float next_update = 0;
@@ -189,14 +188,14 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 
 		if (lby->m_nChokedPackets != true)
 		{
-			bSendPacket = cmd->command_number % 2 ? true : false;
+			bSendPacket2 = cmd->command_number % 2 ? true : false;
 		}
 
 		if (next_update && lby->m_nChokedPackets != true)
 		{
 			cmd->viewangles.yaw += 360.f;
 		}
-		if (!bSendPacket)
+		if (!bSendPacket2)
 		{
 			cmd->viewangles.yaw += balls ? 58.f : -58.f;
 
@@ -208,11 +207,6 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 
 void CAntiAim::Pitch(CUserCmd* cmd, bool& bSendPacket)
 {
-
-	uintptr_t* fp;
-	__asm mov fp, ebp;
-	bSendPacket = (bool*)(*fp - 0x1C);
-
 	static bool bFlip = false;
 	bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
 	bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);

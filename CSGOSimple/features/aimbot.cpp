@@ -5,6 +5,7 @@
 #include "..//helpers/math.hpp"
 #include "..//helpers/input.hpp"
 #include "Misc.hpp"
+#include "../Globals.h"
 
 float CLegitbot::GetFovToPlayer(QAngle viewAngle, QAngle aimAngle)
 {
@@ -83,11 +84,11 @@ void CLegitbot::RCS(QAngle& angle, C_BasePlayer* target)
 	
 
 	if (target)
-		punch = { current_punch.pitch * x, current_punch.yaw * y, 0 };
+		punch = { Globals::aim_punch_old.pitch * x, Globals::aim_punch_old.yaw * y, 0 };
 	else if (g_Options.aimbot.rcstype == 0)
-		punch = { (current_punch.pitch - last_punch.pitch) * x, (current_punch.yaw - last_punch.yaw) * y, 0 };
+		punch = { (Globals::aim_punch_old.pitch - last_punch.pitch) * x, (Globals::aim_punch_old.yaw - last_punch.yaw) * y, 0 };
 
-	if ((punch.pitch != 0.f || punch.yaw != 0.f) && current_punch.roll == 0.f) {
+	if ((punch.pitch != 0.f || punch.yaw != 0.f) && Globals::aim_punch_old.roll == 0.f) {
 		angle -= punch;
 		Math::FixAngles(angle);
 	}
@@ -178,6 +179,9 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 		if (!player->IsEnemy())
 			continue;
 
+		if (player->IsTeammate())
+			continue;
+
 		player->GetBody();
 
 		if (g_LocalPlayer->m_iTeamNum() == player->m_iTeamNum())
@@ -219,6 +223,10 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 
 void CLegitbot::Run(CUserCmd* cmd)
 {
+
+	if (cmd->buttons & IN_ATTACK && g_LocalPlayer->m_iShotsFired() == 0)
+		~IN_ATTACK;
+
 	if (g_Options.aimbot.autorevolver1) {
 		if (g_LocalPlayer->IsAlive() && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)
 			g_Options.aimbot.autorevolver2 = true;
@@ -267,7 +275,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 			{
 
 				if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
-					if (g_Options.aimbot.autofire && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
+					if (g_Options.aimbot.autofire && target->IsEnemy() && !target->IsTeammate() && target->IsAlive() && !target->IsNotTarget()) {
 						cmd->buttons |= IN_ATTACK2;
 						const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
 						const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
@@ -278,7 +286,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 				}
 
 				if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
-					if (g_Options.aimbot.autofire && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
+					if (g_Options.aimbot.autofire && target->IsEnemy() && !target->IsTeammate() && target->IsAlive() && !target->IsNotTarget()) {
 						cmd->buttons |= IN_ATTACK;
 						const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
 						const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
@@ -291,7 +299,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 		}
 		if (!g_Options.aimbot.hc) {
 			if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
-				if (g_Options.aimbot.autofire && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
+				if (g_Options.aimbot.autofire && target->IsEnemy() && !target->IsTeammate() && target->IsAlive() && !target->IsNotTarget()) {
 					cmd->buttons |= IN_ATTACK2;
 					const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
 					const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
@@ -302,7 +310,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 			}
 
 			if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
-				if (g_Options.aimbot.autofire && target->IsEnemy() && target->IsAlive() && !target->IsNotTarget()) {
+				if (g_Options.aimbot.autofire && target->IsEnemy() && !target->IsTeammate() && target->IsAlive() && !target->IsNotTarget()) {
 					cmd->buttons |= IN_ATTACK;
 					const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
 					const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;

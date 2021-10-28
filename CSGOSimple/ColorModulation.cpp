@@ -16,7 +16,7 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 			if (backup)
 				materials.emplace_back(MaterialBackup(i, material));
 
-			Color CuhLuh(30, 30, 30);
+			Color CuhLuh(50, 50, 50);
 
 			float colorr;
 			float colorg;
@@ -29,7 +29,7 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 				return;
 			}
 			else if (CUHLOOR != CuhLuh && g_Options.colormodulation) {
-				material->ColorModulate((float)30 / 255.0f, (float)30 / 255.0f, (float)30 / 255.0f);
+				material->ColorModulate((float)50 / 255.0f, (float)50 / 255.0f, (float)50 / 255.0f);
 			}
 
 		}
@@ -38,7 +38,7 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 			if (backup)
 				materials.emplace_back(MaterialBackup(i, material));
 
-			Color CuhLuh(100, 100, 100);
+			Color CuhLuh(120, 120, 120);
 
 			float colorr;
 			float colorg;
@@ -51,7 +51,7 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 				return;
 			}
 			else {
-				material->ColorModulate((float)100 / 255.0f, (float)100 / 255.0f, (float)100 / 255.0f);
+				material->ColorModulate((float)120 / 255.0f, (float)120 / 255.0f, (float)120 / 255.0f);
 			}
 
 			if (g_Options.asusprops) {
