@@ -274,6 +274,7 @@ public:
 	bool CanFire();
 	bool IsGrenade();
 	bool IsKnife();
+	bool is_non_aim();
 	bool IsReloading();
 	bool IsRifle();
 	bool IsPistol();

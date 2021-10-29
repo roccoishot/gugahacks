@@ -144,7 +144,7 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 			if (thickness > thickest)
 			{
 				thickest = thickness;
-				best_rotation = (rotation + 180.f);
+				best_rotation = rotation;
 			}
 		}
 	

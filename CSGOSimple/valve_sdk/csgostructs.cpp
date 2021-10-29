@@ -74,6 +74,25 @@ bool C_BaseCombatWeapon::CanFire()
 	return m_flNextPrimaryAttack() <= flServerTime;
 }
 
+bool C_BaseCombatWeapon::is_non_aim()
+{
+	if (!this) //-V704
+		return true;
+
+	auto idx = m_iItemDefinitionIndex();
+
+	if (idx == WEAPON_C4 || idx == WEAPON_HEALTHSHOT)
+		return true;
+
+	if (IsKnife())
+		return true;
+
+	if (IsGrenade())
+		return true;
+
+	return false;
+}
+
 bool C_BaseCombatWeapon::IsGrenade()
 {
 	return GetCSWeaponData()->weaponType == WEAPONTYPE_GRENADE;
