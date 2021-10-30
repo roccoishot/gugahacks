@@ -147,12 +147,6 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 				best_rotation = rotation;
 			}
 		}
-	
-	if (g_Options.ragebot_antiaim_yaw == 4)
-	cmd->viewangles.yaw += RAD2DEG(best_rotation);
-
-	__asm mov fp, ebp;
-	bool bSendPacket2 = (bool*)(*fp - 0x1C);
 
 	if (g_Options.ragebot_antiaim_desync)
 	{
@@ -188,21 +182,22 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 
 		if (lby->m_nChokedPackets != true)
 		{
-			bSendPacket2 = cmd->command_number % 2 ? true : false;
+			bSendPacket = cmd->command_number % 2 ? true : false;
 		}
 
 		if (next_update && lby->m_nChokedPackets != true)
 		{
 			cmd->viewangles.yaw += 360.f;
 		}
-		if (!bSendPacket2)
+		if (!bSendPacket)
 		{
 			cmd->viewangles.yaw += balls ? 58.f : -58.f;
-
 		}
 		else
 			cmd->viewangles.yaw += 360.f;
 	}
+		cmd->viewangles.yaw += RAD2DEG(best_rotation);
+
 }
 
 void CAntiAim::Pitch(CUserCmd* cmd, bool& bSendPacket)
