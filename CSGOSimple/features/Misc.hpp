@@ -9,6 +9,7 @@ class CUserCmd;
 
 class Misc : public  Singleton< Misc > {
 public:
+	void Sexdick(CUserCmd* cmd, bool& bSendPacket);
 	void FakeLag(CUserCmd* cmd, bool& bSendPacket);
 	void MovementFixxa(CUserCmd* m_Cmd, QAngle wish_angle, QAngle old_angles);
 	void MovementFix(QAngle vOldAngles, CUserCmd* pCmd, float fOldForward, float fOldSidemove);

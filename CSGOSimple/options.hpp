@@ -119,6 +119,12 @@ public:
 		bool fastaimbot = false;
 	} aimbot;
 
+	struct
+	{
+		bool enabled = false;
+		bool randomizefake = false;
+	} sexdick;
+
 	bool ragebot_enabled = false;
 	bool ragebot_backtrack = false;
 	int ragebot_fov = 0;
@@ -134,6 +140,7 @@ public:
 	float ragebot_hitchance[9] = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
 	int ragebot_baim_after_shots[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	int invertaa = 0;
+	bool sexdick1 = false;
 	bool speclist = false;
 	bool faresp = false;
 	bool noscope = false;

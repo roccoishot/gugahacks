@@ -48,6 +48,7 @@ private:
 	int GetFPS();
 
 	//freestanding
+	int BestEnt = -1;
 	float fov_player(Vector ViewOffSet, QAngle View, C_BasePlayer* entity);
 	int GetNearestPlayerToCrosshair();
 	bool Freestanding(C_BasePlayer* player, float& ang);

@@ -577,8 +577,6 @@ namespace Hooks {
 		if (g_EngineClient->IsInGame())
 			Visuals::Get().ThirdPerson();
 
-			//LagComp::Get().Run();
-
 		CRageBot::Get().PrecacheShit();
 
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
@@ -586,6 +584,7 @@ namespace Hooks {
 			CRageBot::Get().CreateMove(cmd, *bSendPacket);
 			Misc::Get().FakeLag(cmd, *bSendPacket);
 			movement::jumpbug(cmd);
+			Misc::Get().Sexdick(cmd, *bSendPacket);
 			Misc::Get().SlowWalk(cmd);
 			CAntiAim::Get().CreateMove(cmd, *bSendPacket);
 		}

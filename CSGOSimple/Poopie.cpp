@@ -3,8 +3,18 @@
 #include "BetaAA.h"
 #include "crypt_str.h"
 
+void Misc::Sexdick(CUserCmd* cmd, bool& bSendPacket) {
+    if (!g_Options.sexdick.enabled)
+        return;
+
+}
+
 void Misc::FakeLag(CUserCmd* cmd, bool& bSendPacket)
 {
+    uintptr_t* fp;
+    __asm mov fp, ebp;
+    bool bSendPacket2 = (bool*)(*fp - 0x1C);
+
     if (!g_LocalPlayer || !g_LocalPlayer->IsAlive()) return;
 
     int choked_commands = g_ClientState->iChokedCommands + 1;
@@ -14,7 +24,7 @@ void Misc::FakeLag(CUserCmd* cmd, bool& bSendPacket)
     bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
     bool Standing = !Moving && !InAir;
     int ticks = 16;
-    int mode = 0;
+    int mode = 1;
 
     if (ticks == 0)
         return;
@@ -25,7 +35,7 @@ void Misc::FakeLag(CUserCmd* cmd, bool& bSendPacket)
         if (choked_commands <= ticks)
         {
             WasLastInFakelag = true;
-            bSendPacket = false;
+            bSendPacket2 = false;
         }
         else
         {
@@ -51,7 +61,7 @@ void Misc::FakeLag(CUserCmd* cmd, bool& bSendPacket)
         if (choked_commands <= PacketsToChoke)
         {
             WasLastInFakelag = true;
-            bSendPacket = false;
+            bSendPacket2 = false;
         }
         else
         {
@@ -318,6 +328,11 @@ void Misc::ClanTag()
 bool break_lby = false;
 float next_update = 0;
 void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {
+
+    uintptr_t* fp;
+    __asm mov fp, ebp;
+    bool bSendPacket2 = (bool*)(*fp - 0x1C);
+
     float server_time = g_GlobalVars->interval_per_tick * g_LocalPlayer->m_nTickBase();
     float speed = g_LocalPlayer->m_vecVelocity().LengthSqr();
 
@@ -336,7 +351,7 @@ void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {
 
     if (break_lby)
     {
-        bSendPacket = false;
+        bSendPacket2 = false;
         cmd->viewangles.yaw += g_LocalPlayer->m_flLowerBodyYawTarget();//120.f;
     }
 }

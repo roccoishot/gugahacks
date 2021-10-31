@@ -4,9 +4,14 @@
 #include "options.hpp"
 #include "features/aimbot.hpp"
 #include "features/autowall.hpp"
+#include "Globals.h"
 
 void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 {
+	uintptr_t* fp;
+	__asm mov fp, ebp;
+	bool bSendPacket2 = (bool*)(*fp - 0x1C);
+
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
 	{
 		return;
@@ -34,13 +39,13 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 
 	if (g_Options.aimbot.fastaimbot) {
 		if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
-			if (weapon->m_flNextSecondaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 1))
+			if (weapon->m_flNextSecondaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 2))
 			{
 				return;
 			}
 		}
 		if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
-			if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 2))
+			if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 1))
 			{
 				return;
 			}
@@ -48,13 +53,13 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 	}
 	if (!g_Options.aimbot.fastaimbot) {
 		if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
-			if (weapon->m_flNextSecondaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 1) || cmd->buttons & IN_ATTACK2)
+			if (weapon->m_flNextSecondaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 2) || cmd->buttons & IN_ATTACK2)
 			{
 				return;
 			}
 		}
 		if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
-			if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 2) || cmd->buttons & IN_ATTACK)
+			if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 1) || cmd->buttons & IN_ATTACK)
 			{
 				return;
 			}
@@ -75,7 +80,7 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		return;
 	}
 
-	DoAntiAim(cmd, bSendPacket);
+	DoAntiAim(cmd, bSendPacket2);
 }
 
 float WallThickness(Vector from, Vector to, C_BasePlayer* skip, C_BasePlayer* skip2)
@@ -109,44 +114,10 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 
 	uintptr_t* fp;
 	__asm mov fp, ebp;
-	bSendPacket = (bool*)(*fp - 0x1C);
+	bool bSendPacket2 = (bool*)(*fp - 0x1C);
 
 	Yaw(cmd, true);
-	Pitch(cmd, bSendPacket);
-
-	float best_rotation = 0.f;
-	auto local_eyeposition = g_LocalPlayer->GetEyePos();
-	auto head_position = g_LocalPlayer->GetHitboxPos(HITBOX_HEAD);
-	float thickest = -1.f;
-
-	int i = 1; i < g_EngineClient->GetMaxClients(); i++;
-	auto pEntity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
-
-	float step = (DirectX::XM_2PI) / 8.f;
-
-	float radius = fabs(Vector(head_position - g_LocalPlayer->m_vecOrigin()).Length2D());
-	for (float rotation = 0; rotation < (DirectX::XM_2PI); rotation += step)
-	{
-			if (!pEntity || !g_LocalPlayer) continue;
-			if (!pEntity->IsPlayer()) continue;
-			if (pEntity == g_LocalPlayer) continue;
-			if (pEntity->IsDormant()) continue;
-			if (!pEntity->IsAlive()) continue;
-			if (pEntity->m_iTeamNum() == g_LocalPlayer->m_iTeamNum()) continue;
-
-			if (!g_LocalPlayer->IsAlive())
-				return;
-
-			Vector newhead(radius * cos(rotation) + local_eyeposition.x, radius * sin(rotation) + local_eyeposition.y, local_eyeposition.z);
-
-			float thickness = WallThickness(pEntity->GetEyePos(), newhead, pEntity, g_LocalPlayer);
-
-			if (thickness > thickest)
-			{
-				thickest = thickness;
-				best_rotation = rotation;
-			}
-		}
+	Pitch(cmd, bSendPacket2);
 
 	if (g_Options.ragebot_antiaim_desync)
 	{
@@ -179,24 +150,73 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 		else if (!(GetKeyState(g_Options.invertaa)))
 			balls = false;
 
+		float randomfake = rand() % 122 + -122;
 
 		if (lby->m_nChokedPackets != true)
 		{
-			bSendPacket = cmd->command_number % 2 ? true : false;
+			bSendPacket2 = cmd->command_number % 2 ? true : false;
 		}
 
 		if (next_update && lby->m_nChokedPackets != true)
 		{
 			cmd->viewangles.yaw += 360.f;
 		}
-		if (!bSendPacket)
-		{
-			cmd->viewangles.yaw += balls ? 58.f : -58.f;
+		if (g_Options.sexdick.randomizefake) {
+			if (!bSendPacket2)
+			{
+				cmd->viewangles.yaw += balls ? randomfake : -randomfake;
+			}
+			else if (bSendPacket2) {
+				cmd->viewangles.yaw += 360.f;
+			}
 		}
-		else
-			cmd->viewangles.yaw += 360.f;
+		if (!g_Options.sexdick.randomizefake) {
+			if (!bSendPacket2)
+			{
+				cmd->viewangles.yaw += balls ? 58.f : -58.f;
+			}
+			else if (bSendPacket2) {
+				cmd->viewangles.yaw += 360.f;
+			}
+		}
 	}
-		cmd->viewangles.yaw += RAD2DEG(best_rotation);
+	
+	float best_rotation = 0.f;
+	auto local_eyeposition = g_LocalPlayer->GetEyePos();
+	auto head_position = g_LocalPlayer->GetHitboxPos(HITBOX_HEAD);
+	float thickest = -1.f;
+
+	int i = 1; i < g_EngineClient->GetMaxClients(); i++;
+	auto pEntity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
+
+	float step = (DirectX::XM_2PI) / 8.f;
+
+	float radius = fabs(Vector(head_position - g_LocalPlayer->m_vecOrigin()).Length2D());
+
+	for (float rotation = 0; rotation < (DirectX::XM_2PI); rotation += step)
+	{
+		if (!pEntity || !g_LocalPlayer) continue;
+		if (!pEntity->IsPlayer()) continue;
+		if (pEntity == g_LocalPlayer) continue;
+		if (pEntity->IsDormant()) continue;
+		if (!pEntity->IsAlive()) continue;
+		if (pEntity->m_iTeamNum() == g_LocalPlayer->m_iTeamNum()) continue;
+
+		if (!g_LocalPlayer->IsAlive())
+			return;
+
+		Vector newhead(radius * cos(rotation) + local_eyeposition.x, radius * sin(rotation) + local_eyeposition.y, local_eyeposition.z);
+
+		float thickness = WallThickness(pEntity->GetEyePos(), newhead, pEntity, g_LocalPlayer);
+
+		if (thickness > thickest)
+		{
+			thickest = thickness;
+			best_rotation = rotation;
+		}
+		if (g_Options.ragebot_antiaim_yaw == 4)
+			cmd->viewangles.yaw += RAD2DEG(best_rotation);
+	}
 
 }
 

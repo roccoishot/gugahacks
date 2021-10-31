@@ -148,6 +148,49 @@ bool Tab(const char* label, const ImVec2& size_arg, bool state)
 	return pressed;
 }
 
+void Menu::SEXDICK() {
+	if (!g_Options.sexdick1)
+		return;
+
+	ImGuiStyle* Style = &ImGui::GetStyle();
+	Style->WindowBorderSize = 0.5;
+	Style->FrameBorderSize = 0.5;
+	Style->ChildBorderSize = 0.5;
+	Style->WindowRounding = 0;
+	Style->ChildRounding = 0;
+	Style->FrameRounding = 0;
+	Style->ScrollbarSize = 6;
+	Style->ScrollbarRounding = 0;
+	Style->PopupRounding = 0;
+	Style->GrabRounding = 0;
+	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
+	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
+	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	ImGui::PushFont(g_SpectatorListFont);
+	auto flags = NULL | ImGuiWindowFlags_NoScrollbar | NULL | NULL | ImGuiWindowFlags_NoCollapse | NULL | NULL | NULL;
+
+	ImGui::SetNextWindowSize({ 325.f,400.f });
+
+	ImGui::Begin("Sexdick | GUGAHACKS.SU", nullptr, flags);
+	ImGui::Checkbox("Enable Sexdick", &g_Options.sexdick.enabled);
+	if (g_Options.sexdick.enabled) {
+		ImGui::Checkbox("Randomize Fake", &g_Options.sexdick.randomizefake);
+	}
+	ImGui::PopFont();
+	ImGui::End();
+}
+
 void Menu::SpecList()
 {
 	if (!g_Options.speclist)
@@ -277,6 +320,7 @@ void Menu::Render()
 	ImGui::SetNextWindowSize(ImVec2{ 795, 695 }, ImGuiSetCond_Once);
 	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | NULL | NULL | ImGuiWindowFlags_NoCollapse | NULL | NULL | NULL;
 
+	Menu::SEXDICK();
 
 	//Tabs
 	ImGui::Begin("Edited", nullptr, flags);
@@ -989,6 +1033,7 @@ void Menu::Render()
 					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
 					if (g_Options.enablebeta) {
 						ImGui::Checkbox("Fast Shiftwalk Charge", &g_Options.slidewalk);
+						ImGui::Checkbox("Sexdick", &g_Options.sexdick1);
 					}
 					ImGui::EndChild();
 				}

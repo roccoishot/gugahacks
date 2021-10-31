@@ -27,6 +27,7 @@ public:
 
     void Render();
     void SpecList();
+    void SEXDICK();
     void Toggle();
 
     bool IsVisible() const { return _visible; }

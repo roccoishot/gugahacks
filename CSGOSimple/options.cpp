@@ -269,6 +269,9 @@ void Options::SetupVisuals()
 
 void Options::SetupMisc()
 {
+	SetupValue(g_Options.sexdick1, "Misc", "Sexdick");
+	SetupValue(g_Options.sexdick.enabled, "Sexdick", "Enabled");
+	SetupValue(g_Options.sexdick.randomizefake, "Sexdick", "Randomize Fake");
 	SetupValue(g_Options.invertaa, "Antiaim", "Invert AA Key");
 	SetupValue(g_Options.speclist, "Misc", "Spectator List");
 	SetupValue(g_Options.ebmode, "Misc", "Edgebug Mode");
