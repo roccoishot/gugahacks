@@ -584,11 +584,12 @@ namespace Hooks {
 			CRageBot::Get().CreateMove(cmd, *bSendPacket);
 			Misc::Get().FakeLag(cmd, *bSendPacket);
 			movement::jumpbug(cmd);
-			Misc::Get().Sexdick(cmd, *bSendPacket);
 			Misc::Get().SlowWalk(cmd);
-			CAntiAim::Get().CreateMove(cmd, *bSendPacket);
+			CAntiAim::Get().CreateMove(cmd);
 		}
 		CPredictionSystem::Get().End(g_LocalPlayer);
+
+		Misc::Get().Sexdick(cmd, *bSendPacket);
 
 		Math::Normalize3(cmd->viewangles);
 		Math::ClampAngles(cmd->viewangles);
@@ -852,11 +853,11 @@ namespace Hooks {
 			{
 				if (g_Options.colormodulation) {
 				static auto r_drawspecificstaticprop = g_CVar->FindVar(crypt_str("r_drawspecificstaticprop")); //-V807
-
-				if (r_drawspecificstaticprop->GetBool())
-					r_drawspecificstaticprop->SetValue(FALSE);
 					if (g_Options.changemats)
 					{
+						if (r_drawspecificstaticprop->GetBool())
+							r_drawspecificstaticprop->SetValue(g_Options.changemats);
+
 						if (g_Options.colormodulate)
 							nightmode::Get().apply();
 						else

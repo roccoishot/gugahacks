@@ -6,7 +6,7 @@
 #include "features/autowall.hpp"
 #include "Globals.h"
 
-void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
+void CAntiAim::CreateMove(CUserCmd* cmd)
 {
 	uintptr_t* fp;
 	__asm mov fp, ebp;
@@ -69,18 +69,18 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 	if (movetype == MOVETYPE_LADDER)
 	{
 		static bool last = false;
-		bSendPacket = last;
+		bSendPacket2 = last;
 		last = !last;
 		return;
 	}
 
 	if (weapon->IsGrenade())
 	{
-		bSendPacket = false;
+		bSendPacket2 = false;
 		return;
 	}
 
-	DoAntiAim(cmd, bSendPacket2);
+	DoAntiAim(cmd);
 }
 
 float WallThickness(Vector from, Vector to, C_BasePlayer* skip, C_BasePlayer* skip2)
@@ -109,15 +109,15 @@ float WallThickness(Vector from, Vector to, C_BasePlayer* skip, C_BasePlayer* sk
 	return endpos1.DistTo(endpos2);
 }
 
-void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
+void CAntiAim::DoAntiAim(CUserCmd* cmd)
 {
 
 	uintptr_t* fp;
 	__asm mov fp, ebp;
 	bool bSendPacket2 = (bool*)(*fp - 0x1C);
 
-	Yaw(cmd, true);
-	Pitch(cmd, bSendPacket2);
+	Yaw(cmd);
+	Pitch(cmd);
 
 	if (g_Options.ragebot_antiaim_desync)
 	{
@@ -220,7 +220,7 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 
 }
 
-void CAntiAim::Pitch(CUserCmd* cmd, bool& bSendPacket)
+void CAntiAim::Pitch(CUserCmd* cmd)
 {
 	static bool bFlip = false;
 	bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
@@ -250,7 +250,7 @@ void CAntiAim::Pitch(CUserCmd* cmd, bool& bSendPacket)
 	}
 }
 
-void CAntiAim::Yaw(CUserCmd* cmd, bool fake)
+void CAntiAim::Yaw(CUserCmd* cmd)
 {
 	bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
 	bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);

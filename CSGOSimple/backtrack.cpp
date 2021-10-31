@@ -89,6 +89,6 @@ void TimeWarp::CreateMove(CUserCmd* cmd)
 		}
 
 		if (bestTargetSimTime >= 0)
-			cmd->tick_count = TIME_TO_TICKS(bestTargetSimTime + LagFix());
+			cmd->tick_count = TIME_TO_TICKS(bestTargetSimTime - LagFix());
 	}
 }

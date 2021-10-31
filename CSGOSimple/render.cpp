@@ -81,12 +81,17 @@ void Render::BeginScene() {
 	int a = g_Options.aimbot.fov;
 	int b = 12;
 	long long c = a * b;
-
+	int screenWidth, screenHeight;
+	g_EngineClient->GetScreenSize(screenWidth, screenHeight);
 	draw_list->Clear();
 	draw_list->PushClipRectFullScreen();
 
 	if (g_Options.bowlsfreshcut && g_EngineClient->IsInGame() && g_LocalPlayer->IsFlashed()) {
-		Render::Get().RenderText("FLASHED", 965, 545, 18.f, Color(120, 208, 255), false, true, g_VeloFont);
+		Render::Get().RenderText("FLASHED", (screenWidth / 2) + 5, (screenHeight / 2) + 5, 18.f, Color(120, 208, 255), false, true, g_VeloFont);
+	}
+
+	if (g_Options.sexdick.enabled && g_EngineClient->IsInGame() && g_LocalPlayer) {
+		Render::Get().RenderText("SEXDICK", screenWidth / 2, (screenHeight / 2) + 15, 14.f, g_Options.menucolor, true, true, g_VeloFont);
 	}
 
 	if (g_Options.misc_watermark) {
@@ -126,8 +131,6 @@ void Render::BeginScene() {
 	if (g_EngineClient->IsInGame() && g_LocalPlayer)
 		Visuals::Get().AddToDrawList();
 
-	int screenWidth, screenHeight;
-	g_EngineClient->GetScreenSize(screenWidth, screenHeight);
 	if (g_Options.noscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
 		Render::Get().RenderLine(screenWidth / 2, 0, screenWidth / 2, screenHeight, Color(0, 0, 0, 255), g_CVar->FindVar("cl_crosshair_sniper_width")->GetFloat());
 		Render::Get().RenderLine(0, screenHeight / 2, screenWidth, screenHeight / 2, Color(0, 0, 0, 255), g_CVar->FindVar("cl_crosshair_sniper_width")->GetFloat());

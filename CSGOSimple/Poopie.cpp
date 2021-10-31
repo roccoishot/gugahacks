@@ -15,12 +15,12 @@ void Misc::FakeLag(CUserCmd* cmd, bool& bSendPacket)
     __asm mov fp, ebp;
     bool bSendPacket2 = (bool*)(*fp - 0x1C);
 
-    if (!g_LocalPlayer || !g_LocalPlayer->IsAlive()) return;
+    if (!g_LocalPlayer && !g_LocalPlayer->IsAlive()) return;
 
     int choked_commands = g_ClientState->iChokedCommands + 1;
     static bool WasLastInFakelag = false;
 
-    bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1f || (cmd->sidemove != 0.f || cmd->forwardmove != 0.f);
+    bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1f && (cmd->sidemove != 0.f && cmd->forwardmove != 0.f);
     bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
     bool Standing = !Moving && !InAir;
     int ticks = 16;

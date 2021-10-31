@@ -178,11 +178,12 @@ void Menu::SEXDICK() {
 	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
 	ImGui::PushFont(g_SpectatorListFont);
-	auto flags = NULL | ImGuiWindowFlags_NoScrollbar | NULL | NULL | ImGuiWindowFlags_NoCollapse | NULL | NULL | NULL;
+	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | NULL | ImGuiWindowFlags_NoCollapse | NULL | NULL | NULL;
 
 	ImGui::SetNextWindowSize({ 325.f,400.f });
 
 	ImGui::Begin("Sexdick | GUGAHACKS.SU", nullptr, flags);
+	ImGui::Separator("SEXDICK | GUGAHACKS.SU");
 	ImGui::Checkbox("Enable Sexdick", &g_Options.sexdick.enabled);
 	if (g_Options.sexdick.enabled) {
 		ImGui::Checkbox("Randomize Fake", &g_Options.sexdick.randomizefake);
@@ -318,7 +319,7 @@ void Menu::Render()
 
 	ImGui::SetNextWindowPos(ImVec2{ 0, 0 }, ImGuiSetCond_Once);
 	ImGui::SetNextWindowSize(ImVec2{ 795, 695 }, ImGuiSetCond_Once);
-	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | NULL | NULL | ImGuiWindowFlags_NoCollapse | NULL | NULL | NULL;
+	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | NULL | ImGuiWindowFlags_NoCollapse | NULL | NULL | NULL;
 
 	Menu::SEXDICK();
 

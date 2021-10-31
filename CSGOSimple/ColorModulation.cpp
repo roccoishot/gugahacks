@@ -16,7 +16,7 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 			if (backup)
 				materials.emplace_back(MaterialBackup(i, material));
 
-			Color CuhLuh(50, 50, 50);
+			Color CuhLuh(50 / 255.0f, 50 / 255.0f, 50 / 255.0f);
 
 			float colorr;
 			float colorg;
@@ -25,7 +25,7 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 			material->GetColorModulation(&colorr, &colorg, &colorb);
 			Color CUHLOOR(colorr, colorg, colorb);
 
-			if (CUHLOOR != CuhLuh && g_Options.changemats) {
+			if (CuhLuh != CUHLOOR && g_Options.changemats) {
 				material->ColorModulate((float)50 / 255.0f, (float)50 / 255.0f, (float)50 / 255.0f);
 			}
 
@@ -35,23 +35,22 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 			if (backup)
 				materials.emplace_back(MaterialBackup(i, material));
 
-			Color CuhLuh(120, 120, 120);
+			Color CuhLuh(120 / 255.0f, 120 / 255.0f, 120 / 255.0f);
 
 			float colorr;
 			float colorg;
 			float colorb;
-
+			float alpha;
+			float cum = 200 / 255.f;
+			alpha = material->GetAlphaModulation();
 			material->GetColorModulation(&colorr, &colorg, &colorb);
 			Color CUHLOOR(colorr, colorg, colorb);
 
-			if (CUHLOOR != CuhLuh && g_Options.changemats)
+			if (CuhLuh != CUHLOOR && g_Options.changemats)
 				material->ColorModulate((float)120 / 255.0f, (float)120 / 255.0f, (float)120 / 255.0f);
 
-			if (g_Options.asusprops) {
+			if (alpha != cum && g_Options.asusprops) {
 				material->AlphaModulate((float)200 / 255.0f);
-			}
-			else if (!g_Options.asusprops) {
-				material->AlphaModulate((float)255 / 255.0f);
 			}
 
 		}
