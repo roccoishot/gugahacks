@@ -96,7 +96,26 @@ bool Visuals::Player::Begin(C_BasePlayer* pl)
 		return false;
 	ctx.pl = pl;
 	ctx.is_enemy = g_LocalPlayer->m_iTeamNum() != pl->m_iTeamNum();
-	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, HITBOX_PELVIS);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 0);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 1);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 2);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 3);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 4);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 5);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 6);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 7);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 8);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 9);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 10);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 11);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 12);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 13);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 14);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 15);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 16);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 17);
+	ctx.is_visible = g_LocalPlayer->CanSeePlayer(pl, 18);
+
 
 	if (g_Options.teamesp == false) {
 		if (!ctx.is_enemy)
