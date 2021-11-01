@@ -126,10 +126,10 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 	const auto mdl = pInfo->m_pClientEntity->GetModel();
 	//run yo pockets cuh
-	bool is_weapon = strstr(mdl->szName, "weapon") != nullptr;
-	bool is_arm = strstr(mdl->szName, "arms") != nullptr;
 	bool is_player = strstr(mdl->szName, "models/player") != nullptr;
-	bool is_sleeve = strstr(mdl->szName, "sleeve") != nullptr;
+	auto is_weapon = strstr(mdl->szName, "weapons/v_") && !strstr(mdl->szName, "arms");
+	auto is_arm = strstr(mdl->szName, "arms");
+	auto is_sleeve = strstr(mdl->szName, "sleeve");
 
 	class KeyValues {
 	public:
