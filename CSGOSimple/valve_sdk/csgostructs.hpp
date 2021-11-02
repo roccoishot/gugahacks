@@ -331,7 +331,6 @@ public:
 	NETVAR(int32_t, m_nHitboxSet, "DT_BaseAnimating", "m_nHitboxSet");
 	NETVAR(CHandle<C_BaseCombatWeapon>, m_hActiveWeapon, "DT_BaseCombatCharacter", "m_hActiveWeapon");
 	NETVAR(int32_t, m_iAccount, "DT_CSPlayer", "m_iAccount");
-	NETVAR(float, m_flFlashDuration, "DT_CSPlayer", "m_flFlashDuration");
 	NETVAR(float, m_flSimulationTime, "DT_BaseEntity", "m_flSimulationTime");
 	NETVAR(float, m_flOldSimulationTime, "DT_BaseEntity", "m_flOldSimulationTime");
 	NETVAR(float, m_flCycle, "DT_BaseAnimating", "m_flCycle");
@@ -340,6 +339,7 @@ public:
 	NETVAR(int, m_iObserverMode, "DT_BasePlayer", "m_iObserverMode");
 	NETVAR(int32_t, m_nSurvivalTeam, "DT_CSPlayer", "m_nSurvivalTeam");
 	NETVAR(float, m_flHealthShotBoost, "DT_CSPlayer", "m_flHealthShotBoostExpirationTime");
+	NETVAR(float, m_flFlashDuration, "DT_CSPlayer", "m_flFlashDuration");
 
 	//NETVAR(int, m_iAccount, "DT_CSPlayer", "m_iAccount");
 

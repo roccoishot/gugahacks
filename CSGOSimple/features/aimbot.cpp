@@ -82,13 +82,21 @@ void CLegitbot::RCS(QAngle& angle, C_BasePlayer* target)
 	const auto y = float(g_Options.aimbot.x) / 100.f * scale;
 
 	
+	if (g_Options.fatassmf) {
+		if (target)
+			punch = { Globals::aim_punch_old.pitch * x, Globals::aim_punch_old.yaw * y, 0 };
+		else if (g_Options.aimbot.rcstype == 0)
+			punch = { (Globals::aim_punch_old.pitch - last_punch.pitch) * x, (Globals::aim_punch_old.yaw - last_punch.yaw) * y, 0 };
+	}
 
-	if (target)
-		punch = { Globals::aim_punch_old.pitch * x, Globals::aim_punch_old.yaw * y, 0 };
-	else if (g_Options.aimbot.rcstype == 0)
-		punch = { (Globals::aim_punch_old.pitch - last_punch.pitch) * x, (Globals::aim_punch_old.yaw - last_punch.yaw) * y, 0 };
+	if (!g_Options.fatassmf) {
+		if (target)
+			punch = { current_punch.pitch * x,  current_punch.yaw * y, 0 };
+		else if (g_Options.aimbot.rcstype == 0)
+			punch = { (current_punch.pitch - last_punch.pitch) * x, (current_punch.yaw - last_punch.yaw) * y, 0 };
+	}
 
-	if ((punch.pitch != 0.f || punch.yaw != 0.f) && Globals::aim_punch_old.roll == 0.f) {
+	if ((punch.pitch != 0.f || punch.yaw != 0.f) && punch.roll == 0.f) {
 		angle -= punch;
 		Math::FixAngles(angle);
 	}
