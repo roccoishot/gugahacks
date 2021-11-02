@@ -578,7 +578,7 @@ void Menu::Render()
 				ImGui::Separator("Others");
 				ImGui::Checkbox("Hitchance", &g_Options.aimbot.hc);
 				if (g_Options.aimbot.hc)
-					ImGui::SliderInt("Hitchance", &g_Options.aimbot.hitchance, 1, 100, "%.f");
+					ImGui::SliderInt("Hitchance %", &g_Options.aimbot.hitchance, 1, 100, "%.f");
 				ImGui::Checkbox("Backtrack", &g_Options.misc_backtrack);
 				if (g_Options.misc_backtrack) {
 					ImGui::SliderInt("Ticks", &g_Options.backtix, 0.f, 62.f, "%.f");

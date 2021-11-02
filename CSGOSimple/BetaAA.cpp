@@ -214,9 +214,10 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd)
 			thickest = thickness;
 			best_rotation = rotation;
 		}
-		if (g_Options.ragebot_antiaim_yaw == 4)
-			cmd->viewangles.yaw += RAD2DEG(best_rotation);
 	}
+
+	if (g_Options.ragebot_antiaim_yaw == 4)
+		cmd->viewangles.yaw += RAD2DEG(best_rotation);
 
 }
 
