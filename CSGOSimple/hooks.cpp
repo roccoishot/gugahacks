@@ -486,9 +486,7 @@ namespace Hooks {
 		//auto cmd = g_Input->GetUserCmd(sequence_number);
 		//auto verified = g_Input->GetVerifiedCmd(sequence_number);
 
-		uintptr_t* fp;
-		__asm mov fp, ebp;
-		bool* bSendPacket = (bool*)(*fp - 0x1C);
+		bool bSendPacket = true;
 
 		//Desync
 		Misc::Get().ClanTag();
@@ -581,15 +579,15 @@ namespace Hooks {
 
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
 		{
-			CRageBot::Get().CreateMove(cmd, *bSendPacket);
-			Misc::Get().FakeLag(cmd, *bSendPacket);
+			CRageBot::Get().CreateMove(cmd, bSendPacket);
+			Misc::Get().FakeLag(cmd, bSendPacket);
 			movement::jumpbug(cmd);
 			Misc::Get().SlowWalk(cmd);
-			CAntiAim::Get().CreateMove(cmd);
+			CAntiAim::Get().CreateMove(cmd, bSendPacket);
 		}
 		CPredictionSystem::Get().End(g_LocalPlayer);
 
-		Misc::Get().Sexdick(cmd, *bSendPacket);
+		Misc::Get().Sexdick(cmd, bSendPacket);
 
 		Math::Normalize3(cmd->viewangles);
 		Math::ClampAngles(cmd->viewangles);
@@ -666,9 +664,6 @@ namespace Hooks {
 		static auto oPaintTraverse = vguipanel_hook.get_original<decltype(&hkPaintTraverse)>(index::PaintTraverse);
 
 		oPaintTraverse(g_VGuiPanel, edx, panel, forceRepaint, allowForce);
-
-		if (g_Options.colormodulation)
-			Misc::Get().NightmodeFix();
 
 		if (!panelId) {
 			const auto panelName = g_VGuiPanel->GetName(panel);

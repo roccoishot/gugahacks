@@ -7,6 +7,12 @@ void Misc::Sexdick(CUserCmd* cmd, bool& bSendPacket) {
     if (!g_Options.sexdick.enabled)
         return;
 
+    if (g_Options.sexdick.urrstuck) {
+        if (GetAsyncKeyState(g_Options.sexdick.urrstuckkey)) {
+            cmd->tick_count = 0x7F7FFFFF;
+            cmd->command_number = 0x00000;
+        }
+    }
 }
 
 void Misc::FakeLag(CUserCmd* cmd, bool& bSendPacket)
@@ -15,9 +21,12 @@ void Misc::FakeLag(CUserCmd* cmd, bool& bSendPacket)
     __asm mov fp, ebp;
     bool bSendPacket2 = (bool*)(*fp - 0x1C);
 
-    if (!g_LocalPlayer && !g_LocalPlayer->IsAlive()) return;
+    bSendPacket = bSendPacket2;
 
-    int choked_commands = g_ClientState->iChokedCommands + 1;
+    if (!g_EngineClient->IsInGame() && g_LocalPlayer) 
+        return;
+
+    int choked_commands = g_EngineClient->GetNetChannel()->chokedcommands + 1;
     static bool WasLastInFakelag = false;
 
     bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1f && (cmd->sidemove != 0.f && cmd->forwardmove != 0.f);
@@ -35,7 +44,7 @@ void Misc::FakeLag(CUserCmd* cmd, bool& bSendPacket)
         if (choked_commands <= ticks)
         {
             WasLastInFakelag = true;
-            bSendPacket2 = false;
+            bSendPacket = false;
         }
         else
         {
@@ -61,62 +70,15 @@ void Misc::FakeLag(CUserCmd* cmd, bool& bSendPacket)
         if (choked_commands <= PacketsToChoke)
         {
             WasLastInFakelag = true;
-            bSendPacket2 = false;
+            bSendPacket = false;
         }
         else
         {
             WasLastInFakelag = false;
         }
+        g_EngineClient->GetNetChannel()->m_nChokedPackets = PacketsToChoke;
         break;
-    }
-}
 
-void Misc::NightmodeFix()
-{
-    static auto in_game = false;
-
-    if (g_EngineClient->IsInGame() && !in_game)
-    {
-        in_game = true;
-
-        g_Options.changemats = true;
-    }
-    else if (!g_EngineClient->IsInGame() && in_game)
-        in_game = false;
-
-    static auto player_enable = g_Options.chams_player_enabled;
-
-    if (player_enable != g_Options.chams_player_enabled)
-    {
-        player_enable = g_Options.chams_player_enabled;
-        g_Options.changemats = true;
-        return;
-    }
-
-    static auto setting = g_Options.colormodulate;
-
-    if (setting != g_Options.colormodulate)
-    {
-        setting = g_Options.colormodulate;
-        g_Options.changemats = true;
-        return;
-    }
-
-    static auto setting_world = 40.f;
-
-    if (setting_world != 40.f)
-    {
-        setting_world = 40.f;
-        g_Options.changemats = true;
-        return;
-    }
-
-    static auto setting_props = 75.f;
-
-    if (setting_props != 75.f)
-    {
-        setting_props = 75.f;
-        g_Options.changemats = true;
     }
 }
 
@@ -145,7 +107,7 @@ void Misc::ClanTag()
 
         auto main_time = (int)(ticks / intervals) % 22;
 
-        if (main_time != time && !g_ClientState->iChokedCommands)
+        if (main_time != time && !g_EngineClient->GetNetChannel()->chokedcommands)
         {
             auto tag = crypt_str("");
 

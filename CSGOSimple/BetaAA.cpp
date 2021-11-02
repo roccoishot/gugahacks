@@ -6,11 +6,13 @@
 #include "features/autowall.hpp"
 #include "Globals.h"
 
-void CAntiAim::CreateMove(CUserCmd* cmd)
+void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 {
 	uintptr_t* fp;
 	__asm mov fp, ebp;
 	bool bSendPacket2 = (bool*)(*fp - 0x1C);
+
+	bSendPacket = bSendPacket2;
 
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
 	{
@@ -69,18 +71,18 @@ void CAntiAim::CreateMove(CUserCmd* cmd)
 	if (movetype == MOVETYPE_LADDER)
 	{
 		static bool last = false;
-		bSendPacket2 = last;
+		bSendPacket = last;
 		last = !last;
 		return;
 	}
 
 	if (weapon->IsGrenade())
 	{
-		bSendPacket2 = false;
+		bSendPacket = false;
 		return;
 	}
 
-	DoAntiAim(cmd);
+	DoAntiAim(cmd, bSendPacket);
 }
 
 float WallThickness(Vector from, Vector to, C_BasePlayer* skip, C_BasePlayer* skip2)
@@ -109,14 +111,16 @@ float WallThickness(Vector from, Vector to, C_BasePlayer* skip, C_BasePlayer* sk
 	return endpos1.DistTo(endpos2);
 }
 
-void CAntiAim::DoAntiAim(CUserCmd* cmd)
+void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 {
 
 	uintptr_t* fp;
 	__asm mov fp, ebp;
 	bool bSendPacket2 = (bool*)(*fp - 0x1C);
 
-	Yaw(cmd);
+	bSendPacket = bSendPacket2;
+
+	Yaw(cmd, false);
 	Pitch(cmd);
 
 	if (g_Options.ragebot_antiaim_desync)
@@ -154,7 +158,7 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd)
 
 		if (lby->m_nChokedPackets != true)
 		{
-			bSendPacket2 = cmd->command_number % 2 ? true : false;
+			bSendPacket = cmd->command_number % 2 ? true : false;
 		}
 
 		if (next_update && lby->m_nChokedPackets != true)
@@ -162,20 +166,20 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd)
 			cmd->viewangles.yaw += 360.f;
 		}
 		if (g_Options.sexdick.randomizefake) {
-			if (!bSendPacket2)
+			if (!bSendPacket)
 			{
 				cmd->viewangles.yaw += balls ? randomfake : -randomfake;
 			}
-			else if (bSendPacket2) {
+			else if (bSendPacket) {
 				cmd->viewangles.yaw += 360.f;
 			}
 		}
 		if (!g_Options.sexdick.randomizefake) {
-			if (!bSendPacket2)
+			if (!bSendPacket)
 			{
 				cmd->viewangles.yaw += balls ? 58.f : -58.f;
 			}
-			else if (bSendPacket2) {
+			else if (bSendPacket) {
 				cmd->viewangles.yaw += 360.f;
 			}
 		}
@@ -217,7 +221,7 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd)
 	}
 
 	if (g_Options.ragebot_antiaim_yaw == 4)
-		cmd->viewangles.yaw += RAD2DEG(best_rotation);
+		cmd->viewangles.yaw = RAD2DEG(best_rotation);
 
 }
 
@@ -251,8 +255,9 @@ void CAntiAim::Pitch(CUserCmd* cmd)
 	}
 }
 
-void CAntiAim::Yaw(CUserCmd* cmd)
+void CAntiAim::Yaw(CUserCmd* cmd, bool fake)
 {
+	fake = g_Options.ragebot_antiaim_desync;
 	bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
 	bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
 	bool Standing = !Moving && !InAir;

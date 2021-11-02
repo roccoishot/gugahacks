@@ -31,8 +31,8 @@ enum class PitchAntiAims : int
 class CAntiAim : public Singleton<CAntiAim>
 {
 public:
-	void CreateMove(CUserCmd* cmd);
-	void LbyBreakerPrediction(CUserCmd* cmd);
+	void CreateMove(CUserCmd* cmd, bool& bSendPacket);
+	void LbyBreakerPrediction(CUserCmd* cmd, bool& bSendPacket);
 	void ResetLbyPrediction();
 
 	void Fakewalk(CUserCmd* cmd, bool& bSendPackets);
@@ -41,9 +41,9 @@ public:
 
 	void SlideWalk(CUserCmd* cmd);
 private:
-	void DoAntiAim(CUserCmd* cmd);
+	void DoAntiAim(CUserCmd* cmd, bool& bSendPacket);
 	void Pitch(CUserCmd* cmd);
-	void Yaw(CUserCmd* cmd);
+	void Yaw(CUserCmd* cmd, bool fake);
 	void YawAdd(CUserCmd* cmd, bool fake);
 	int GetFPS();
 

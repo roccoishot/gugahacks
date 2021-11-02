@@ -187,6 +187,7 @@ void Menu::SEXDICK() {
 	ImGui::Checkbox("Enable Sexdick", &g_Options.sexdick.enabled);
 	if (g_Options.sexdick.enabled) {
 		ImGui::Checkbox("Randomize Fake", &g_Options.sexdick.randomizefake);
+		ImGui::Checkbox("Air Stuck", &g_Options.sexdick.urrstuck); ImGui::SameLine(); ImGui::Hotkey("                                                                                                                        ", &g_Options.sexdick.urrstuckkey);
 	}
 	ImGui::PopFont();
 	ImGui::End();

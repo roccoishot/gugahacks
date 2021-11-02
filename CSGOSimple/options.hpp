@@ -123,6 +123,8 @@ public:
 	{
 		bool enabled = false;
 		bool randomizefake = false;
+		bool urrstuck = false;
+		int urrstuckkey;
 	} sexdick;
 
 	bool ragebot_enabled = false;

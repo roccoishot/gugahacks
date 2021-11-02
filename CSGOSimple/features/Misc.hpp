@@ -15,7 +15,6 @@ public:
 	void MovementFix(QAngle vOldAngles, CUserCmd* pCmd, float fOldForward, float fOldSidemove);
 	void UpdateLBY(CUserCmd* cmd, bool& bSendPacket);
 	void ClanTag();
-	void NightmodeFix();
 	void SilentWalk(CUserCmd* cmd);
 	void AutoStop(CUserCmd* cmd);
 	void SlowWalk(CUserCmd* cmd);
