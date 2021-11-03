@@ -8,11 +8,6 @@
 
 void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 {
-	uintptr_t* fp;
-	__asm mov fp, ebp;
-	bool bSendPacket2 = (bool*)(*fp - 0x1C);
-
-	bSendPacket = bSendPacket2;
 
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
 	{
@@ -113,12 +108,7 @@ float WallThickness(Vector from, Vector to, C_BasePlayer* skip, C_BasePlayer* sk
 
 void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 {
-
-	uintptr_t* fp;
-	__asm mov fp, ebp;
-	bool bSendPacket2 = (bool*)(*fp - 0x1C);
-
-	bSendPacket = bSendPacket2;
+	//Proper Sendpacket idk but not desyncing when using
 
 	Yaw(cmd, false);
 	Pitch(cmd);
@@ -166,21 +156,21 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 			cmd->viewangles.yaw += 360.f;
 		}
 		if (g_Options.sexdick.randomizefake) {
-			if (!bSendPacket)
+			if (bSendPacket) {
+			cmd->viewangles.yaw += 360.f;
+			}
+			else if (!bSendPacket)
 			{
 				cmd->viewangles.yaw += balls ? randomfake : -randomfake;
 			}
-			else if (bSendPacket) {
-				cmd->viewangles.yaw += 360.f;
-			}
 		}
 		if (!g_Options.sexdick.randomizefake) {
-			if (!bSendPacket)
+			if (bSendPacket) {
+				cmd->viewangles.yaw += 360.f;
+			}
+			else if (!bSendPacket)
 			{
 				cmd->viewangles.yaw += balls ? 58.f : -58.f;
-			}
-			else if (bSendPacket) {
-				cmd->viewangles.yaw += 360.f;
 			}
 		}
 	}
@@ -204,7 +194,7 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 		if (pEntity == g_LocalPlayer) continue;
 		if (pEntity->IsDormant()) continue;
 		if (!pEntity->IsAlive()) continue;
-		if (pEntity->m_iTeamNum() == g_LocalPlayer->m_iTeamNum()) continue;
+		if (pEntity->IsTeammate()) continue;
 
 		if (!g_LocalPlayer->IsAlive())
 			return;
@@ -218,11 +208,9 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 			thickest = thickness;
 			best_rotation = rotation;
 		}
+		if (g_Options.ragebot_antiaim_yaw == 4)
+			cmd->viewangles.yaw = RAD2DEG(best_rotation);
 	}
-
-	if (g_Options.ragebot_antiaim_yaw == 4)
-		cmd->viewangles.yaw = RAD2DEG(best_rotation);
-
 }
 
 void CAntiAim::Pitch(CUserCmd* cmd)

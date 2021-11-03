@@ -125,6 +125,8 @@ public:
 		bool randomizefake = false;
 		bool urrstuck = false;
 		int urrstuckkey;
+		bool nopacketonshot = false;
+		bool fuckthepitch = false;
 	} sexdick;
 
 	bool ragebot_enabled = false;

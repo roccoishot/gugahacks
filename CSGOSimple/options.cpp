@@ -271,6 +271,7 @@ void Options::SetupMisc()
 {
 	SetupValue(g_Options.sexdick1, "Misc", "Sexdick");
 	SetupValue(g_Options.sexdick.enabled, "Sexdick", "Enabled");
+	SetupValue(g_Options.sexdick.nopacketonshot, "Sexdick", "No Packet on Shot");
 	SetupValue(g_Options.sexdick.urrstuck, "Sexdick", "Air Stuck");
 	SetupValue(g_Options.sexdick.urrstuckkey, "Sexdick", "Air Stuck Key");
 	SetupValue(g_Options.sexdick.randomizefake, "Sexdick", "Randomize Fake");

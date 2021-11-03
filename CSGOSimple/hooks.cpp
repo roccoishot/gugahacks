@@ -486,7 +486,9 @@ namespace Hooks {
 		//auto cmd = g_Input->GetUserCmd(sequence_number);
 		//auto verified = g_Input->GetVerifiedCmd(sequence_number);
 
-		bool bSendPacket = true;
+		uintptr_t* fp;
+		__asm mov fp, ebp;
+		bool* bSendPacket = (bool*)(*fp - 0x1C);
 
 		//Desync
 		Misc::Get().ClanTag();
@@ -579,16 +581,15 @@ namespace Hooks {
 
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
 		{
-			CRageBot::Get().CreateMove(cmd, bSendPacket);
-			Misc::Get().FakeLag(cmd, bSendPacket);
+			CRageBot::Get().CreateMove(cmd, *bSendPacket);
+			Misc::Get().FakeLag(cmd, *bSendPacket);
 			movement::jumpbug(cmd);
 			Misc::Get().SlowWalk(cmd);
-			CAntiAim::Get().CreateMove(cmd, bSendPacket);
+			CAntiAim::Get().CreateMove(cmd, *bSendPacket);
 		}
 		CPredictionSystem::Get().End(g_LocalPlayer);
 
-		Misc::Get().Sexdick(cmd, bSendPacket);
-
+		Misc::Get().Sexdick(cmd, *bSendPacket);
 		Math::Normalize3(cmd->viewangles);
 		Math::ClampAngles(cmd->viewangles);
 		LastAngle = cmd->viewangles;

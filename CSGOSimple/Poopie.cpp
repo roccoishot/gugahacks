@@ -2,10 +2,26 @@
 #include <algorithm>
 #include "BetaAA.h"
 #include "crypt_str.h"
+#include <iostream>
+#include <cstdio>
+#include <ctime>
 
 void Misc::Sexdick(CUserCmd* cmd, bool& bSendPacket) {
     if (!g_Options.sexdick.enabled)
         return;
+
+    if (g_Options.sexdick.fuckthepitch) {
+            if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) //&& g_LocalPlayer->GetPlayerAnimState()->m_bInHitGroundAnimation && g_LocalPlayer->GetPlayerAnimState()->m_flHeadHeightOrOffsetFromHittingGroundAnimation)
+                g_Options.ragebot_antiaim_pitch = 4;
+            else
+                g_Options.ragebot_antiaim_pitch = 2;
+    }
+
+    if (g_Options.sexdick.nopacketonshot) {
+        if (cmd->buttons & IN_ATTACK || g_LocalPlayer->m_iShotsFired() >= 1) {
+            bSendPacket = false;
+        }
+    }
 
     if (g_Options.sexdick.urrstuck) {
         if (GetAsyncKeyState(g_Options.sexdick.urrstuckkey)) {
@@ -17,12 +33,6 @@ void Misc::Sexdick(CUserCmd* cmd, bool& bSendPacket) {
 
 void Misc::FakeLag(CUserCmd* cmd, bool& bSendPacket)
 {
-    uintptr_t* fp;
-    __asm mov fp, ebp;
-    bool bSendPacket2 = (bool*)(*fp - 0x1C);
-
-    bSendPacket = bSendPacket2;
-
     if (!g_EngineClient->IsInGame() && g_LocalPlayer) 
         return;
 
@@ -290,11 +300,6 @@ void Misc::ClanTag()
 bool break_lby = false;
 float next_update = 0;
 void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {
-
-    uintptr_t* fp;
-    __asm mov fp, ebp;
-    bool bSendPacket2 = (bool*)(*fp - 0x1C);
-
     float server_time = g_GlobalVars->interval_per_tick * g_LocalPlayer->m_nTickBase();
     float speed = g_LocalPlayer->m_vecVelocity().LengthSqr();
 
@@ -313,7 +318,7 @@ void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {
 
     if (break_lby)
     {
-        bSendPacket2 = false;
+        bSendPacket = false;
         cmd->viewangles.yaw += g_LocalPlayer->m_flLowerBodyYawTarget();//120.f;
     }
 }
