@@ -17,9 +17,42 @@ void Misc::Sexdick(CUserCmd* cmd, bool& bSendPacket) {
                 g_Options.ragebot_antiaim_pitch = 2;
     }
 
+    C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+
     if (g_Options.sexdick.nopacketonshot) {
-        if (cmd->buttons & IN_ATTACK || g_LocalPlayer->m_iShotsFired() >= 1) {
-            bSendPacket = false;
+        if (!weapon)
+        {
+            return;
+        }
+        if (g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() != WEAPON_REVOLVER) {
+            if (bSendPacket) {
+                if (cmd->buttons & IN_ATTACK || g_LocalPlayer->m_iShotsFired() >= 1) {
+                    bSendPacket = false;
+                }
+            }
+            if (!bSendPacket) {
+                if (cmd->buttons & IN_ATTACK2 || g_LocalPlayer->m_iShotsFired() >= 2) {
+                    return;
+                }
+                else {
+                    bSendPacket = false;
+                }
+            }
+        }
+        if (g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
+            if (bSendPacket) {
+                if (cmd->buttons & IN_ATTACK2 || g_LocalPlayer->m_iShotsFired() >= 2) {
+                    bSendPacket = false;
+                }
+            }
+            else if (!bSendPacket) {
+                if (cmd->buttons & IN_ATTACK2 || g_LocalPlayer->m_iShotsFired() >= 2) {
+                    return;
+                }
+                else {
+                    bSendPacket = false;
+                }
+            }
         }
     }
 

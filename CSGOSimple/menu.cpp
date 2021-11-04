@@ -189,7 +189,7 @@ void Menu::SEXDICK() {
 		ImGui::Checkbox("Randomize Fake", &g_Options.sexdick.randomizefake);
 		ImGui::Checkbox("No Packets on Shot", &g_Options.sexdick.nopacketonshot);
 		//ImGui::Checkbox("No pitch on Land", &g_Options.sexdick.fuckthepitch);
-		ImGui::Checkbox("Air Stuck", &g_Options.sexdick.urrstuck); ImGui::SameLine(); ImGui::Hotkey("                                                                                                                        ", &g_Options.sexdick.urrstuckkey);
+		ImGui::Checkbox("Air Stuck", &g_Options.sexdick.urrstuck); ImGui::SameLine(); ImGui::Hotkey(" ", &g_Options.sexdick.urrstuckkey);
 	}
 	ImGui::PopFont();
 	ImGui::End();

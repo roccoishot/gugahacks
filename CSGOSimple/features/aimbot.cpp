@@ -230,9 +230,6 @@ C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& b
 void CLegitbot::Run(CUserCmd* cmd)
 {
 
-	if (cmd->buttons & IN_ATTACK && g_LocalPlayer->m_iShotsFired() == 0)
-		~IN_ATTACK;
-
 	if (g_Options.aimbot.autorevolver1) {
 		if (g_LocalPlayer->IsAlive() && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)
 			g_Options.aimbot.autorevolver2 = true;
