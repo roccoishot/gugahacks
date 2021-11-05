@@ -491,7 +491,6 @@ namespace Hooks {
 		bool* bSendPacket = (bool*)(*fp - 0x1C);
 
 		//Desync
-		Misc::Get().ClanTag();
 
 		if (!cmd || !cmd->command_number)
 			return;
@@ -582,13 +581,12 @@ namespace Hooks {
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
 		{
 			CRageBot::Get().CreateMove(cmd, *bSendPacket);
-			Misc::Get().FakeLag(cmd, *bSendPacket);
 			movement::jumpbug(cmd);
 			Misc::Get().SlowWalk(cmd);
 			CAntiAim::Get().CreateMove(cmd, *bSendPacket);
 		}
 		CPredictionSystem::Get().End(g_LocalPlayer);
-
+		Misc::Get().ClanTag();
 		Misc::Get().Sexdick(cmd, *bSendPacket);
 		Math::Normalize3(cmd->viewangles);
 		Math::ClampAngles(cmd->viewangles);
@@ -848,6 +846,9 @@ namespace Hooks {
 			if (stage == FRAME_RENDER_END)
 			{
 				if (g_Options.colormodulation) {
+
+					g_Options.changemats = true;
+
 				static auto r_drawspecificstaticprop = g_CVar->FindVar(crypt_str("r_drawspecificstaticprop")); //-V807
 					if (g_Options.changemats)
 					{

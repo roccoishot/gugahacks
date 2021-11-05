@@ -265,7 +265,7 @@ public:
 		int AutoStafe_key;
 		bool autostrafe = false;
 		int faketicks = 0;
-		bool fakelag = true;
+		bool fakelag = false;
 		bool fakeping = false;
 		int fakepingzzz = 0;
 		bool enablebeta = false;

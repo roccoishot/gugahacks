@@ -144,7 +144,7 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 		else if (!(GetKeyState(g_Options.invertaa)))
 			balls = false;
 
-		float randomfake = rand() % 87 + -87;
+		float randomfake = rand() % 141 + -141;
 
 		if (lby->m_nChokedPackets != true)
 		{

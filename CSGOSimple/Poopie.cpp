@@ -64,67 +64,6 @@ void Misc::Sexdick(CUserCmd* cmd, bool& bSendPacket) {
     }
 }
 
-void Misc::FakeLag(CUserCmd* cmd, bool& bSendPacket)
-{
-    if (!g_EngineClient->IsInGame() && g_LocalPlayer) 
-        return;
-
-    int choked_commands = g_EngineClient->GetNetChannel()->chokedcommands + 1;
-    static bool WasLastInFakelag = false;
-
-    bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1f && (cmd->sidemove != 0.f && cmd->forwardmove != 0.f);
-    bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
-    bool Standing = !Moving && !InAir;
-    int ticks = 16;
-    int mode = 1;
-
-    if (ticks == 0)
-        return;
-
-    switch (mode)
-    {
-    case 0:
-        if (choked_commands <= ticks)
-        {
-            WasLastInFakelag = true;
-            bSendPacket = false;
-        }
-        else
-        {
-            WasLastInFakelag = false;
-        }
-        break;
-    case 1:
-        int PacketsToChoke = 0;
-        if (g_LocalPlayer->m_vecVelocity().Length() > 0.f)
-        {
-            PacketsToChoke = (int)(64.f / g_GlobalVars->interval_per_tick / g_LocalPlayer->m_vecVelocity().Length()) + 1;
-            if (PacketsToChoke >= 16)
-            {
-                PacketsToChoke = 15;
-            }
-
-            if (PacketsToChoke >= ticks)
-            {
-                PacketsToChoke = ticks;
-            }
-        }
-
-        if (choked_commands <= PacketsToChoke)
-        {
-            WasLastInFakelag = true;
-            bSendPacket = false;
-        }
-        else
-        {
-            WasLastInFakelag = false;
-        }
-        g_EngineClient->GetNetChannel()->m_nChokedPackets = PacketsToChoke;
-        break;
-
-    }
-}
-
 void Misc::ClanTag()
 {
     static auto removed = false;
@@ -150,14 +89,10 @@ void Misc::ClanTag()
 
         auto main_time = (int)(ticks / intervals) % 22;
 
-        if (main_time != time && !g_EngineClient->GetNetChannel()->chokedcommands)
+        if (main_time != time)
         {
             auto tag = crypt_str("");
 
-            "Animated",
-                "Discord",
-                "Static",
-                "Reverse";
                 if (g_Options.clantagtype == 0) {
                     switch (main_time)
                     {
