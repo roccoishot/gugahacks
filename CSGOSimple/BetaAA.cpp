@@ -65,15 +65,11 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 
 	if (movetype == MOVETYPE_LADDER)
 	{
-		static bool last = false;
-		bSendPacket = last;
-		last = !last;
 		return;
 	}
 
 	if (weapon->IsGrenade())
 	{
-		bSendPacket = false;
 		return;
 	}
 
@@ -153,13 +149,6 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 
 	if (g_Options.ragebot_antiaim_desync)
 	{
-		float next_update = 0;
-		float server_time = g_GlobalVars->interval_per_tick * g_LocalPlayer->m_nTickBase();
-		float speed = g_LocalPlayer->m_vecVelocity().LengthSqr();
-
-		if (speed > 0.1)
-			next_update = server_time + 0.22;
-
 		if (!g_Options.ragebot_antiaim_desync)
 			return;
 
@@ -182,35 +171,63 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 		else if (!(GetKeyState(g_Options.invertaa)))
 			balls = false;
 
-		float randomfake = rand() % 141 + -141;
+		float randomfake = rand() % 122 + -122;
 
 		if (lby->m_nChokedPackets != true)
 		{
 			bSendPacket = cmd->command_number % 2 ? true : false;
 		}
 
-		if (next_update && lby->m_nChokedPackets != true)
-		{
-			cmd->viewangles.yaw += 360.f;
-		}
 		if (g_Options.sexdick.randomizefake) {
-			if (bSendPacket) {
-			cmd->viewangles.yaw += 360.f;
-			}
-			else if (!bSendPacket)
+			if (!bSendPacket)
 			{
 				cmd->viewangles.yaw += balls ? randomfake : -randomfake;
 			}
+			else if (bSendPacket)
+			{
+				cmd->viewangles.yaw += 0.f;
+			}
 		}
 		if (!g_Options.sexdick.randomizefake) {
-			if (bSendPacket) {
-				cmd->viewangles.yaw += 360.f;
-			}
-			else if (!bSendPacket)
+			if (!bSendPacket)
 			{
 				cmd->viewangles.yaw += balls ? 58.f : -58.f;
 			}
+			else if (bSendPacket)
+			{
+				cmd->viewangles.yaw += 0.f;
+			}
 		}
+
+		//Proper Desync
+		//Animstate Crashes
+				/*float m_flGoalFeetYaw = g_LocalPlayer->GetPlayerAnimState()->m_flGoalFeetYaw;
+		float m_flEyeYaw = g_LocalPlayer->m_angEyeAngles().yaw;
+		float DesyncAngle = 0.f;
+		float SentYaw = 0.f;
+
+		if (bSendPacket) {
+			m_flGoalFeetYaw = std::clamp(m_flGoalFeetYaw, -360.0f, 360.0f);
+
+			float eye_feet_delta = m_flEyeYaw - m_flGoalFeetYaw;
+
+			if (eye_feet_delta <= 58.f)
+			{
+				if (-58.f > eye_feet_delta)
+					cmd->viewangles.yaw = SentYaw + 180;
+			}
+			else
+			{
+				cmd->viewangles.yaw = SentYaw - 58.f;
+			}
+			DesyncAngle = cmd->viewangles.yaw;
+		}
+		else if (!bSendPacket) {
+			cmd->viewangles.yaw += 180.f;
+			SentYaw = cmd->viewangles.yaw;
+		}
+	}*/
+
 	}
 
 }

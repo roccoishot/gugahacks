@@ -129,7 +129,7 @@ public:
 		bool fuckthepitch = false;
 	} sexdick;
 
-	bool ragebot_enabled = true;
+	bool ragebot_enabled = false;
 	bool ragebot_backtrack = false;
 	int ragebot_fov = 0;
 	bool ragebot_autozeus = false;

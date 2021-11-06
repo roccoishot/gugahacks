@@ -268,26 +268,76 @@ void Misc::ClanTag()
 bool break_lby = false;
 float next_update = 0;
 void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {
+
+    int movetype = g_LocalPlayer->m_nMoveType();
+
+    if (
+        movetype == MOVETYPE_FLY
+        || movetype == MOVETYPE_NOCLIP
+        || cmd->buttons & IN_USE
+        || cmd->buttons & IN_GRENADE1
+        || cmd->buttons & IN_GRENADE2
+        )
+    {
+        return;
+    }
+
+    C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+
+    if (!weapon)
+    {
+        return;
+    }
+
+    if (movetype == MOVETYPE_LADDER)
+    {
+        return;
+    }
+
+    if (weapon->IsGrenade())
+    {
+        return;
+    }
+
+    if (!g_Options.breaklby)
+        return;
+
+    if (g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() != WEAPON_REVOLVER)
+    if (cmd->buttons & IN_ATTACK)
+        return;
+
+    if (g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)
+    if (cmd->buttons & IN_ATTACK2)
+        return;
+
+
     float server_time = g_GlobalVars->interval_per_tick * g_LocalPlayer->m_nTickBase();
     float speed = g_LocalPlayer->m_vecVelocity().LengthSqr();
 
-   if (speed > 0.1)
+    bool balls = false;
+
+    if (GetKeyState(g_Options.invertaa))
+        balls = true;
+    else if (!(GetKeyState(g_Options.invertaa)))
+        balls = false;
+
+    if (speed > 0.1)
         next_update = server_time + 0.22;
 
-    break_lby = g_Options.breaklby;
+    break_lby = false;
 
     if (next_update <= server_time) {
         next_update = server_time + 1.1;
-        break_lby = g_Options.breaklby;
+        break_lby = true;
     }
 
     if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND))
-        break_lby = g_Options.breaklby;
+        break_lby = false;
 
     if (break_lby)
     {
         bSendPacket = false;
-        cmd->viewangles.yaw += g_LocalPlayer->m_flLowerBodyYawTarget();//120.f;
+        cmd->viewangles.yaw += balls ? 120.f : -120.f;
     }
 }
 

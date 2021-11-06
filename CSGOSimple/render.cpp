@@ -90,7 +90,7 @@ void Render::BeginScene() {
 		Render::Get().RenderText("FLASHED", (screenWidth / 2) + 5, (screenHeight / 2) + 5, 18.f, Color(120, 208, 255), false, true, g_VeloFont);
 	}
 
-	if (g_Options.sexdick.enabled && g_EngineClient->IsInGame() && g_LocalPlayer) {
+	if (g_Options.sexdick.enabled) {
 		Render::Get().RenderText("SEXDICK", screenWidth / 2, (screenHeight / 2) + 15, 14.f, g_Options.menucolor, true, true, g_VeloFont);
 	}
 
@@ -112,7 +112,7 @@ void Render::BeginScene() {
 		}
 	}
 
-	if (GetKeyState(g_Options.invertaa) && g_Options.ragebot_antiaim_desync && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive()) {
+	if (GetKeyState(g_Options.invertaa) && g_Options.ragebot_antiaim_desync || g_Options.breaklby && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive()) {
 		Render::Get().RenderText("INVERTED", 10, 80, 18.f, g_Options.menucolor, false, true, g_VeloFont);
 	}
 	else {

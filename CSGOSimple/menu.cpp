@@ -520,7 +520,7 @@ void Menu::Render()
 				ImGui::Combo("Pitch", &g_Options.ragebot_antiaim_pitch, aa_pitch_list, IM_ARRAYSIZE(aa_pitch_list));
 				ImGui::Combo("Yaw", &g_Options.ragebot_antiaim_yaw, aa_yaw_list, IM_ARRAYSIZE(aa_yaw_list));
 				ImGui::Checkbox("Desync", &g_Options.ragebot_antiaim_desync);
-				ImGui::Checkbox("Break LBY", &g_Options.breaklby);
+				ImGui::Checkbox("LBY Flick", &g_Options.breaklby);
 				if (g_Options.ragebot_antiaim_yaw == 2) {
 					ImGui::SliderInt("Spin Speed", &g_Options.spinspeed, 1.f, 10.f, "%.f");
 				}
@@ -537,7 +537,7 @@ void Menu::Render()
 				}
 				//ImGui::Checkbox("Resolver", &g_Options.rageresolver);
 
-			}			
+			} 			
 			ImGui::EndChild();
 		}
 

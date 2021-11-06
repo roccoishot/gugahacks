@@ -577,6 +577,7 @@ namespace Hooks {
 
 		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
 		{
+			Misc::Get().UpdateLBY(cmd, *bSendPacket);
 			CRageBot::Get().CreateMove(cmd, *bSendPacket);
 			movement::jumpbug(cmd);
 			Misc::Get().SlowWalk(cmd);
