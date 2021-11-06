@@ -31,7 +31,7 @@ void Misc::Sexdick(CUserCmd* cmd, bool& bSendPacket) {
                 }
             }
             if (!bSendPacket) {
-                if (cmd->buttons & IN_ATTACK2 || g_LocalPlayer->m_iShotsFired() >= 2) {
+                if (cmd->buttons & IN_ATTACK2) {
                     return;
                 }
                 else {
@@ -46,7 +46,7 @@ void Misc::Sexdick(CUserCmd* cmd, bool& bSendPacket) {
                 }
             }
             else if (!bSendPacket) {
-                if (cmd->buttons & IN_ATTACK2 || g_LocalPlayer->m_iShotsFired() >= 2) {
+                if (cmd->buttons & IN_ATTACK2) {
                     return;
                 }
                 else {

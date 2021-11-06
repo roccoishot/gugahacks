@@ -486,14 +486,14 @@ namespace Hooks {
 		//auto cmd = g_Input->GetUserCmd(sequence_number);
 		//auto verified = g_Input->GetVerifiedCmd(sequence_number);
 
+
+		if (!cmd || !cmd->command_number)
+			return;
+
 		uintptr_t* fp;
 		__asm mov fp, ebp;
 		bool* bSendPacket = (bool*)(*fp - 0x1C);
 
-		//Desync
-
-		if (!cmd || !cmd->command_number)
-			return;
 		QAngle oldAngle = cmd->viewangles;
 
 		IGameEvent* event;
@@ -559,9 +559,6 @@ namespace Hooks {
 		Math::CorrectMovement(cmd, oldAngle, cmd->viewangles);
 		//verified->m_cmd = *cmd;
 		//verified->m_crc = cmd->GetChecksum();
-
-		if (!cmd || !cmd->command_number)
-			return;
 
 		if (Menu::Get().IsVisible())
 			cmd->buttons &= ~IN_ATTACK;

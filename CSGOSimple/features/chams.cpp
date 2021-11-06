@@ -870,6 +870,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 					animated2->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
 					g_StudioRender->ForcedMaterialOverride(animated2);
 				}
+				fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 
 			}
 		}

@@ -50,10 +50,10 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 					material->ColorModulate((float)120 / 255.0f, (float)120 / 255.0f, (float)120 / 255.0f);
 
 				if (g_Options.asusprops) {
-					material->AlphaModulate((float)200 / 255.0f);
+					material->AlphaModulate(0.67);
 				}
 				else {
-					material->AlphaModulate((float)255 / 255.0f);
+					material->AlphaModulate(1.0);
 				}
 
 			}
