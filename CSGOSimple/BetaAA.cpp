@@ -113,6 +113,44 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 	Yaw(cmd, false);
 	Pitch(cmd);
 
+	float best_rotation = 0.f;
+	auto local_eyeposition = g_LocalPlayer->GetEyePos();
+	auto head_position = g_LocalPlayer->GetHitboxPos(HITBOX_HEAD);
+	float thickest = -1.f;
+
+	int i = 1; i < g_EngineClient->GetMaxClients(); i++;
+	auto pEntity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
+
+	float step = (DirectX::XM_2PI) / 8.f;
+
+	float radius = fabs(Vector(head_position - g_LocalPlayer->m_vecOrigin()).Length2D());
+
+	for (float rotation = 0; rotation < (DirectX::XM_2PI); rotation += step)
+	{
+		if (!pEntity || !g_LocalPlayer) continue;
+		if (!pEntity->IsPlayer()) continue;
+		if (pEntity == g_LocalPlayer) continue;
+		if (pEntity->IsDormant()) continue;
+		if (!pEntity->IsAlive()) continue;
+		if (g_LocalPlayer->m_iTeamNum() == pEntity->m_iTeamNum()) continue;
+
+		if (!g_LocalPlayer->IsAlive())
+			return;
+
+		Vector newhead(radius * cos(rotation) + local_eyeposition.x, radius * sin(rotation) + local_eyeposition.y, local_eyeposition.z);
+
+		float thickness = WallThickness(pEntity->GetEyePos(), newhead, pEntity, g_LocalPlayer);
+
+		if (thickness > thickest)
+		{
+			thickest = thickness;
+			best_rotation = rotation;
+		}
+	}
+
+	if (g_Options.ragebot_antiaim_yaw == 4)
+		cmd->viewangles.yaw = RAD2DEG(best_rotation);
+
 	if (g_Options.ragebot_antiaim_desync)
 	{
 		float next_update = 0;
@@ -174,43 +212,7 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 			}
 		}
 	}
-	
-	float best_rotation = 0.f;
-	auto local_eyeposition = g_LocalPlayer->GetEyePos();
-	auto head_position = g_LocalPlayer->GetHitboxPos(HITBOX_HEAD);
-	float thickest = -1.f;
 
-	int i = 1; i < g_EngineClient->GetMaxClients(); i++;
-	auto pEntity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
-
-	float step = (DirectX::XM_2PI) / 8.f;
-
-	float radius = fabs(Vector(head_position - g_LocalPlayer->m_vecOrigin()).Length2D());
-
-	for (float rotation = 0; rotation < (DirectX::XM_2PI); rotation += step)
-	{
-		if (!pEntity || !g_LocalPlayer) continue;
-		if (!pEntity->IsPlayer()) continue;
-		if (pEntity == g_LocalPlayer) continue;
-		if (pEntity->IsDormant()) continue;
-		if (!pEntity->IsAlive()) continue;
-		if (pEntity->IsTeammate()) continue;
-
-		if (!g_LocalPlayer->IsAlive())
-			return;
-
-		Vector newhead(radius * cos(rotation) + local_eyeposition.x, radius * sin(rotation) + local_eyeposition.y, local_eyeposition.z);
-
-		float thickness = WallThickness(pEntity->GetEyePos(), newhead, pEntity, g_LocalPlayer);
-
-		if (thickness > thickest)
-		{
-			thickest = thickness;
-			best_rotation = rotation;
-		}
-		if (g_Options.ragebot_antiaim_yaw == 4)
-			cmd->viewangles.yaw = RAD2DEG(best_rotation);
-	}
 }
 
 void CAntiAim::Pitch(CUserCmd* cmd)

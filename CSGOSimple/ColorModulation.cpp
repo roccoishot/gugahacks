@@ -11,48 +11,52 @@ void nightmode::modulate(MaterialHandle_t i, IMaterial* material, bool backup = 
 {
 	auto name = material->GetTextureGroupName();
 	if (g_EngineClient->IsInGame() && g_LocalPlayer) {
-		if (strstr(name, crypt_str("World")))
-		{
-			if (backup)
-				materials.emplace_back(MaterialBackup(i, material));
+		if (g_Options.misc_nightmode) {
+			if (strstr(name, crypt_str("World")))
+			{
+				if (backup)
+					materials.emplace_back(MaterialBackup(i, material));
 
-			Color CuhLuh(50 / 255.0f, 50 / 255.0f, 50 / 255.0f);
+				Color CuhLuh(50 / 255.0f, 50 / 255.0f, 50 / 255.0f);
 
-			float colorr;
-			float colorg;
-			float colorb;
+				float colorr;
+				float colorg;
+				float colorb;
 
-			material->GetColorModulation(&colorr, &colorg, &colorb);
-			Color CUHLOOR(colorr, colorg, colorb);
+				material->GetColorModulation(&colorr, &colorg, &colorb);
+				Color CUHLOOR(colorr, colorg, colorb);
 
-			if (CuhLuh != CUHLOOR && g_Options.changemats) {
-				material->ColorModulate((float)50 / 255.0f, (float)50 / 255.0f, (float)50 / 255.0f);
+				if (CuhLuh != CUHLOOR && g_Options.changemats)
+					material->ColorModulate((float)50 / 255.0f, (float)50 / 255.0f, (float)50 / 255.0f);
+
 			}
+			else if (strstr(name, crypt_str("StaticProp")))
+			{
+				if (backup)
+					materials.emplace_back(MaterialBackup(i, material));
 
-		}
-		else if (strstr(name, crypt_str("StaticProp")))
-		{
-			if (backup)
-				materials.emplace_back(MaterialBackup(i, material));
+				Color CuhLuh(120 / 255.0f, 120 / 255.0f, 120 / 255.0f);
 
-			Color CuhLuh(120 / 255.0f, 120 / 255.0f, 120 / 255.0f);
+				float colorr;
+				float colorg;
+				float colorb;
+				float alpha;
+				float cum = 200 / 255.f;
+				alpha = material->GetAlphaModulation();
+				material->GetColorModulation(&colorr, &colorg, &colorb);
+				Color CUHLOOR(colorr, colorg, colorb);
 
-			float colorr;
-			float colorg;
-			float colorb;
-			float alpha;
-			float cum = 200 / 255.f;
-			alpha = material->GetAlphaModulation();
-			material->GetColorModulation(&colorr, &colorg, &colorb);
-			Color CUHLOOR(colorr, colorg, colorb);
+				if (CuhLuh != CUHLOOR && g_Options.changemats)
+					material->ColorModulate((float)120 / 255.0f, (float)120 / 255.0f, (float)120 / 255.0f);
 
-			if (CuhLuh != CUHLOOR && g_Options.changemats)
-				material->ColorModulate((float)120 / 255.0f, (float)120 / 255.0f, (float)120 / 255.0f);
+				if (g_Options.asusprops) {
+					material->AlphaModulate((float)200 / 255.0f);
+				}
+				else {
+					material->AlphaModulate((float)255 / 255.0f);
+				}
 
-			if (alpha != cum && g_Options.asusprops) {
-				material->AlphaModulate((float)200 / 255.0f);
 			}
-
 		}
 	}
 }
