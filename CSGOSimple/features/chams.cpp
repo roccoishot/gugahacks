@@ -741,6 +741,14 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 		if (is_arm || is_sleeve)
 			return;
 
+
+		C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+
+		if (!weapon)
+		{
+			return;
+		}
+
 		fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 		if (g_Options.strap_material == 2)
 		{
@@ -752,6 +760,10 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 				(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.ohthuhshine[0] / 255.f, g_Options.ohthuhshine[1] / 255.f, g_Options.ohthuhshine[2] / 255.f);
 			}
 			g_MdlRender->ForcedMaterialOverride(othershine);
+
+			if (g_MdlRender->IsForcedMaterialOverride())
+				g_MdlRender->ForcedMaterialOverride(othershine);
+
 		}
 
 		if (g_Options.strap_material == 3)
@@ -759,6 +771,10 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 			animated->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
 			animated->ColorModulate(g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
 			g_MdlRender->ForcedMaterialOverride(animated);
+
+			if (g_MdlRender->IsForcedMaterialOverride())
+				g_MdlRender->ForcedMaterialOverride(animated);
+
 		}
 
 		if (g_Options.strap_material == 4)
@@ -771,6 +787,10 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 				(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
 			}
 			g_MdlRender->ForcedMaterialOverride(shit);
+
+			if (g_MdlRender->IsForcedMaterialOverride())
+				g_MdlRender->ForcedMaterialOverride(shit);
+
 		}
 
 		if (g_Options.strap_material == 5)
@@ -783,12 +803,20 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 				(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
 			}
 			g_MdlRender->ForcedMaterialOverride(dubble);
+
+			if (g_MdlRender->IsForcedMaterialOverride())
+				g_MdlRender->ForcedMaterialOverride(dubble);
+
 		}
 
 		if (g_Options.strap_material == 6) {
 			animated2->ColorModulate(g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
 			animated2->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
 			g_StudioRender->ForcedMaterialOverride(animated2);
+
+			if (g_MdlRender->IsForcedMaterialOverride())
+				g_MdlRender->ForcedMaterialOverride(animated2);
+
 		}
 		fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 
@@ -821,7 +849,6 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 				modulate(g_Options.color_chams_strap_visible, player_enemies_type);
 				g_StudioRender->ForcedMaterialOverride(player_enemies_type);
 				fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
-
 				if (g_Options.strap_material == 2)
 				{
 					othershine->AlphaModulate(g_Options.ohthuhshine[3] / 255.f);
@@ -832,6 +859,10 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 						(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.ohthuhshine[0] / 255.f, g_Options.ohthuhshine[1] / 255.f, g_Options.ohthuhshine[2] / 255.f);
 					}
 					g_MdlRender->ForcedMaterialOverride(othershine);
+
+					if (g_MdlRender->IsForcedMaterialOverride())
+						g_MdlRender->ForcedMaterialOverride(othershine);
+
 				}
 
 				if (g_Options.strap_material == 3)
@@ -839,6 +870,10 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 					animated->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
 					animated->ColorModulate(g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
 					g_MdlRender->ForcedMaterialOverride(animated);
+
+					if (g_MdlRender->IsForcedMaterialOverride())
+						g_MdlRender->ForcedMaterialOverride(animated);
+
 				}
 
 				if (g_Options.strap_material == 4)
@@ -851,6 +886,10 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 						(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
 					}
 					g_MdlRender->ForcedMaterialOverride(shit);
+
+					if (g_MdlRender->IsForcedMaterialOverride())
+						g_MdlRender->ForcedMaterialOverride(shit);
+
 				}
 
 				if (g_Options.strap_material == 5)
@@ -863,12 +902,20 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 						(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
 					}
 					g_MdlRender->ForcedMaterialOverride(dubble);
+
+					if (g_MdlRender->IsForcedMaterialOverride())
+						g_MdlRender->ForcedMaterialOverride(dubble);
+
 				}
 
 				if (g_Options.strap_material == 6) {
 					animated2->ColorModulate(g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
 					animated2->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
 					g_StudioRender->ForcedMaterialOverride(animated2);
+
+					if (g_MdlRender->IsForcedMaterialOverride())
+						g_MdlRender->ForcedMaterialOverride(animated2);
+
 				}
 				fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 

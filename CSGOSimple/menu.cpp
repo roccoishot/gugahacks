@@ -494,8 +494,7 @@ void Menu::Render()
 						}
 						ImGui::PopItemWidth();
 					}
-					ImGui::EndGroup();
-				}*/
+					ImGui::EndGroup();*/
 			ImGui::SetCursorPos({ 21,65 });
 			ImGui::BeginChild("##1", { 255,520 });
 			{
@@ -537,7 +536,8 @@ void Menu::Render()
 					ImGui::Text("On Key"); ImGui::SameLine(); ImGui::Hotkey("                                                                                             ", &g_Options.fakepingkey);
 				}
 				//ImGui::Checkbox("Resolver", &g_Options.rageresolver);
-			}
+
+			}			
 			ImGui::EndChild();
 		}
 

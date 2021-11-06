@@ -274,7 +274,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 	{
 		if (g_Options.aimbot.hc)
 		{
-			if (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread() < g_Options.aimbot.hitchance)
+			if (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread() <= g_Options.aimbot.hitchance)
 			{
 
 				if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
