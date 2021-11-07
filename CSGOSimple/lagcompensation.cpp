@@ -14,6 +14,7 @@ void LagComp::Run()
 			if (player->IsDormant()) continue;
 			if (!player->IsAlive()) continue;
 			if (player->m_iTeamNum() == g_LocalPlayer->m_iTeamNum()) continue;
+			if (player == nullptr) continue;
 
 			if (!g_LocalPlayer->IsAlive())
 				return;
@@ -51,11 +52,11 @@ void LagComp::LagCompensate(C_BasePlayer* player, LagRecord record)
 			player->UpdateClientSideAnimation();
 			memcpy(record.resolver_layers[0], player->GetAnimOverlays(), sizeof(AnimationLayer) * player->GetNumAnimOverlays());
 
-			player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw + 60.f;
+			player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw + 58.f;
 			player->UpdateClientSideAnimation();
 			memcpy(record.resolver_layers[1], player->GetAnimOverlays(), sizeof(AnimationLayer) * player->GetNumAnimOverlays());
 
-			player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw - 60.f;
+			player->GetPlayerAnimState()->m_flGoalFeetYaw = player->m_angEyeAngles().yaw - 58.f;
 			player->UpdateClientSideAnimation();
 			memcpy(record.resolver_layers[2], player->GetAnimOverlays(), sizeof(AnimationLayer) * player->GetNumAnimOverlays());
 		}
