@@ -117,6 +117,7 @@ public:
 		bool autorevolver1 = false;
 		bool autorevolver2 = false;
 		bool fastaimbot = false;
+		bool safehead = false;
 	} aimbot;
 
 	struct

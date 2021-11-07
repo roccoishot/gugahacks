@@ -593,6 +593,7 @@ void Menu::Render()
 					ImGui::SliderFloat("##Silentfov", &g_Options.aimbot.silentfov, 0.f, 360.f, "%.f");
 					ImGui::Spacing();
 				}
+				ImGui::Checkbox("Safe Head", &g_Options.aimbot.safehead);
 				ImGui::Checkbox("Fast Aimbot", &g_Options.aimbot.fastaimbot);
 				ImGui::Checkbox("Autofire##autofire", &g_Options.aimbot.autofire);
 				ImGui::Checkbox("Autorevolver", &g_Options.aimbot.autorevolver1);

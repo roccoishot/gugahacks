@@ -161,6 +161,7 @@ void Options::SetupWeapons()
 			SetupValue(g_Options.aimbot.autowall, key, "AutoWall Enabled");
 			SetupValue(g_Options.aimbot.autowallmin, key, "AutoWall MinDamage");
 
+			SetupValue(g_Options.aimbot.safehead, key, "Safe Head");
 			SetupValue(g_Options.aimbot.fastaimbot, key, "Fast Aimbot");
 			SetupValue(g_Options.aimbot.autofire, key, "Autofire");
 			SetupValue(g_Options.aimbot.autorevolver1, key, "Autorevolver");

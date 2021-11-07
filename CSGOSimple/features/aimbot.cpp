@@ -267,18 +267,36 @@ void CLegitbot::Run(CUserCmd* cmd)
 	const auto current = angles;
 
 	float fov = FLT_MAX;
-
 	int bestBone = -1;
 
 	if (GetClosestPlayer(cmd, bestBone, fov, angles))
 	{
+
+		auto targetgotastrap = target->m_hActiveWeapon().Get();
+
+		if (!targetgotastrap)
+			return;
+
+		if (!target->IsEnemy() || target->IsTeammate() || !target->IsAlive() || target->IsNotTarget())
+			return;
+
+		if (g_Options.aimbot.safehead) {
+			if (!(target->m_fFlags() & FL_ONGROUND) || target->m_vecVelocity().Length2D() >= 120.f)
+				bestBone = 0;
+			else
+				bestBone = bestBone;
+		}
+		else {
+			bestBone = bestBone;
+		}
+
 		if (g_Options.aimbot.hc)
 		{
 			if (g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy() / g_LocalPlayer->m_hActiveWeapon()->GetSpread() <= g_Options.aimbot.hitchance)
 			{
 
 				if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
-					if (g_Options.aimbot.autofire && target->IsEnemy() && !target->IsTeammate() && target->IsAlive() && !target->IsNotTarget()) {
+					if (g_Options.aimbot.autofire) {
 						cmd->buttons |= IN_ATTACK2;
 						const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
 						const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
@@ -289,7 +307,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 				}
 
 				if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
-					if (g_Options.aimbot.autofire && target->IsEnemy() && !target->IsTeammate() && target->IsAlive() && !target->IsNotTarget()) {
+					if (g_Options.aimbot.autofire) {
 						cmd->buttons |= IN_ATTACK;
 						const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
 						const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
@@ -302,7 +320,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 		}
 		if (!g_Options.aimbot.hc) {
 			if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
-				if (g_Options.aimbot.autofire && target->IsEnemy() && !target->IsTeammate() && target->IsAlive() && !target->IsNotTarget()) {
+				if (g_Options.aimbot.autofire) {
 					cmd->buttons |= IN_ATTACK2;
 					const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
 					const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
@@ -313,7 +331,7 @@ void CLegitbot::Run(CUserCmd* cmd)
 			}
 
 			if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
-				if (g_Options.aimbot.autofire && target->IsEnemy() && !target->IsTeammate() && target->IsAlive() && !target->IsNotTarget()) {
+				if (g_Options.aimbot.autofire) {
 					cmd->buttons |= IN_ATTACK;
 					const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
 					const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;

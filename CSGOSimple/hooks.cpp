@@ -498,9 +498,6 @@ namespace Hooks {
 
 		IGameEvent* event;
 
-		if (g_Options.sky_changer)
-		Fixed::Get().PerformNightmode();
-
 		static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
 
 		if (g_Options.fovscope) {
@@ -843,6 +840,7 @@ namespace Hooks {
 
 			if (stage == FRAME_RENDER_END)
 			{
+				Fixed::Get().PerformNightmode();
 				if (g_Options.colormodulation) {
 
 					g_Options.changemats = true;
