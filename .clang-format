@@ -1,0 +1,21 @@
+﻿---
+BasedOnStyle: LLVM
+AlignConsecutiveAssignments: 'true'
+AlignOperands: 'true'
+AllowShortIfStatementsOnASingleLine: Always
+AlwaysBreakTemplateDeclarations: 'Yes'
+BreakBeforeBraces: Mozilla
+BreakBeforeTernaryOperators: 'false'
+BreakStringLiterals: 'false'
+ColumnLimit: '150'
+DerivePointerAlignment: 'true'
+ExperimentalAutoDetectBinPacking: 'false'
+FixNamespaceComments: 'true'
+IncludeBlocks: Preserve
+IndentCaseLabels: 'false'
+IndentWidth: '2'
+IndentWrappedFunctionNames: 'false'
+Language: Cpp
+SpacesInSquareBrackets: 'true'
+
+...
