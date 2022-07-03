@@ -2155,6 +2155,8 @@ XorStr("Directional")
 				spacing();
 				ImGui::Checkbox(XorStr("Blockbot"), &g_Options.blockbot); keybindspacing(); ImGui::Hotkey(XorStr("##blockbotkey"), &g_Options.bbkey);
 				spacing();
+				ImGui::Checkbox( XorStr( "Autopeek" ), &g_Options.autopeek ); keybindspacing(); ImGui::Hotkey( XorStr( "##autopeekkey" ), &g_Options.autopeek_bind );
+				spacing();
 				ImGui::Checkbox(XorStr("Duck In Air"), &g_Options.ducknair); keybindspacing(); ImGui::Hotkey(XorStr("##dairkey"), &g_Options.diarkey);
 				spacing();
 				ImGui::Checkbox(XorStr("Spectator List"), &g_Options.speclist);

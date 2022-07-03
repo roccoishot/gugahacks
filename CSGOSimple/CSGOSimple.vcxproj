@@ -51,13 +51,13 @@
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>C:\Program Files %28x86%29\Microsoft SDKs\cpp-netlib-0.12.0-final;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <TargetName>csgosimple</TargetName>
-    <LibraryPath>C:\Users\Rocco\Desktop\GUGAHACKS\CSGOSimple\curl;C:\Users\Rocco\Desktop\GUGAHACKS\CSGOSimple;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>C:\Program Files %28x86%29\Microsoft SDKs\cpp-netlib-0.12.0-final;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)Include</IncludePath>
-    <LibraryPath>C:\Users\Rocco\Desktop\GUGAHACKS\CSGOSimple\curl;C:\Users\Rocco\Desktop\GUGAHACKS\CSGOSimple;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -115,6 +115,7 @@
     <ClCompile Include="features\item_definitions.cpp" />
     <ClCompile Include="features\kit_parser.cpp" />
     <ClCompile Include="features\parser.cpp" />
+    <ClCompile Include="features\rageborto.cc" />
     <ClCompile Include="features\skins.cpp" />
     <ClCompile Include="features\visuals.cpp" />
     <ClCompile Include="FixSkyboxes.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="features\kit_parser.h" />
     <ClInclude Include="features\Misc.hpp" />
     <ClInclude Include="features\parser.h" />
+    <ClInclude Include="features\rageborto.hh" />
     <ClInclude Include="features\skins.h" />
     <ClInclude Include="FixSkyboxes.h" />
     <ClInclude Include="fonts.hpp" />

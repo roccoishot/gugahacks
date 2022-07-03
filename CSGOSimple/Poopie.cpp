@@ -22,12 +22,13 @@
 #include<stdio.h>
 #include<string>
 #include<cstring>
+/*
 #include<wininet.h> 
 #pragma comment(lib, "wininet.lib")
 
 #define CURL_STATICLIB
 
-#include "curl/curl.h"
+#include <curl/curl.h>
 
 #pragma comment(lib, "curl/libcurl_a.lib")
 
@@ -37,7 +38,7 @@ using namespace std;
 
 #include <iostream>
 #include <string>
-
+*/
 /*std::vector<char> LoadFromUrl(const char* url)
 {
     struct Content
@@ -885,6 +886,54 @@ bool Misc::cl_move_dt(CUserCmd* m_pcmd)
 
     }
     return true;
+}
+
+bool hasShot = false;
+Vector autopeek_pos = { 0, 0, 0 };
+
+void returnpos( CUserCmd* cmd ) {
+    //auto localPlayer = interfaces::engine_client->GetLocalPlayer());
+    if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() ) 
+        return;
+
+    Vector playerLoc = g_LocalPlayer->abs_origin();
+    auto wish_angle = cmd->viewangles;
+
+    float wish_yaw = cmd->viewangles.yaw;
+    Vector difference = playerLoc - autopeek_pos;
+
+    //if (VecForward.Length2D() > 5.0f) {
+    auto translatedVelocity = Vector( difference.x * cos( wish_yaw / 180.0f * M_PI ) + difference.y * sin( wish_yaw / 180.0f * M_PI ), difference.y * cos( wish_yaw / 180.0f * M_PI ) - difference.x * sin( wish_yaw / 180.0f * M_PI ), difference.z );
+
+    cmd->forwardmove = Math::clamp( -translatedVelocity.x * 11.f, -250.f, 250.f );
+    cmd->sidemove = Math::clamp( translatedVelocity.y * 11.f, -250.f, 250.f );
+    /* } else {
+        misc::Get().hasShot = false;
+        misc::Get().quickpeekstartpos = Vector{ 0, 0, 0 };
+    }*/
+}
+
+void Misc::autopeek( CUserCmd* cmd ) {
+
+    if ( !g_LocalPlayer )
+        return;
+
+
+    if ( GetAsyncKeyState(g_Options.autopeek_bind) && g_Options.autopeek && g_LocalPlayer->IsAlive() ) {
+        if ( autopeek_pos.IsZero() &&g_LocalPlayer->m_fFlags() & FL_ONGROUND ) {
+            autopeek_pos = g_LocalPlayer->abs_origin();
+        }
+
+        if ( cmd->buttons & cmd->buttons & IN_ATTACK && !autopeek_pos.IsZero() )
+            hasShot = true;
+
+        if ( hasShot && !autopeek_pos.IsZero() )
+            returnpos( cmd );
+
+    } else {
+        hasShot = false;
+        autopeek_pos.Zero();
+    }
 }
 
 void Misc::fuck(CUserCmd* cmd)

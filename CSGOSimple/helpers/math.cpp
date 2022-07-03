@@ -322,6 +322,27 @@ namespace Math
     }
 
     //--------------------------------------------------------------------------------
+	Vector CrossProduct( const Vector& a, const Vector& b ) {
+		return Vector( a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x );
+	}
+	void VectorAngles( const Vector& forward, Vector& up, QAngle& angles ) {
+		Vector left = CrossProduct( up, forward );
+		left.NormalizeInPlace( );
+
+		float forwardDist = forward.Length2D( );
+
+		if ( forwardDist > 0.001f ) {
+			angles.pitch = atan2f( -forward.z, forwardDist ) * 180 / PI_F;
+			angles.yaw   = atan2f( forward.y, forward.x ) * 180 / PI_F;
+
+			float upZ   = ( left.y * forward.x ) - ( left.x * forward.y );
+			angles.roll = atan2f( left.z, upZ ) * 180 / PI_F;
+		} else {
+			angles.pitch = atan2f( -forward.z, forwardDist ) * 180 / PI_F;
+			angles.yaw   = atan2f( -left.x, left.y ) * 180 / PI_F;
+			angles.roll  = 0;
+		}
+	}
     void VectorAngles(const Vector& forward, QAngle& angles)
     {
         float	tmp, yaw, pitch;

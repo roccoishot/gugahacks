@@ -32,6 +32,7 @@
 #include "detours.h"
 #include "sexynutssexyfuckdickshitnigga.h"
 #include "Rollangles.h"
+#include "features/rageborto.hh"
 
 namespace Hooks {
 
@@ -636,8 +637,14 @@ namespace Hooks {
 
 		static auto prediction = new PredictionSystem();
 		auto flags = g_LocalPlayer->m_fFlags();
+
 		prediction->StartPrediction(cmd);
+
+
 		g_Legitbot->Run(cmd);
+
+		g_rage.ragebot( cmd );
+
 		prediction->EndPrediction();
 		QAngle LastAngle = QAngle(0, 0, 0);
 		Math::Normalize3(cmd->viewangles);
@@ -658,6 +665,8 @@ namespace Hooks {
 		{
 			Misc::Get().MovementFix(oldAngle, cmd, oldForward, oldSideMove);
 		}
+
+		Misc::Get().autopeek( cmd );
 
 		Misc::Get().fuck(cmd);
 

@@ -390,6 +390,8 @@ void Options::SetupMisc()
 	SetupColor(menucolor, XorStr("Menu Accents"));
 	SetupValue(fakeping, XorStr("Rage"), XorStr("Fake Ping"));
 	SetupValue(fakepingzzz, XorStr("Rage"), XorStr("Fake Ping Tix"));
+	SetupValue(autopeek, XorStr("Rage"), XorStr("autopeek"));
+	SetupValue(autopeek_bind, XorStr("Rage"), XorStr("autopeek bind"));
 }
 
 void Options::Initialize()

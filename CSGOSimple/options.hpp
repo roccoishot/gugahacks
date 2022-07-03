@@ -233,6 +233,9 @@ public:
 	int movementrecord = 0;
 	int movementplay = 0;
 
+	bool autopeek = false;
+	int autopeek_bind = 0;
+
 	int spinrollspeed = 1;
 	int spinroll2speed = 1;
 	bool spinroll = false;
