@@ -64,9 +64,13 @@ class CUserCmd
 public:
     CUserCmd()
     {
-        memset(this, 0, sizeof(*this));
+        memset(this, NULL, sizeof(*this)); //-V598
     };
-    virtual ~CUserCmd() {};
+
+    virtual ~CUserCmd()
+    {
+
+    };
 
     CRC32_t GetChecksum(void) const
     {
@@ -89,6 +93,7 @@ public:
         CRC32_ProcessBuffer(&crc, &mousedy, sizeof(mousedy));
 
         CRC32_Final(&crc);
+
         return crc;
     }
 

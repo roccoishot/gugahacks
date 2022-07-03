@@ -324,6 +324,36 @@ namespace Utils {
         }
         return nullptr;
     }
+   
+    unsigned int find_in_datamap(datamap_t* map, const char* name)
+    {
+        while (map)
+        {
+            for (auto i = 0; i < map->dataNumFields; ++i)
+            {
+                if (!map->dataDesc[i].fieldName)
+                    continue;
+
+                if (!strcmp(name, map->dataDesc[i].fieldName))
+                    return map->dataDesc[i].fieldOffset[TD_OFFSET_NORMAL];
+
+                if (map->dataDesc[i].fieldType == FIELD_EMBEDDED)
+                {
+                    if (map->dataDesc[i].td)
+                    {
+                        unsigned int offset;
+
+                        if (offset = find_in_datamap(map->dataDesc[i].td, name))
+                            return offset;
+                    }
+                }
+            }
+
+            map = map->baseMap;
+        }
+
+        return 0;
+    }
 
     /*
      * @brief Set player clantag
@@ -401,4 +431,46 @@ namespace Utils {
     {
         return g_GameTypes->GetCurrentGameType() == 6;
     }
+
+    struct hud_weapons_t {
+        std::int32_t* get_weapon_count() {
+            return reinterpret_cast<std::int32_t*>(std::uintptr_t(this) + 0x80);
+        }
+    };
+    template<class T>
+    static T* FindHudElement(const char* name) {
+        static auto pThis = *reinterpret_cast<DWORD**>(Utils::PatternScan(GetModuleHandleA("client.dll"), "B9 ? ? ? ? 68 ? ? ? ? E8 ? ? ? ? 89") + 0x1);
+
+        static auto find_hud_element = reinterpret_cast<DWORD(__thiscall*)(void*, const char*)>(Utils::PatternScan(GetModuleHandleA("client.dll"), "55 8B EC 53 8B 5D 08 56 57 8B F9 33 F6 39 77 28"));
+        return (T*)find_hud_element(pThis, name);
+    }
+
+    void ForceFullUpdate() {
+        return;
+
+        static auto clear_hud_weapon_icon_fn =
+            reinterpret_cast<std::int32_t(__thiscall*)(void*, std::int32_t)>(
+                Utils::PatternScan(GetModuleHandleA("client.dll"), "55 8B EC 51 53 56 8B 75 08 8B D9 57 6B"));
+
+        auto element = FindHudElement<std::uintptr_t*>("CCSGO_HudWeaponSelection");
+
+        if (!element)
+            return;
+
+        auto hud_weapons = reinterpret_cast<hud_weapons_t*>(std::uintptr_t(element) - 0xa0);
+        if (hud_weapons == nullptr)
+            return;
+
+        if (!*hud_weapons->get_weapon_count())
+            return;
+
+        for (std::int32_t i = 0; i < *hud_weapons->get_weapon_count(); i++)
+            i = clear_hud_weapon_icon_fn(hud_weapons, i);
+
+        // typedef void(*ForceUpdate) (void);
+        // static ForceUpdate FullUpdate = (ForceUpdate)Utils::PatternScan(GetModuleHandleA("engine.dll"), "A1 ? ? ? ? B9 ? ? ? ? 56 FF 50 14 8B 34 85");
+       //  FullUpdate();
+        g_ClientState->ForceFullUpdate();
+    }
+
 }

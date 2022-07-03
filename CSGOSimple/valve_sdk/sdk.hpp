@@ -40,13 +40,16 @@
 #include "interfaces/IRefCounted.hpp"
 #include "Interfaces/IGameTypes.hpp"
 #include "Interfaces/IStudioRender.hpp"
+#include "../ilocalise.hpp"
+#include "../SexySexyDickShit.hpp"
 
 #include "Misc/Convar.hpp"
 #include "Misc/CUserCmd.hpp"
 #include "misc/glow_outline_effect.hpp"
 #include "Misc/datamap.hpp"
-
+#include "../IMemAlloc.h"
 #include "netvars.hpp"
+#include "./interfaces/steam_sdk/steam_api.h"
 
 struct IDirect3DDevice9;
 
@@ -56,6 +59,10 @@ namespace Interfaces
     void Dump();
 }
 
+inline CEffects* g_pEffects = nullptr;
+inline LWNetChannelInfo*       g_NetChannel = nullptr;
+inline LWEngineClient*		 g_LwEngine = nullptr;
+inline IMemAlloc* g_pMemAlloc = nullptr;
 inline IVEngineClient*       g_EngineClient   = nullptr;
 inline IBaseClientDLL*       g_CHLClient      = nullptr;
 inline IClientEntityList*    g_EntityList     = nullptr;
@@ -86,37 +93,12 @@ inline IInputSystem*         g_InputSystem    = nullptr;
 inline IWeaponSystem*        g_WeaponSystem   = nullptr;
 inline IGameTypes*           g_GameTypes      = nullptr;
 inline IStudioRender*        g_StudioRender   = nullptr;
-
-namespace Interfaces
-{
-	extern IVEngineClient* Engine;
-	extern IBaseClientDLL* Client;
-	extern IGameTypes* GameType;
-	extern IClientEntityList* EntityList;
-	extern CGlobalVarsBase* GlobalVars;
-	extern IEngineTrace* EngineTrace;
-	extern ICvar* Convar;
-	extern IPanel* Panel;
-	extern IClientMode* ClientMode;
-	extern IVDebugOverlay* DebugOverlay;
-	extern ISurface* Surface;
-	extern CInput* Input;
-	extern IVModelInfoClient* ModelInfo;
-	extern IVModelRender* ModelRender;
-	extern IVRenderView* RenderView;
-	extern IMaterialSystem* MaterialSystem;
-	extern IGameEventManager2* GameEvents;
-	extern IMoveHelper* MoveHelper;
-	extern IMDLCache* MdlCache;
-	extern IPrediction* Prediction;
-	extern CGameMovement* GameMovement;
-	extern IEngineSound* EngineSound;
-	extern CGlowObjectManager* GlowManager;
-	extern IViewRender* ViewRender;
-	extern IDirect3DDevice9* D3DDevice;
-	extern CClientState* ClientState;
-	extern IPhysicsSurfaceProps* PhysSurface;
-}
+inline IFileSystem*          g_FileSystem     = nullptr;
+inline CHudChat*             g_ChatElement = nullptr;
+inline uintptr_t* g_SpatialPartition = nullptr;
+inline ILocalize* g_Localize = nullptr;
+inline ISteamGameCoordinator* g_pSteamGameCoordinator;
+inline ISteamUser* g_pSteamUser;
 
 template<typename... Args>
 void ConMsg(const char* pMsg, Args... args)

@@ -3,7 +3,13 @@
 #include "sdk.hpp"
 #include <array>
 #include "../helpers/utils.hpp"
-#include "../crypt_str.h"
+#include "../xor.h"
+#ifdef ENABLE_XOR
+#define XorStr _xor_ 
+#else
+#define XorStr
+#endif
+#pragma intrinsic(_ReturnAddress)  
 
 #define NETVAR(type, name, table, netvar)                           \
     type& name##() const {                                          \
@@ -88,6 +94,7 @@ public:
 	NETVAR(int32_t, m_iEntityQuality, "DT_BaseAttributableItem", "m_iEntityQuality");
 	NETVAR(str_32, m_iCustomName, "DT_BaseAttributableItem", "m_szCustomName");
 };
+
 
 struct player_log_t
 {
@@ -193,6 +200,12 @@ public:
 	NETVAR(float_t, m_flC4Blow, "DT_PlantedC4", "m_flC4Blow");
 	NETVAR(int, m_hRagdoll, "CCSPlayer", "m_hRagdoll")
 
+	std::array<Vector, 5>& m_vecPlayerPatchEconIndices()
+	{
+		static int _m_vecPlayerPatchEconIndices = NetvarSys::Get().GetOffset("DT_CSPlayer", "m_vecPlayerPatchEconIndices");
+		return *(std::array<Vector, 5>*)((uintptr_t)this + _m_vecPlayerPatchEconIndices);
+	}
+
 	const matrix3x4_t& m_rgflCoordinateFrame()
 	{
 		static auto _m_rgflCoordinateFrame = NetvarSys::Get().GetOffset("DT_BaseEntity", "m_CollisionGroup") - 0x30;
@@ -205,6 +218,7 @@ public:
 	bool IsPlantedC4();
 	bool IsDefuseKit();
 	void setModelIndex(int modelIndex);
+	void set_abs_angles(const Vector& angle);
 	//bool isSpotted();
 };
 
@@ -284,6 +298,7 @@ public:
 	bool IsAutomaticGun();
 	bool IsMashineGun();
 	bool IsSMG();
+	bool can_double_tap();
 	bool IsAuto();
 	bool IsShotgun();
 	bool IsBallistic();
@@ -307,6 +322,7 @@ public:
 		return static_cast<C_BasePlayer*>(GetEntityByIndex(i));
 	}
 
+	NETVAR(bool, m_bClientSideAnimation, XorStr("CBaseAnimating"), XorStr("m_bClientSideAnimation"));
 	NETVAR(bool, m_bHasDefuser, "DT_CSPlayer", "m_bHasDefuser");
 	NETVAR(bool, m_bGunGameImmunity, "DT_CSPlayer", "m_bGunGameImmunity");
 	NETVAR(int32_t, m_iShotsFired, "DT_CSPlayer", "m_iShotsFired");
@@ -340,30 +356,44 @@ public:
 	NETVAR(int32_t, m_nSurvivalTeam, "DT_CSPlayer", "m_nSurvivalTeam");
 	NETVAR(float, m_flHealthShotBoost, "DT_CSPlayer", "m_flHealthShotBoostExpirationTime");
 	NETVAR(float, m_flFlashDuration, "DT_CSPlayer", "m_flFlashDuration");
-
 	//NETVAR(int, m_iAccount, "DT_CSPlayer", "m_iAccount");
 
-	void SetAbsAngles(const Vector& angle)
-	{
-		if (!this) //-V704
-			return;
+	void C_BasePlayer::SetAbsAngles(const Vector& angles) {
+		using SetAbsAnglesFn = void(__thiscall*)(void*, const Vector& angles);
+		//55 8B EC 83 E4 F8 83 EC 64 53 maybe
+		static SetAbsAnglesFn SetAbsAngles = (SetAbsAnglesFn)Utils::PatternScan(GetModuleHandleA("client.dll"), "55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1");
 
-		using Fn = void(__thiscall*)(void*, const Vector&);
-		static auto fn = reinterpret_cast<Fn>(Utils::PatternScan("client.dll", "55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1 E8"));
-
-		return fn(this, angle);
+		SetAbsAngles(this, angles);
 	}
+	void SetAngle2(Vector wantedang);
 	NETVAR(Vector, m_skybox3d_origin, "DT_BasePlayer", "DT_LocalPlayerExclusive", "DT_Local", "m_skybox3d.origin");
 	NETVAR(int, m_skybox3d_scale, "DT_BasePlayer", "DT_LocalPlayerExclusive", "DT_Local", "m_skybox3d.scale");
 	NETVAR(QAngle, m_angAbsAngles, "DT_BaseEntity", "m_angAbsAngles");
 	NETVAR(Vector, m_angAbsOrigin, "DT_BaseEntity", "m_angAbsOrigin");
 	NETVAR(float, m_flDuckSpeed, "DT_BaseEntity", "m_flDuckSpeed");
 	NETVAR(float, m_flDuckAmount, "DT_BaseEntity", "m_flDuckAmount");
-	std::array<float, 24> &m_flPoseParameter() const {
-		static int _m_flPoseParameter = NetvarSys::Get().GetOffset("DT_BaseAnimating", "m_flPoseParameter");
-		return *(std::array<float, 24>*)((uintptr_t)this + _m_flPoseParameter);
+	std::array <float, 24>& m_flPoseParameter()
+	{
+		static auto _m_flPoseParameter = NetvarSys::Get().GetOffset("CCSPlayer", "m_flPoseParameter");
+		return *(std::array <float, 24>*)((uintptr_t)this + _m_flPoseParameter);
 	}
 
+	Vector& GetAbsAngles() {
+		if (!this)
+			return Vector();
+		typedef Vector& (__thiscall* OriginalFn)(void*);
+		return CallVFunction<OriginalFn>(this, 11)(this);
+	}
+
+	uint32_t& GetMostRecentModelBoneCounter() // for fake matrix
+	{
+		return *reinterpret_cast<uint32_t*>(uintptr_t(this) + 0x2690);
+	}
+
+	float& GetLastBoneSetupTime() // for fake matrix
+	{
+		return *reinterpret_cast<float*>(uintptr_t(this) + 0x2924);
+	}
 
 	PNETVAR(CHandle<C_BaseCombatWeapon>, m_hMyWeapons, "DT_BaseCombatCharacter", "m_hMyWeapons");
 	PNETVAR(CHandle<C_BaseAttributableItem>, m_hMyWearables, "DT_BaseCombatCharacter", "m_hMyWearables");
@@ -373,14 +403,21 @@ public:
 	NETPROP(m_flLowerBodyYawTargetProp, "DT_CSPlayer", "m_flLowerBodyYawTarget");
 	CUserCmd*& m_pCurrentCommand();
 
+	uint32_t& m_fEffects();
+	uint32_t& m_iEFlags();
 	void InvalidateBoneCache();
 	int GetNumAnimOverlays();
 	AnimationLayer *GetAnimOverlays();
 	AnimationLayer *GetAnimOverlay(int i);
 	int GetSequenceActivity(int sequence);
-	CCSGOPlayerAnimState *GetPlayerAnimState();
+	CCSGOPlayerAnimState* GetPlayerAnimState();
 
-	static void UpdateAnimationState(CCSGOPlayerAnimState *state, QAngle angle);
+	int NumOverlays() {
+		return 15;
+	}
+
+	void UpdateAnimationState();
+	static void UpdateAnimationState(CCSGOPlayerAnimState* state, QAngle angle);
 	static void ResetAnimationState(CCSGOPlayerAnimState *state);
 	void CreateAnimationState(CCSGOPlayerAnimState *state);
 
@@ -406,6 +443,7 @@ public:
 	Vector        GetEyePos();
 	player_info_t GetPlayerInfo();
 	bool          IsAlive();
+	bool		  valid(bool check_team, bool check_dormant);
 	bool		  IsFlashed();
 	bool		  IsEnemy();
 	bool          HasC4();
@@ -418,12 +456,16 @@ public:
 	bool          CanSeePlayer(C_BasePlayer* player, const Vector& pos);
 	void UpdateClientSideAnimation();
 	Vector        abs_origin();
-
+	matrix3x4_t GetBoneMatrix(int BoneID);
+	bool setup_bones_fixed(matrix3x4_t* matrix, int mask);
+	void set_abs_origin(const Vector& origin);
+	void invalidate_bone_cache();
+	uint32_t& m_iMostRecentModelBoneCounter();
+	float& m_flLastBoneSetupTime();
 	int m_nMoveType();
 	void SetVAngles(QAngle angles);
 	QAngle * GetVAngles();
 	float_t m_flSpawnTime();
-	bool IsNotTarget();
 
 
 };
@@ -431,11 +473,15 @@ public:
 class C_BaseViewModel : public C_BaseEntity
 {
 public:
-	NETVAR(int32_t, m_nModelIndex, "DT_BaseViewModel", "m_nModelIndex");
-	NETVAR(int32_t, m_nViewModelIndex, "DT_BaseViewModel", "m_nViewModelIndex");
-	NETVAR(CHandle<C_BaseCombatWeapon>, m_hWeapon, "DT_BaseViewModel", "m_hWeapon");
-	NETVAR(CHandle<C_BasePlayer>, m_hOwner, "DT_BaseViewModel", "m_hOwner");
+	NETVAR(int, m_nModelIndex, "CBaseViewModel", "m_nModelIndex");
+	NETVAR(int, m_nViewModelIndex, "CBaseViewModel", "m_nViewModelIndex");
+	NETVAR(CHandle <C_BaseWeaponWorldModel>, m_hWeapon, "CBaseViewModel", "m_hWeapon");
+	NETVAR(CHandle <C_BasePlayer>, m_hOwner, "CBaseViewModel", "m_hOwner");
+	NETVAR(int, m_nAnimationParity, "CBaseViewModel", "m_nAnimationParity");
 	NETPROP(m_nSequence, "DT_BaseViewModel", "m_nSequence");
+
+	float& m_flCycle();
+	float& m_flAnimTime();
 	void SendViewModelMatchingSequence(int sequence);
 };
 
@@ -457,20 +503,24 @@ public:
 	char  pad_0038[4]; //0x0034
 }; //Size: 0x0038
 
-class CCSGOPlayerAnimState
-{
+class CCSGOPlayerAnimState {
 public:
-	void* pThis;
-	char pad2[91];
-	void* pBaseEntity; //0x60
-	void* pActiveWeapon; //0x64
-	void* pLastActiveWeapon; //0x68
+	char pad[3];
+	char bUnknown; //0x4
+	char pad2[87];
+	C_BaseCombatWeapon* m_pLastBoneSetupWeapon; //0x5C
+	C_BasePlayer* m_pBaseEntity; //0x60
+	C_BaseCombatWeapon* m_pActiveWeapon; //0x64
+	C_BaseCombatWeapon* m_pLastActiveWeapon; //0x68
 	float m_flLastClientSideAnimationUpdateTime; //0x6C
 	int m_iLastClientSideAnimationUpdateFramecount; //0x70
 	float m_flEyePitch; //0x74
 	float m_flEyeYaw; //0x78
 	float m_flPitch; //0x7C
 	float m_flGoalFeetYaw; //0x80
+	float& m_flAbsRotation() {
+		return *(float*)((uintptr_t)this + 0x80);
+	}
 	float m_flCurrentFeetYaw; //0x84
 	float m_flCurrentTorsoYaw; //0x88
 	float m_flUnknownVelocityLean; //0x8C //changes when moving/jumping/hitting ground
@@ -487,6 +537,9 @@ public:
 	float m_vVelocityX; //0xC8
 	float m_vVelocityY; //0xCC
 	char pad5[4];
+	float& m_flMagicFraction() {
+		return *(float*)((uintptr_t)this + 0x124);
+	}
 	float m_flUnknownFloat1; //0xD4 Affected by movement and direction
 	char pad6[8];
 	float m_flUnknownFloat2; //0xE0 //from -1 to 1 when moving and affected by direction
@@ -494,6 +547,9 @@ public:
 	float m_unknown; //0xE8
 	float speed_2d; //0xEC
 	float flUpVelocity; //0xF0
+	float& m_flTimeSinceInAir() {
+		return *(float*)((uintptr_t)this + 0x110);
+	}
 	float m_flSpeedNormalized; //0xF4 //from 0 to 1
 	float m_flFeetSpeedForwardsOrSideWays; //0xF8 //from 0 to 2. something  is 1 when walking, 2.something when running, 0.653 when crouch walking
 	float m_flFeetSpeedUnknownForwardOrSideways; //0xFC //from 0 to 3. something

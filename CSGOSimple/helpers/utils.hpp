@@ -5,6 +5,12 @@
 #include <string>
 #include <initializer_list>
 #include "../valve_sdk/sdk.hpp"
+#include <thread>
+#include <Psapi.h>
+
+#define INRANGE(x, a, b) (x >= a && x <= b)  //-V1003
+#define GETBITS(x) (INRANGE((x & (~0x20)),'A','F') ? ((x & (~0x20)) - 'A' + 0xA) : (INRANGE(x, '0', '9') ? x - '0' : 0)) //-V1003
+#define GETBYTE(x) (GETBITS(x[0]) << 4 | GETBITS(x[1]))
 
 namespace Utils {
 	std::vector<char> HexToBytes(const std::string& hex);
@@ -65,7 +71,7 @@ namespace Utils {
      * @param tag New clantag
      */
     void SetClantag(const char* tag);
-
+    unsigned int find_in_datamap(datamap_t* map, const char* name);
     /*
      * @brief Set player name
      *
@@ -74,8 +80,8 @@ namespace Utils {
     void SetName(const char* name);
     std::vector<int> GetObservervators(int playerId);
 
-    void ViewRoll(const char* rollin);
-
     bool IsDangerZone();
+
+    void ForceFullUpdate();
 
 }

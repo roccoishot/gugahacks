@@ -135,6 +135,11 @@ public:
             roll > -tolerance && roll < tolerance);
     }
 
+    bool IsValid() const
+    {
+        return std::isfinite(pitch) && std::isfinite(yaw) && std::isfinite(roll);
+    }
+
 	float Normalize() const
 	{
 		QAngle res = *this;

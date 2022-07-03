@@ -1,7 +1,7 @@
 #include "./valve_sdk/csgostructs.hpp"
 #include "./helpers/math.hpp"
 #include <deque>
-#define NUM_OF_TICKS 62
+#define NUM_OF_TICKS 12
 
 struct StoredData
 {

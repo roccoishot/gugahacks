@@ -38,9 +38,26 @@ namespace Math
 		}
 		vec[2] = 0.f;
 	}
+	template<class T, class U>
+	static T clamp(const T& in, const U& low, const U& high)
+	{
+		if (in <= low)
+			return low;
+
+		if (in >= high)
+			return high;
+
+		return in;
+	}
+	int random_int(int min, int max);
     void ClampAngles(QAngle& angles);
 	void FixAngles(QAngle& angles);
     void VectorTransform(const Vector& in1, const matrix3x4_t& in2, Vector& out);
+	float normalize_yaw(float f);
+	void angle_vectors(const Vector& angles, Vector& forward);
+	void angle_vectors(const Vector& angles, Vector* forward, Vector* right, Vector* up);
+	void vector_angles(const Vector& forward, Vector& angles);
+	void vector_angles(const Vector& forward, Vector& up, Vector& angles);
     void AngleVectors(const QAngle &angles, Vector& forward);
     void AngleVectors(const QAngle &angles, Vector& forward, Vector& right, Vector& up);
     void VectorAngles(const Vector& forward, QAngle& angles);
@@ -49,5 +66,15 @@ namespace Math
 	float Magnitude(Vector a);
 	Vector Normalize(Vector value);
 	Vector ClampMagnitude(Vector vector, float maxLength);
+	float random_float(float min, float max);
+
+	template <typename t>
+	static t interpolate(const t& t1, const t& t2, float progress)
+	{
+		if (t1 == t2)
+			return t1;
+
+		return t2 * progress + t1 * (1.0f - progress);
+	}
 
 }

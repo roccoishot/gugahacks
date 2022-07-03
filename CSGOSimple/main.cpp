@@ -12,11 +12,14 @@
 #include "options.hpp"
 #include "render.hpp"
 #include "features/hitmarker.hpp"
+#include "imports.h"
+#include <thread>
 
 DWORD WINAPI OnDllAttach(LPVOID base)
 {
-	while (!GetModuleHandleA("serverbrowser.dll"))
-		Sleep(1000);
+
+    while (!GetModuleHandleA("serverbrowser.dll"))
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 #ifdef _DEBUG
     Utils::AttachConsole();

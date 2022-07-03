@@ -26,6 +26,10 @@ int Color::GetRawColor() const
 {
     return *((int *)this);
 }
+void Color::SetAlpha(int alpha)
+{ 
+    _CColor[3] = alpha; 
+}
 void Color::SetColor(int _r, int _g, int _b, int _a)
 {
     _CColor[0] = (unsigned char)_r;

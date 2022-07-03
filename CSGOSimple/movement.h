@@ -7,3 +7,11 @@ namespace movement {
 	void edgebug(CUserCmd* cmd);
 
 }
+
+class LETSMAKETHISASBADASPOSSIBLE {
+public:
+	bool CUMSHITPOOPASTE;
+	int CUMSHITPOOPASTETooTHpASte;
+	int dicksTOsTOp;
+};
+extern LETSMAKETHISASBADASPOSSIBLE eb;

@@ -1,6 +1,9 @@
 // dear imgui, v1.69 WIP
 // (widgets code)
-
+#include <algorithm>
+#include <map>
+#include "../menu.hpp"
+#include "../options.hpp"
 /*
 
 Index of this file:
@@ -745,10 +748,11 @@ void ImGui::Scrollbar(ImGuiAxis axis)
     if (bb.GetWidth() <= 0.0f || bb_height <= 0.0f)
         return;
 
+
+
     // When we are too small, start hiding and disabling the grab (this reduce visual noise on very small window and facilitate using the resize grab)
     float alpha = 1.0f;
-    if ((axis == ImGuiAxis_Y) && bb_height < g.FontSize + g.Style.FramePadding.y * 2.0f)
-    {
+    if ((axis == ImGuiAxis_Y) && bb_height < g.FontSize + g.Style.FramePadding.y * 2.0f) {
         alpha = ImSaturate((bb_height - g.FontSize) / (g.Style.FramePadding.y * 2.0f));
         if (alpha <= 0.0f)
             return;
@@ -782,11 +786,151 @@ void ImGui::Scrollbar(ImGuiAxis axis)
     const bool previously_held = (g.ActiveId == id);
     ButtonBehavior(bb, id, &hovered, &held, ImGuiButtonFlags_NoNavFocus);
 
+    float deltatime = 1.5f * ImGui::GetIO().DeltaTime;
+    static std::map<ImGuiID, float> hover_animation;
+    auto it_hover = hover_animation.find(id);
+    if (it_hover == hover_animation.end()) {
+        hover_animation.insert({ id, 0.f });
+        it_hover = hover_animation.find(id);
+    }
+
+
+    const ImVec4 text_dis = style.Colors[ImGuiCol_Text];
+    const ImVec4 text_act = ImVec4(244 / 255.f, 244 / 255.f, 244 / 255.f, 1.f);
+
+    const ImVec4 hover_act = ImVec4(244 / 255.f, 244 / 255.f, 244 / 255.f, 1.f);
+    const ImVec4 hover_dis = ImVec4(g_Options.menucolor.r() / 255, g_Options.menucolor.g() / 255, g_Options.menucolor.b() / 255, 1.f);
+
+    static std::map<ImGuiID, ImVec4> hover_color;
+    auto it_hcolor = hover_color.find(id);
+    if (it_hcolor == hover_color.end()) {
+        hover_color.insert({ id, hover_dis });
+        it_hcolor = hover_color.find(id);
+    }
+    if (held) {
+        ImVec4 to = hover_dis;
+        if (it_hcolor->second.x != to.x) {
+            if (it_hcolor->second.x < to.x)
+                it_hcolor->second.x = ImMin(it_hcolor->second.x + deltatime, to.x);
+            else if (it_hcolor->second.x > to.x)
+                it_hcolor->second.x = ImMax(to.x, it_hcolor->second.x - deltatime);
+        }
+
+        if (it_hcolor->second.y != to.y) {
+            if (it_hcolor->second.y < to.y)
+                it_hcolor->second.y = ImMin(it_hcolor->second.y + deltatime, to.y);
+            else if (it_hcolor->second.y > to.y)
+                it_hcolor->second.y = ImMax(to.y, it_hcolor->second.y - deltatime);
+        }
+
+        if (it_hcolor->second.z != to.z) {
+            if (it_hcolor->second.z < to.z)
+                it_hcolor->second.z = ImMin(it_hcolor->second.z + deltatime, to.z);
+            else if (it_hcolor->second.z > to.z)
+                it_hcolor->second.z = ImMax(to.z, it_hcolor->second.z - deltatime);
+        }
+    } else {
+        ImVec4 to = hovered ? hover_dis : hover_act;
+        if (it_hcolor->second.x != to.x) {
+            if (it_hcolor->second.x < to.x)
+                it_hcolor->second.x = ImMin(it_hcolor->second.x + deltatime, to.x);
+            else if (it_hcolor->second.x > to.x)
+                it_hcolor->second.x = ImMax(to.x, it_hcolor->second.x - deltatime);
+        }
+
+        if (it_hcolor->second.y != to.y) {
+            if (it_hcolor->second.y < to.y)
+                it_hcolor->second.y = ImMin(it_hcolor->second.y + deltatime, to.y);
+            else if (it_hcolor->second.y > to.y)
+                it_hcolor->second.y = ImMax(to.y, it_hcolor->second.y - deltatime);
+        }
+
+        if (it_hcolor->second.z != to.z) {
+            if (it_hcolor->second.z < to.z)
+                it_hcolor->second.z = ImMin(it_hcolor->second.z + deltatime, to.z);
+            else if (it_hcolor->second.z > to.z)
+                it_hcolor->second.z = ImMax(to.z, it_hcolor->second.z - deltatime);
+        }
+    }
+
+    static std::map<ImGuiID, ImVec4> text_animation;
+    auto it_text = text_animation.find(id);
+    if (it_text == text_animation.end()) {
+        text_animation.insert({ id, text_dis });
+        it_text = text_animation.find(id);
+    }
+    if (held) {
+        ImVec4 to = hovered ? text_dis : text_act;
+        if (it_text->second.x != to.x) {
+            if (it_text->second.x < to.x)
+                it_text->second.x = ImMin(it_text->second.x + deltatime, to.x);
+            else if (it_text->second.x > to.x)
+                it_text->second.x = ImMax(to.x, it_text->second.x - deltatime);
+        }
+
+        if (it_text->second.y != to.y) {
+            if (it_text->second.y < to.y)
+                it_text->second.y = ImMin(it_text->second.y + deltatime, to.y);
+            else if (it_text->second.y > to.y)
+                it_text->second.y = ImMax(to.y, it_text->second.y - deltatime);
+        }
+
+        if (it_text->second.z != to.z) {
+            if (it_text->second.z < to.z)
+                it_text->second.z = ImMin(it_text->second.z + deltatime, to.z);
+            else if (it_text->second.z > to.z)
+                it_text->second.z = ImMax(to.z, it_text->second.z - deltatime);
+        }
+    } else {
+        ImVec4 to = text_dis;
+        if (it_text->second.x != to.x) {
+            if (it_text->second.x < to.x)
+                it_text->second.x = ImMin(it_text->second.x + deltatime, to.x);
+            else if (it_text->second.x > to.x)
+                it_text->second.x = ImMax(to.x, it_text->second.x - deltatime);
+        }
+
+        if (it_text->second.y != to.y) {
+            if (it_text->second.y < to.y)
+                it_text->second.y = ImMin(it_text->second.y + deltatime, to.y);
+            else if (it_text->second.y > to.y)
+                it_text->second.y = ImMax(to.y, it_text->second.y - deltatime);
+        }
+
+        if (it_text->second.z != to.z) {
+            if (it_text->second.z < to.z)
+                it_text->second.z = ImMin(it_text->second.z + deltatime, to.z);
+            else if (it_text->second.z > to.z)
+                it_text->second.z = ImMax(to.z, it_text->second.z - deltatime);
+        }
+    }
+
+    static std::map<ImGuiID, float> filled_animation;
+    auto it_filled = filled_animation.find(id);
+    if (it_filled == filled_animation.end()) {
+        filled_animation.insert({ id, 0.f });
+        it_filled = filled_animation.find(id);
+    }
+
+    if (held && it_filled->second >= 0.5f)
+        it_filled->second = std::clamp(it_filled->second - 2.2f * ImGui::GetIO().DeltaTime, 0.5f, 1.f);
+    else
+        it_filled->second = std::clamp(it_filled->second + (2.2f * ImGui::GetIO().DeltaTime * ((held) ? -1.f : 1.f)), 0.7f, 1.f);
+
+    if (held)
+        it_hover->second = std::clamp(it_hover->second + (3.f * ImGui::GetIO().DeltaTime * (hovered ? 1.f : -1.f)), 1.0f, 0.7f);
+    else
+        it_hover->second = std::clamp(it_hover->second + (3.f * ImGui::GetIO().DeltaTime), 1.f, 1.f);
+
+    if (hovered)
+        it_hover->second = std::clamp(it_hover->second + (3.f * ImGui::GetIO().DeltaTime), 1.f, 0.6f);
+    else
+        it_hover->second = std::clamp(it_hover->second + (3.f * ImGui::GetIO().DeltaTime), 0.6f, 1.f);
+
     float scroll_max = ImMax(1.0f, win_size_contents_v - win_size_avail_v);
     float scroll_ratio = ImSaturate(scroll_v / scroll_max);
     float grab_v_norm = scroll_ratio * (scrollbar_size_v - grab_h_pixels) / scrollbar_size_v;
-    if (held && allow_interaction && grab_h_norm < 1.0f)
-    {
+    if (held && allow_interaction && grab_h_norm < 1.0f) {
         float scrollbar_pos_v = horizontal ? bb.Min.x : bb.Min.y;
         float mouse_pos_v = horizontal ? g.IO.MousePos.x : g.IO.MousePos.y;
         float* click_delta_to_grab_center_v = horizontal ? &g.ScrollbarClickDeltaToGrabCenter.x : &g.ScrollbarClickDeltaToGrabCenter.y;
@@ -796,15 +940,11 @@ void ImGui::Scrollbar(ImGuiAxis axis)
         SetHoveredID(id);
 
         bool seek_absolute = false;
-        if (!previously_held)
-        {
+        if (!previously_held) {
             // On initial click calculate the distance between mouse and the center of the grab
-            if (clicked_v_norm >= grab_v_norm && clicked_v_norm <= grab_v_norm + grab_h_norm)
-            {
-                *click_delta_to_grab_center_v = clicked_v_norm - grab_v_norm - grab_h_norm*0.5f;
-            }
-            else
-            {
+            if (clicked_v_norm >= grab_v_norm && clicked_v_norm <= grab_v_norm + grab_h_norm) {
+                *click_delta_to_grab_center_v = clicked_v_norm - grab_v_norm - grab_h_norm * 0.5f;
+            } else {
                 seek_absolute = true;
                 *click_delta_to_grab_center_v = 0.0f;
             }
@@ -812,12 +952,14 @@ void ImGui::Scrollbar(ImGuiAxis axis)
 
         // Apply scroll
         // It is ok to modify Scroll here because we are being called in Begin() after the calculation of SizeContents and before setting up our starting position
-        const float scroll_v_norm = ImSaturate((clicked_v_norm - *click_delta_to_grab_center_v - grab_h_norm*0.5f) / (1.0f - grab_h_norm));
+        const float scroll_v_norm = ImSaturate((clicked_v_norm - *click_delta_to_grab_center_v - grab_h_norm * 0.5f) / (1.0f - grab_h_norm));
         scroll_v = (float)(int)(0.5f + scroll_v_norm * scroll_max);//(win_size_contents_v - win_size_v));
         if (horizontal)
             window->Scroll.x = scroll_v;
-        else
+        else {
             window->Scroll.y = scroll_v;
+            window->ScrollNext.y = scroll_v;
+        }
 
         // Update values for rendering
         scroll_ratio = ImSaturate(scroll_v / scroll_max);
@@ -825,17 +967,18 @@ void ImGui::Scrollbar(ImGuiAxis axis)
 
         // Update distance to grab now that we have seeked and saturated
         if (seek_absolute)
-            *click_delta_to_grab_center_v = clicked_v_norm - grab_v_norm - grab_h_norm*0.5f;
+            *click_delta_to_grab_center_v = clicked_v_norm - grab_v_norm - grab_h_norm * 0.5f;
     }
 
     // Render grab
-    const ImU32 grab_col = GetColorU32(held ? ImGuiCol_ScrollbarGrabActive : hovered ? ImGuiCol_ScrollbarGrabHovered : ImGuiCol_ScrollbarGrab, alpha);
+    const ImU32 grab_col = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), (int)(it_filled->second * 255));
     ImRect grab_rect;
     if (horizontal)
         grab_rect = ImRect(ImLerp(bb.Min.x, bb.Max.x, grab_v_norm), bb.Min.y, ImMin(ImLerp(bb.Min.x, bb.Max.x, grab_v_norm) + grab_h_pixels, window_rect.Max.x), bb.Max.y);
     else
         grab_rect = ImRect(bb.Min.x, ImLerp(bb.Min.y, bb.Max.y, grab_v_norm), bb.Max.x, ImMin(ImLerp(bb.Min.y, bb.Max.y, grab_v_norm) + grab_h_pixels, window_rect.Max.y));
-    window->DrawList->AddRectFilled(grab_rect.Min, grab_rect.Max, grab_col, style.ScrollbarRounding);
+
+    window->DrawList->AddRectFilled(grab_rect.Min - ImVec2(1, 2), grab_rect.Max + ImVec2(1, 2), grab_col, style.ScrollbarRounding);
 }
 
 void ImGui::Image(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)
@@ -949,18 +1092,51 @@ bool ImGui::Checkbox(const char* label, bool* v)
 
     const ImRect check_bb(pos, pos + ImVec2(square_sz, square_sz));
     RenderNavHighlight(total_bb, id);
+
+    float deltatime = 1.5f * ImGui::GetIO().DeltaTime;
+
+    static std::map<ImGuiID, float> text_animation;
+    auto it_text = text_animation.find(id);
+    if (it_text == text_animation.end()) {
+        text_animation.insert({ id, 0.f });
+        it_text = text_animation.find(id);
+    }
+
+    if (*v) {
+
+        if (hovered)
+            it_text->second = std::clamp(it_text->second - 1.1f * ImGui::GetIO().DeltaTime, 0.75f, 1.f);
+        else
+            it_text->second = std::clamp(it_text->second + (1.1f * ImGui::GetIO().DeltaTime * 1.f), 0.75f, 1.f);
+    } else {
+        if (hovered)
+            it_text->second = std::clamp(it_text->second + (1.1f * ImGui::GetIO().DeltaTime * 1.f), 0.5f, 0.75f);
+        else
+            it_text->second = std::clamp(it_text->second + (1.1f * ImGui::GetIO().DeltaTime * -1.f), 0.5f, 1.f);
+    }
+
+    static std::map<ImGuiID, float> filled_animation;
+    auto it_filled = filled_animation.find(id);
+    if (it_filled == filled_animation.end()) {
+        filled_animation.insert({ id, 0.f });
+        it_filled = filled_animation.find(id);
+    }
+  //  if (hovered && *v && it_filled->second >= 0.5f)
+   //     it_filled->second = std::clamp(it_filled->second - 2.2f * ImGui::GetIO().DeltaTime, 0.5f, 1.f);
+   // else
+        it_filled->second = std::clamp(it_filled->second + (4.4f * ImGui::GetIO().DeltaTime * ((*v) ? 1.f : -1.f)), 0.0f, 1.f);
+
+
     window->DrawList->AddRectFilled(check_bb.Min + ImVec2(5, 4), check_bb.Max + ImVec2(-3, -4), ImColor(20, 20, 20));
 
-    if (*v)
-    {
-        window->DrawList->AddRectFilled(check_bb.Min + ImVec2(5, 4), check_bb.Max + ImVec2(-3, -4), ImColor(200, 200, 200));
-    }
+    window->DrawList->AddRectFilled(check_bb.Min + ImVec2(5, 4), check_bb.Max + ImVec2(-3, -4), ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), (int)(it_filled->second * 255 * Menu::Get().widget_alpha)));
+   
 
     window->DrawList->AddRect(check_bb.Min + ImVec2(5, 4), check_bb.Max + ImVec2(-3, -4), ImColor(0, 0, 0));
 
 
     if (label_size.x > 0.0f)
-        RenderText(ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y), label);
+        window->DrawList->AddText(ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x - 3, check_bb.Min.y + style.FramePadding.y), GetColorU32(ImVec4(255.f, 255.f, 255.f, it_text->second)), label);
 
     return pressed;
 }
@@ -1295,6 +1471,12 @@ static float CalcMaxPopupHeightFromItemCount(int items_count)
     return (g.FontSize + g.Style.ItemSpacing.y) * items_count - g.Style.ItemSpacing.y + (g.Style.WindowPadding.y * 2);
 }
 
+void SetNextWindowScroll(const ImVec2& scroll) {
+    ImGuiContext& g = *GImGui;
+    g.NextWindowData.Flags |= ImGuiNextWindowDataFlags_HasScroll;
+    g.NextWindowData.ScrollVal = scroll;
+}
+
 bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboFlags flags)
 {
     // Always consume the SetNextWindowSizeConstraint() call in our early return paths
@@ -1325,12 +1507,32 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
     bool popup_open = IsPopupOpen(id);
 
     const ImRect value_bb(frame_bb.Min, frame_bb.Max - ImVec2(arrow_size, 0.0f));
-    const ImU32 frame_col = GetColorU32(hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
+
+    ImColor grey(122.f / 255.f, 122.f / 255.f, 122.f / 255.f, Menu::Get().alpha);
+    const ImU32 frame_col = grey;
+
+    static std::map<ImGuiID, float> open_animation;
+    auto it_open = open_animation.find(id);
+    if (it_open == open_animation.end()) {
+        open_animation.insert({ id, 0.f });
+        it_open = open_animation.find(id);
+    }
+
+    static std::map<ImGuiID, bool> scoll_set;
+    auto scroll_it = scoll_set.find(id);
+    if (scroll_it == scoll_set.end()) {
+        scoll_set.insert({ id, false });
+        scroll_it = scoll_set.find(id);
+    }
+
+    it_open->second = std::clamp(it_open->second + (3.f * ImGui::GetIO().DeltaTime * (popup_open ? 1.f : -1.f)), 0.01f, 1.f);
+
 
     if (!(flags & ImGuiComboFlags_NoPreview))
     {
-        window->DrawList->AddRectFilled(frame_bb.Min + ImVec2(5, 2), ImVec2(frame_bb.Max.x, frame_bb.Max.y - 2), ImColor(22, 22, 22), style.FrameRounding, ImDrawCornerFlags_Left);
-        window->DrawList->AddRect(frame_bb.Min + ImVec2(5, 2), ImVec2(frame_bb.Max.x, frame_bb.Max.y - 2), ImColor(0, 0, 0), style.FrameRounding, ImDrawCornerFlags_Left);
+        ImColor bg(9.f / 255.f, 9.f / 255.f, 9.f / 255.f, Menu::Get().widget_alpha);
+        window->DrawList->AddRectFilled(frame_bb.Min + ImVec2(5, 2), ImVec2(frame_bb.Max.x, frame_bb.Max.y - 2), bg, style.FrameRounding, ImDrawCornerFlags_Left);
+        window->DrawList->AddRect(frame_bb.Min + ImVec2(5, 2), ImVec2(frame_bb.Max.x, frame_bb.Max.y - 2), grey, style.FrameRounding, ImDrawCornerFlags_Left);
     }
 
     if (!(flags & ImGuiComboFlags_NoArrowButton))
@@ -1341,7 +1543,7 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
     if (preview_value != NULL && !(flags & ImGuiComboFlags_NoPreview))
         RenderText(frame_bb.Min + style.FramePadding + ImVec2(5, 1), preview_value);
     if (label_size.x > 0)
-        RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y + 1), label);
+        RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y + 6), label);
 
     if ((pressed || g.NavActivateId == id) && !popup_open)
     {
@@ -1351,8 +1553,15 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
         popup_open = true;
     }
 
-    if (!popup_open)
+    if (!popup_open) {
+        scroll_it->second = false;
         return false;
+    }
+
+    if (it_open->second < 0.99f)
+        PushStyleVar(ImGuiStyleVar_ScrollbarSize, 0.f);
+
+    PushStyleVar(ImGuiStyleVar_Alpha, it_open->second * Menu::Get().widget_alpha);
 
     if (backup_next_window_size_constraint)
     {
@@ -1369,6 +1578,10 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
         else if (flags & ImGuiComboFlags_HeightSmall)  popup_max_height_in_items = 4;
         else if (flags & ImGuiComboFlags_HeightLarge)  popup_max_height_in_items = 20;
         SetNextWindowSizeConstraints(ImVec2(w - 5, 0.0f), ImVec2(FLT_MAX, CalcMaxPopupHeightFromItemCount(popup_max_height_in_items)));
+        if (!scroll_it->second && it_open->second >= 0.06f) {
+            SetNextWindowScroll(ImVec2(0, 0));
+            scroll_it->second = true;
+        }
     }
 
     char name[16];
@@ -1390,7 +1603,9 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_Popup | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
     PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(style.FramePadding.x, style.WindowPadding.y));
     bool ret = Begin(name, NULL, window_flags);
-    PopStyleVar();
+    PopStyleVar(2);
+    if (it_open->second < 0.99f)
+        PopStyleVar();
     if (!ret)
     {
         EndPopup();
@@ -2367,22 +2582,42 @@ bool ImGui::SliderScalar(const char* label, ImGuiDataType data_type, void* v, co
 
     const ImU32 frame_col = GetColorU32(g.ActiveId == id ? ImGuiCol_FrameBgActive : g.HoveredId == id ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
     RenderNavHighlight(frame_bb, id);
-    RenderFrame(frame_bb.Min, frame_bb.Max, frame_col, true, g.Style.FrameRounding);
+    //RenderFrame(frame_bb.Min, frame_bb.Max, frame_col, true, g.Style.FrameRounding);
 
     ImRect grab_bb;
     const bool value_changed = SliderBehavior(frame_bb, id, data_type, v, v_min, v_max, format, power, ImGuiSliderFlags_None, &grab_bb);
     if (value_changed)
         MarkItemEdited(id);
 
-    window->DrawList->AddRectFilled(frame_bb.Min, grab_bb.Max + ImVec2(0, 2), ImColor(200, 200, 200), style.GrabRounding);
-    window->DrawList->AddRect(frame_bb.Min, frame_bb.Max, ImColor(0, 0, 0));
+    ImColor grey(122.f / 255.f, 122.f / 255.f, 122.f / 255.f, Menu::Get().alpha);
+
+    static std::map<ImGuiID, float> filled_animation;
+    auto it_filled = filled_animation.find(id);
+    if (it_filled == filled_animation.end()) {
+        filled_animation.insert({ id, 0.f });
+        it_filled = filled_animation.find(id);
+    }
+
+    bool held = g.ActiveId == id;
+
+    if (held && it_filled->second >= 0.5f)
+        it_filled->second = std::clamp(it_filled->second - 2.2f * ImGui::GetIO().DeltaTime, 0.5f, 1.f);
+    else
+        it_filled->second = std::clamp(it_filled->second + (2.2f * ImGui::GetIO().DeltaTime * ((held) ? -1.f : 1.f)), 0.7f, 1.f);
+
+
+    window->DrawList->AddRectFilled(frame_bb.Min, grab_bb.Max + ImVec2(1, 0) + ImVec2(0, 2), ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), (int)(it_filled->second * 255 * Menu::Get().widget_alpha)), 0.f);
+
+    window->DrawList->AddRect(frame_bb.Min, frame_bb.Max, grey);
 
     char value_buf[64];
     const char* value_buf_end = value_buf + DataTypeFormatString(value_buf, IM_ARRAYSIZE(value_buf), data_type, v, format);
-    RenderText(grab_bb.Min - ImVec2(5, 0), value_buf);
+   // RenderText(grab_bb.Min - ImVec2(5, 0), value_buf);
 
     if (label_size.x > 0.0f)
-        RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y - 4), label);
+        RenderText(ImVec2(frame_bb.Min.x + style.ItemInnerSpacing.x, frame_bb.Min.y - 17), label);
+
+        RenderText(ImVec2(frame_bb.Max.x - style.ItemInnerSpacing.x - CalcTextSize(value_buf).x, frame_bb.Min.y - 17), value_buf);
 
     return value_changed;
 }
@@ -4012,7 +4247,7 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
             SameLine(0, style.ItemInnerSpacing.x);
 
         const ImVec4 col_v4(col[0], col[1], col[2], alpha ? col[3] : 1.0f);
-        if (ColorButton("##ColorButton", col_v4, flags))
+        if (ColorButton("##ColorButton", col_v4, flags, ImVec2(14, 14)))
         {
             if (!(flags & ImGuiColorEditFlags_NoPicker))
             {
@@ -5119,8 +5354,7 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
     bb.Min.y -= spacing_U;
     bb.Max.x += spacing_R;
     bb.Max.y += spacing_D;
-    if (!ItemAdd(bb, id))
-    {
+    if (!ItemAdd(bb, id)) {
         if ((flags & ImGuiSelectableFlags_SpanAllColumns) && window->DC.ColumnsSet)
             PushColumnClipRect();
         return false;
@@ -5140,35 +5374,105 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
     bool pressed = ButtonBehavior(bb, id, &hovered, &held, button_flags);
     // Hovering selectable with mouse updates NavId accordingly so navigation can be resumed with gamepad/keyboard (this doesn't happen on most widgets)
     if (pressed || hovered)
-        if (!g.NavDisableMouseHover && g.NavWindow == window && g.NavLayer == window->DC.NavLayerCurrent)
-        {
+        if (!g.NavDisableMouseHover && g.NavWindow == window && g.NavLayer == window->DC.NavLayerCurrent) {
             g.NavDisableHighlight = true;
             SetNavID(id, window->DC.NavLayerCurrent);
         }
     if (pressed)
         MarkItemEdited(id);
 
-    // Render
-    if (hovered || selected)
-    {
-        const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_HeaderActive : hovered ? ImGuiCol_HeaderHovered : ImGuiCol_Header);
-        RenderFrame(bb.Min, bb.Max, col, false, 0.0f);
-        RenderNavHighlight(bb, id, ImGuiNavHighlightFlags_TypeThin | ImGuiNavHighlightFlags_NoRounding);
-    }
 
-    if ((flags & ImGuiSelectableFlags_SpanAllColumns) && window->DC.ColumnsSet)
-    {
+
+    if ((flags & ImGuiSelectableFlags_SpanAllColumns) && window->DC.ColumnsSet) {
         PushColumnClipRect();
         bb.Max.x -= (GetContentRegionMax().x - max_x);
     }
 
-    if (flags & ImGuiSelectableFlags_Disabled) PushStyleColor(ImGuiCol_Text, g.Style.Colors[ImGuiCol_TextDisabled]);
-    RenderTextClipped(bb_inner.Min, bb_inner.Max, label, NULL, &label_size, style.SelectableTextAlign, &bb);
-    if (flags & ImGuiSelectableFlags_Disabled) PopStyleColor();
+    // Render
+    const ImVec4 hover_act = ImVec4(255 / 255.f, 255 / 255.f, 255 / 255.f, 1.f);
+    const ImVec4 hover_dis = ImVec4(200 / 255.f, 200 / 255.f, 200 / 255.f, 0.5f);;
 
-    // Automatically close popups
+    float deltatime = 2.2f * ImGui::GetIO().DeltaTime;
+
+    static std::map<ImGuiID, ImVec4> hover_animation;
+    auto it_hover = hover_animation.find(id);
+    if (it_hover == hover_animation.end()) {
+        hover_animation.insert({ id, hover_dis });
+        it_hover = hover_animation.find(id);
+    }
+    if (selected || hovered || pressed) {
+        ImVec4 to = hover_act;
+        if (it_hover->second.x != to.x) {
+            if (it_hover->second.x < to.x)
+                it_hover->second.x = ImMin(it_hover->second.x + deltatime, to.x);
+            else if (it_hover->second.x > to.x)
+                it_hover->second.x = ImMax(to.x, it_hover->second.x - deltatime);
+        }
+
+        if (it_hover->second.y != to.y) {
+            if (it_hover->second.y < to.y)
+                it_hover->second.y = ImMin(it_hover->second.y + deltatime, to.y);
+            else if (it_hover->second.y > to.y)
+                it_hover->second.y = ImMax(to.y, it_hover->second.y - deltatime);
+        }
+
+        if (it_hover->second.z != to.z) {
+            if (it_hover->second.z < to.z)
+                it_hover->second.z = ImMin(it_hover->second.z + deltatime, to.z);
+            else if (it_hover->second.z > to.z)
+                it_hover->second.z = ImMax(to.z, it_hover->second.z - deltatime);
+        }
+
+        if (it_hover->second.w != to.w) {
+            if (it_hover->second.w < to.w)
+                it_hover->second.w = ImMin(it_hover->second.w + deltatime, to.w);
+            else if (it_hover->second.w > to.w)
+                it_hover->second.w = ImMax(to.w, it_hover->second.w - deltatime);
+        }
+    } else {
+        ImVec4 to = hover_dis;
+        if (it_hover->second.x != to.x) {
+            if (it_hover->second.x < to.x)
+                it_hover->second.x = ImMin(it_hover->second.x + deltatime, to.x);
+            else if (it_hover->second.x > to.x)
+                it_hover->second.x = ImMax(to.x, it_hover->second.x - deltatime);
+        }
+
+        if (it_hover->second.y != to.y) {
+            if (it_hover->second.y < to.y)
+                it_hover->second.y = ImMin(it_hover->second.y + deltatime, to.y);
+            else if (it_hover->second.y > to.y)
+                it_hover->second.y = ImMax(to.y, it_hover->second.y - deltatime);
+        }
+
+        if (it_hover->second.z != to.z) {
+            if (it_hover->second.z < to.z)
+                it_hover->second.z = ImMin(it_hover->second.z + deltatime, to.z);
+            else if (it_hover->second.z > to.z)
+                it_hover->second.z = ImMax(to.z, it_hover->second.z - deltatime);
+        }
+
+        if (it_hover->second.w != to.w) {
+            if (it_hover->second.w < to.w)
+                it_hover->second.w = ImMin(it_hover->second.w + deltatime, to.w);
+            else if (it_hover->second.w > to.w)
+                it_hover->second.w = ImMax(to.w, it_hover->second.w - deltatime);
+        }
+    }
+
+    // if (flags & ImGuiSelectableFlags_Disabled) PushStyleColor(ImGuiCol_Text, g.Style.Colors[ImGuiCol_TextDisabled]);
+    // if (combob)
+    ImGui::GetWindowDrawList()->AddText(bb_inner.Min + ImVec2(5, 0), GetColorU32(it_hover->second), label);
+    // else
+    //     wdl->AddText(bb_inner.Min + ImVec2(5, 0), GetColorU32(it_hover->second), label);
+
+
+     //if (flags & ImGuiSelectableFlags_Disabled) PopStyleColor();
+
+     // Automatically close popups
     if (pressed && (window->Flags & ImGuiWindowFlags_Popup) && !(flags & ImGuiSelectableFlags_DontClosePopups) && !(window->DC.ItemFlags & ImGuiItemFlags_SelectableDontClosePopup))
         CloseCurrentPopup();
+
     return pressed;
 }
 

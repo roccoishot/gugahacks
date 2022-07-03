@@ -16,20 +16,25 @@
 #include "features/kit_parser.h"
 #include "render.hpp"
 #include "./features/item_definitions.h"
-#include "features/skins.h"
+#include "Globals.h"
 #include "xor.h"
+#include "./features/skins.h"
+#include "sexynutssexyfuckdickshitnigga.h"
+#include "image.hpp"
+
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
 #define XorStr
 #endif
 #pragma intrinsic(_ReturnAddress)  
+
 using namespace std;
 
 void ReadDirectory(const std::string& name, std::vector<std::string>& v)
 {
 	auto pattern(name);
-	pattern.append("\\*.ini");
+	pattern.append("\\*.cfg");
 	WIN32_FIND_DATAA data;
 	HANDLE hFind;
 	if ((hFind = FindFirstFileA(pattern.c_str(), &data)) != INVALID_HANDLE_VALUE)
@@ -81,35 +86,70 @@ namespace ImGuiEx
 	}
 
 	inline bool ColorEdit3(const char* label, Color* v)
-    {
-        return ColorEdit4(label, v, false);
-    }
+	{
+		return ColorEdit4(label, v, false);
+	}
 }
 
+
+IDirect3DTexture9* rageiconD = nullptr;
+IDirect3DTexture9* legiticonD = nullptr;
+IDirect3DTexture9* visualsiconD = nullptr;
+IDirect3DTexture9* misciconD = nullptr;
+IDirect3DTexture9* skinsiconD = nullptr;
+IDirect3DTexture9* playericonD = nullptr;
+IDirect3DTexture9* cfgiconD = nullptr;
 void Menu::Initialize()
 {
 	CreateStyle();
 
-    _visible = true;
+	_visible = true;
+
+	//cry
+	if (guger == nullptr) {
+		D3DXCreateTextureFromFileInMemory(g_D3DDevice9, &text, sizeof(text), &guger);
+	}
+	if (bg == nullptr) {
+		D3DXCreateTextureFromFileInMemory(g_D3DDevice9, &background, sizeof(background), &bg);
+	}
+
+	if (rageiconD == nullptr) {
+		D3DXCreateTextureFromFileInMemoryEx(g_D3DDevice9, &rageicon, sizeof(rageicon), 42, 42, D3DX_DEFAULT, D3DUSAGE_DYNAMIC, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, &rageiconD);
+	}
+	if (legiticonD == nullptr) {
+		D3DXCreateTextureFromFileInMemoryEx(g_D3DDevice9, &legiticon, sizeof(legiticon), 42, 42, D3DX_DEFAULT, D3DUSAGE_DYNAMIC, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, &legiticonD);
+	}
+	if (visualsiconD == nullptr) {
+		D3DXCreateTextureFromFileInMemoryEx(g_D3DDevice9, &visualsicon, sizeof(visualsicon), 42, 42, D3DX_DEFAULT, D3DUSAGE_DYNAMIC, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, &visualsiconD);
+	}
+	if (misciconD == nullptr) {
+		D3DXCreateTextureFromFileInMemoryEx(g_D3DDevice9, &miscicon, sizeof(miscicon), 42, 42, D3DX_DEFAULT, D3DUSAGE_DYNAMIC, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, &misciconD);
+	}
+	if (skinsiconD == nullptr) {
+		D3DXCreateTextureFromFileInMemoryEx(g_D3DDevice9, &skinsicon, sizeof(skinsicon), 42, 42, D3DX_DEFAULT, D3DUSAGE_DYNAMIC, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, &skinsiconD);
+	}
+	if (cfgiconD == nullptr) {
+		D3DXCreateTextureFromFileInMemoryEx(g_D3DDevice9, &cfgicon, sizeof(cfgicon), 42, 42, D3DX_DEFAULT, D3DUSAGE_DYNAMIC, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, &cfgiconD);
+	}
 }
 
 void Menu::Shutdown()
 {
-    ImGui_ImplDX9_Shutdown();
+	ImGui_ImplDX9_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 }
 
 void Menu::OnDeviceLost()
 {
-    ImGui_ImplDX9_InvalidateDeviceObjects();
+	ImGui_ImplDX9_InvalidateDeviceObjects();
 }
 
 void Menu::OnDeviceReset()
 {
-    ImGui_ImplDX9_CreateDeviceObjects();
+	ImGui_ImplDX9_CreateDeviceObjects();
 }
-bool Tab(const char* label, const ImVec2& size_arg, bool state)
+bool Tab(const char* label, const ImVec2& size_arg, bool state, ImTextureID user_texture_id)
 {
 	ImGuiWindow* window = ImGui::GetCurrentWindow();
 	if (window->SkipItems)
@@ -132,67 +172,140 @@ bool Tab(const char* label, const ImVec2& size_arg, bool state)
 	if (pressed)
 		ImGui::MarkItemEdited(id);
 
-	ImGui::RenderFrame(bb.Min, bb.Max, state ? ImColor(15, 15, 15) : ImColor(11, 11, 11), true, style.FrameRounding);
-	window->DrawList->AddRect(bb.Min, bb.Max, ImColor(0, 0, 0));
-	ImGui::RenderTextClipped(bb.Min + style.FramePadding, bb.Max - style.FramePadding, label, NULL, &label_size, style.ButtonTextAlign, &bb);
+	//ImGui::RenderFrame(bb.Min, bb.Max, state ? ImColor(15, 15, 15) : ImColor(11, 11, 11), true, style.FrameRounding);
+	//window->DrawList->AddRect(bb.Min, bb.Max, ImColor(0, 0, 0));
+
+
+	const ImVec4 active_dis = ImVec4(255 / 255.f, 255 / 255.f, 255 / 255.f, 1.f);
+	const ImVec4 hover_dis = ImVec4(255 / 255.f, 255 / 255.f, 255 / 255.f, 0.7f);
+	const ImVec4 else_dis = ImVec4(255 / 255.f, 255 / 255.f, 255 / 255.f, 0.4f);
+
+	float deltatime = 2.5f * ImGui::GetIO().DeltaTime;
+
+	static std::map<ImGuiID, ImVec4> hover_animation;
+	auto it_hover = hover_animation.find(id);
+	if (it_hover == hover_animation.end()) {
+		hover_animation.insert({ id, hover_dis });
+		it_hover = hover_animation.find(id);
+	}
+	if (state) {
+		ImVec4 to = active_dis;
+		if (it_hover->second.x != to.x) {
+			if (it_hover->second.x < to.x)
+				it_hover->second.x = ImMin(it_hover->second.x + deltatime, to.x);
+			else if (it_hover->second.x > to.x)
+				it_hover->second.x = ImMax(to.x, it_hover->second.x - deltatime);
+		}
+
+		if (it_hover->second.y != to.y) {
+			if (it_hover->second.y < to.y)
+				it_hover->second.y = ImMin(it_hover->second.y + deltatime, to.y);
+			else if (it_hover->second.y > to.y)
+				it_hover->second.y = ImMax(to.y, it_hover->second.y - deltatime);
+		}
+
+		if (it_hover->second.z != to.z) {
+			if (it_hover->second.z < to.z)
+				it_hover->second.z = ImMin(it_hover->second.z + deltatime, to.z);
+			else if (it_hover->second.z > to.z)
+				it_hover->second.z = ImMax(to.z, it_hover->second.z - deltatime);
+		}
+
+		if (it_hover->second.w != to.w) {
+			if (it_hover->second.w < to.w)
+				it_hover->second.w = ImMin(it_hover->second.w + deltatime, to.w);
+			else if (it_hover->second.w > to.w)
+				it_hover->second.w = ImMax(to.w, it_hover->second.w - deltatime);
+		}
+	}
+	else if (hovered || pressed) {
+		ImVec4 to = hover_dis;
+		if (it_hover->second.x != to.x) {
+			if (it_hover->second.x < to.x)
+				it_hover->second.x = ImMin(it_hover->second.x + deltatime, to.x);
+			else if (it_hover->second.x > to.x)
+				it_hover->second.x = ImMax(to.x, it_hover->second.x - deltatime);
+		}
+
+		if (it_hover->second.y != to.y) {
+			if (it_hover->second.y < to.y)
+				it_hover->second.y = ImMin(it_hover->second.y + deltatime, to.y);
+			else if (it_hover->second.y > to.y)
+				it_hover->second.y = ImMax(to.y, it_hover->second.y - deltatime);
+		}
+
+		if (it_hover->second.z != to.z) {
+			if (it_hover->second.z < to.z)
+				it_hover->second.z = ImMin(it_hover->second.z + deltatime, to.z);
+			else if (it_hover->second.z > to.z)
+				it_hover->second.z = ImMax(to.z, it_hover->second.z - deltatime);
+		}
+
+		if (it_hover->second.w != to.w) {
+			if (it_hover->second.w < to.w)
+				it_hover->second.w = ImMin(it_hover->second.w + deltatime, to.w);
+			else if (it_hover->second.w > to.w)
+				it_hover->second.w = ImMax(to.w, it_hover->second.w - deltatime);
+		}
+	}
+	else {
+		ImVec4 to = else_dis;
+		if (it_hover->second.x != to.x) {
+			if (it_hover->second.x < to.x)
+				it_hover->second.x = ImMin(it_hover->second.x + deltatime, to.x);
+			else if (it_hover->second.x > to.x)
+				it_hover->second.x = ImMax(to.x, it_hover->second.x - deltatime);
+		}
+
+		if (it_hover->second.y != to.y) {
+			if (it_hover->second.y < to.y)
+				it_hover->second.y = ImMin(it_hover->second.y + deltatime, to.y);
+			else if (it_hover->second.y > to.y)
+				it_hover->second.y = ImMax(to.y, it_hover->second.y - deltatime);
+		}
+
+		if (it_hover->second.z != to.z) {
+			if (it_hover->second.z < to.z)
+				it_hover->second.z = ImMin(it_hover->second.z + deltatime, to.z);
+			else if (it_hover->second.z > to.z)
+				it_hover->second.z = ImMax(to.z, it_hover->second.z - deltatime);
+		}
+
+		if (it_hover->second.w != to.w) {
+			if (it_hover->second.w < to.w)
+				it_hover->second.w = ImMin(it_hover->second.w + deltatime, to.w);
+			else if (it_hover->second.w > to.w)
+				it_hover->second.w = ImMax(to.w, it_hover->second.w - deltatime);
+		}
+	}
+	static std::map<ImGuiID, float> filled_animation;
+	auto it_filled = filled_animation.find(id);
+	if (it_filled == filled_animation.end()) {
+		filled_animation.insert({ id, 0.f });
+		it_filled = filled_animation.find(id);
+	}
+
+
+	ImColor white(255.f, 255.f, 255.f, Menu::Get().alpha);
+	ImColor grey(122.f / 255.f, 122.f / 255.f, 122.f / 255.f, Menu::Get().alpha);
+
+	ImGui::GetWindowDrawList()->AddImage(user_texture_id, bb.Min + ImVec2(5 + 8, 0 - 3), bb.Min + ImVec2(30 + 8 + 5 + 8, 30 + 8 - 3), ImVec2(0, 0), ImVec2(1, 1), ImGui::GetColorU32(it_hover->second));
+
+
+	window->DrawList->AddText(uhFont, 18.f, bb.Min + ImVec2(58 - 3 + 8, 8), ImGui::GetColorU32(it_hover->second), label);
 
 	if (state)
 	{
+		/*
 		window->DrawList->AddLine(bb.Min, bb.Min + ImVec2(9, 0), ImColor(255, 255, 255), 1);
 		window->DrawList->AddLine(bb.Min, bb.Min + ImVec2(0, 9), ImColor(255, 255, 255), 1);
 
 		window->DrawList->AddLine(bb.Max - ImVec2(0, 1), bb.Max - ImVec2(10, 1), ImColor(255, 255, 255), 1);
 		window->DrawList->AddLine(bb.Max - ImVec2(1, 1), bb.Max - ImVec2(1, 10), ImColor(255, 255, 255), 1);
+	*/
 	}
 
 	return pressed;
-}
-
-void Menu::SEXDICK() {
-	if (!g_Options.sexdick1)
-		return;
-
-	ImGuiStyle* Style = &ImGui::GetStyle();
-	Style->WindowBorderSize = 0.5;
-	Style->FrameBorderSize = 0.5;
-	Style->ChildBorderSize = 0.5;
-	Style->WindowRounding = 0;
-	Style->ChildRounding = 0;
-	Style->FrameRounding = 0;
-	Style->ScrollbarSize = 6;
-	Style->ScrollbarRounding = 0;
-	Style->PopupRounding = 0;
-	Style->GrabRounding = 0;
-	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
-	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22);
-	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
-	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
-	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
-	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	ImGui::PushFont(g_SpectatorListFont);
-	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | NULL | ImGuiWindowFlags_NoCollapse | NULL | NULL | NULL;
-
-	ImGui::SetNextWindowSize({ 325.f,400.f });
-
-	ImGui::Begin("Sexdick | GUGAHACKS.SU", nullptr, flags);
-	ImGui::Separator("SEXDICK | GUGAHACKS.SU");
-	ImGui::Checkbox("Enable Sexdick", &g_Options.sexdick.enabled);
-	if (g_Options.sexdick.enabled) {
-		ImGui::Checkbox("Randomize Fake", &g_Options.sexdick.randomizefake);
-		ImGui::Checkbox("No Packets on Shot", &g_Options.sexdick.nopacketonshot);
-		//ImGui::Checkbox("No pitch on Land", &g_Options.sexdick.fuckthepitch);
-		ImGui::Checkbox("Air Stuck", &g_Options.sexdick.urrstuck); ImGui::SameLine(); ImGui::Hotkey(" ", &g_Options.sexdick.urrstuckkey);
-	}
-	ImGui::PopFont();
-	ImGui::End();
 }
 
 void Menu::SpecList()
@@ -212,27 +325,27 @@ void Menu::SpecList()
 	Style->PopupRounding = 0;
 	Style->GrabRounding = 0;
 	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
-	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_TitleBg] = ImColor(9, 9, 9);
 	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
 	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22);
-	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_WindowBg] = ImColor(9, 9, 9);
+	Style->Colors[ImGuiCol_ChildBg] = ImColor(9, 9, 9);
+	Style->Colors[ImGuiCol_FrameBg] = ImColor(18, 18, 18);
+	Style->Colors[ImGuiCol_Button] = ImColor(18, 18, 18);
 	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
+	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(19, 19, 19);
 	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	ImGui::PushFont(g_SpectatorListFont);
+	ImGui::PushFont(g_MenuFont);
 
-	int specs = 0;
 	int modes = 0;
 	std::string spect = u8"";
 	std::string mode = u8"";
 	int DrawIndex = 1;
 
+	int specs = 0;
 	for (int playerId : Utils::GetObservervators(g_EngineClient->GetLocalPlayer()))
 	{
 		C_BasePlayer* pPlayer = (C_BasePlayer*)g_EntityList->GetClientEntity(playerId);
@@ -255,11 +368,14 @@ void Menu::SpecList()
 		specs++;
 
 	}
+
+	g_Options.spectators = specs;
+
 	bool misc_Spectators = true;
 
 	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 1.f, 1.f, 1.f));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
-	if (ImGui::Begin("Spectator List", &g_Options.speclist, ImVec2(), 1.f, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
+	if (ImGui::Begin(XorStr("Spectator List"), &g_Options.speclist, ImVec2(), 1.f, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
 	{
 		ImGui::PopStyleVar();
 		ImGui::PopStyleColor();
@@ -268,7 +384,8 @@ void Menu::SpecList()
 		ImVec2 size = ImGui::CalcTextSize(spect.c_str());
 
 		ImGui::SetWindowSize(ImVec2(200, 25 + size.y));
-		ImGui::Separator("Spectator List");
+		ImGui::SetWindowPos(ImVec2(g_Options.specx, g_Options.specy));
+		ImGui::Separator(XorStr("Spectator List"));
 		ImGui::Text(spect.c_str());
 		DrawIndex++;
 		ImGui::PopFont();
@@ -276,11 +393,8 @@ void Menu::SpecList()
 	ImGui::End();
 }
 
-void Menu::Render()
+/*void Menu::Render()
 {
-
-
-
 	//RenderRadio();
 
 	if (!_visible)
@@ -305,1147 +419,1939 @@ void Menu::Render()
 	Style->PopupRounding = 0;
 	Style->GrabRounding = 0;
 	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
-	Style->Colors[ImGuiCol_TitleBg] = ImColor(11, 11, 11);
+	Style->Colors[ImGuiCol_TitleBg] = ImColor(9, 9, 9);
 	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
 	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_WindowBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_ChildBg] = ImColor(11, 11, 11);
-	Style->Colors[ImGuiCol_FrameBg] = ImColor(22, 22, 22);
-	Style->Colors[ImGuiCol_Button] = ImColor(22, 22, 22);
+	Style->Colors[ImGuiCol_WindowBg] = ImColor(9, 9, 9);
+	Style->Colors[ImGuiCol_ChildBg] = ImColor(9, 9, 9);
+	Style->Colors[ImGuiCol_FrameBg] = ImColor(18, 18, 18);
+	Style->Colors[ImGuiCol_Button] = ImColor(18, 18, 18);
 	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(23, 23, 23);
+	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(19, 19, 19);
 	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	ImGui::PushFont(g_SpectatorListFont);
+	ImGui::PushFont(g_MenuFont);
 
 	ImGui::SetNextWindowPos(ImVec2{ 0, 0 }, ImGuiSetCond_Once);
-	ImGui::SetNextWindowSize(ImVec2{ 795, 695 }, ImGuiSetCond_Once);
+	ImGui::SetNextWindowSize(ImVec2{ 665, 635 }, ImGuiSetCond_Once);
 	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | NULL | ImGuiWindowFlags_NoCollapse | NULL | NULL | NULL;
 
-	Menu::SEXDICK();
-
 	//Tabs
-	ImGui::Begin("Edited", nullptr, flags);
+	ImGui::Begin(XorStr("Edited"), nullptr, flags);
 	{
 		ImVec2 p = ImGui::GetWindowPos();
 
 		ImGui::SetCursorPos({ 5 + 5 + 0,17 });
-		if (Tab("ANTIAIM", { 125,35 }, tab == 5))
+		if (Tab(XorStr("ANTIAIM"), { 125,35 }, tab == 5))
 			tab = 5;
 
 		ImGui::SetCursorPos({ 15 + 115 + 10,17 });
-		if (Tab("AIMBOT", { 125,35 }, tab == 0))
+		if (Tab(XorStr("AIMBOT"), { 125,35 }, tab == 0))
 			tab = 0;
 
 		ImGui::SetCursorPos({ 15 + 235 + 20,17 });
-		if (Tab("VISUALS", { 125,35 }, tab == 1))
+		if (Tab(XorStr("VISUALS"), { 125,35 }, tab == 1))
 			tab = 1;
 
 		ImGui::SetCursorPos({ 15 + 355 + 30,17 });
-		if (Tab("WORLD", { 125,35 }, tab == 2))
+		if (Tab(XorStr("WORLD"), { 125,35 }, tab == 2))
 			tab = 2;
 
 		ImGui::SetCursorPos({ 15 + 475 + 40,17 });
-		if (Tab("MISC", { 125,35 }, tab == 3))
+		if (Tab(XorStr("MISC"), { 125,35 }, tab == 3))
 			tab = 3;
 
-		ImGui::SetCursorPos({ 15 + 595 + 50,17 });
-		if (Tab("SKINS", { 125,35 }, tab == 4))
-			tab = 4;
-
-		const char* selectiontypes[] = {
-	"Closest to crosshair",
-	"Health"
-		};
-		const char* items[] = {
-	"Legit",
-	"Rage",
-	"Other"
-		};
-
-		const char* aa_pitch_list[] = {
-			"None",
-			"Emotion",
-			"Down",
-			"Up",
-			"Zero"
-		};
-
-		const char* aa_yaw_list[] = {
-			"None",
-			"Backwards",
-			"Spinbot",
-			"Lowerbody",
-			"Freestanding"
-		};
-
-		const char* hitboxes[] = {
-			"Head",
-			"Neck",
-			"Chest",
-			"Pelvis",
-			"Stomach",
-			"Arms",
-			"Legs",
-			"Foot",
-		};
-
-		enum WEAPON_GROUPS {
-			PISTOLS,
-			RIFLES,
-			SHOTGUNS,
-			SCOUT,
-			AUTO,
-			AWP,
-			SMG,
-			UNKNOWN
-		};
+		//ImGui::SetCursorPos({ 15 + 595 + 50,17 });
+		//if (Tab(XorStr("SKINS"), { 125,35 }, tab == 4))
+			//tab = 4;
 
 		if (tab == 5) {
-
-				/*static int selected = 0;
-
-				if (ImGui::ButtonSelectable(XorStr("Globals"), ImVec2(220, 40), selected == 0, g_SpectatorListFont, g_SpectatorListFont))
-					selected = 0;
-				ImGui::SameLine();
-				if (ImGui::ButtonSelectable(XorStr("Weapon"), ImVec2(220, 40), selected == 1, g_SpectatorListFont, g_SpectatorListFont))
-					selected = 1;
-
-				if (selected == 0)
-				{
-					ImGui::BeginGroup();
-					{
-						ImGui::PushItemWidth(152);
-						ImGui::Checkbox(XorStr("Enable Ragebot"), &g_Options.ragebot_enabled);
-						ImGui::Checkbox(XorStr("Auto zeus"), &g_Options.ragebot_autozeus);
-						ImGui::Text(XorStr("FOV"));
-						ImGui::SliderInt(XorStr("##FOV"), &g_Options.ragebot_fov, 0, 180);
-						ImGui::PopItemWidth();
-					}
-					ImGui::EndGroup();
-				}
-				else if (selected == 1) {
-					static int curGroup = 0;
-					if (ImGui::ButtonSelectable("Pistols", ImVec2(55, 25), curGroup == WEAPON_GROUPS::PISTOLS)) curGroup = WEAPON_GROUPS::PISTOLS;
-					ImGui::SameLine();
-					if (ImGui::ButtonSelectable("Rifles", ImVec2(55, 25), curGroup == WEAPON_GROUPS::RIFLES)) curGroup = WEAPON_GROUPS::RIFLES;
-					ImGui::SameLine();
-					if (ImGui::ButtonSelectable("SMG", ImVec2(55, 25), curGroup == WEAPON_GROUPS::SMG)) curGroup = WEAPON_GROUPS::SMG;
-					ImGui::SameLine();
-					if (ImGui::ButtonSelectable("Shotguns", ImVec2(55, 25), curGroup == WEAPON_GROUPS::SHOTGUNS)) curGroup = WEAPON_GROUPS::SHOTGUNS;
-					ImGui::SameLine();
-					if (ImGui::ButtonSelectable("Scout", ImVec2(55, 25), curGroup == WEAPON_GROUPS::SCOUT)) curGroup = WEAPON_GROUPS::SCOUT;
-					ImGui::SameLine();
-					if (ImGui::ButtonSelectable("Auto", ImVec2(55, 25), curGroup == WEAPON_GROUPS::AUTO)) curGroup = WEAPON_GROUPS::AUTO;
-					ImGui::SameLine();
-					if (ImGui::ButtonSelectable("AWP", ImVec2(55, 25), curGroup == WEAPON_GROUPS::AWP)) curGroup = WEAPON_GROUPS::AWP;
-					ImGui::BeginGroup();
-					{
-						ImGui::PushItemWidth(142);
-
-						ImGui::Checkbox(XorStr("Auto Scope"), &g_Options.ragebot_autoscope[curGroup]);
-						ImGui::Checkbox(XorStr("Auto Stop"), &g_Options.ragebot_autostop[curGroup]);
-						ImGui::Checkbox(XorStr("Auto Crouch"), &g_Options.ragebot_autocrouch[curGroup]);
-
-						ImGui::SliderFloat(XorStr("Hitchance"), &g_Options.ragebot_hitchance[curGroup], 0.f, 100.f);
-						ImGui::SliderFloat(XorStr("Min Damage"), &g_Options.ragebot_mindamage[curGroup], 0.f, 100.f);
-						ImGui::SliderInt(XorStr("Baim after x shots"), &g_Options.ragebot_baim_after_shots[curGroup], 0, 10);
-
-						ImGui::Combo("Target Selection", &g_Options.ragebot_selection[curGroup], selectiontypes, IM_ARRAYSIZE(selectiontypes));
-
-						static std::string prevValue = "Select";
-						if (ImGui::BeginCombo("Hitscan", "Select", 0))
-						{
-							//prevValue = "Hitscan";
-							std::vector<std::string> vec;
-							for (size_t i = 0; i < IM_ARRAYSIZE(hitboxes); i++)
-							{
-								ImGui::Selectable(hitboxes[i], &g_Options.ragebot_hitbox[i][curGroup], ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups);
-								if (g_Options.ragebot_hitbox[i][curGroup])
-									vec.push_back(hitboxes[i]);
-							}
-
-							for (size_t i = 0; i < vec.size(); i++)
-							{
-								if (vec.size() == 1)
-									prevValue += vec.at(i);
-								else if (i != vec.size())
-									prevValue += vec.at(i) + ", ";
-								else
-									prevValue += vec.at(i);
-							}
-							ImGui::EndCombo();
-						}
-						ImGui::PopItemWidth();
-					}
-					ImGui::EndGroup();
-
-					ImGui::SameLine();
-
-					ImGui::BeginGroup();
-					{
-						ImGui::PushItemWidth(142);
-						ImGui::Text("Multipoint Scale");
-						for (int i = 0; i < 8; i++) {
-							if (g_Options.ragebot_hitbox[i])
-								ImGui::SliderFloat(hitboxes[i], &g_Options.ragebot_hitbox_multipoint_scale[i][curGroup], 0.f, 1.f);
-						}
-						ImGui::PopItemWidth();
-					}
-					ImGui::EndGroup();*/
 			ImGui::SetCursorPos({ 21,65 });
-			ImGui::BeginChild("##1", { 255,520 });
+			ImGui::BeginChild(XorStr("##1"), { 315,530 });
 			{
 
 				const char* aa_pitch_list[] = {
-"None",
-"Offset",
-"Down",
-"Up",
-"Zero"
+XorStr("None"),
+XorStr("Offset"),
+XorStr("Down"),
+XorStr("Up"),
+XorStr("Zero"),
+XorStr("Fake Up"),
+XorStr("Fake Down"),
+XorStr("Fake Zero")
+
 
 				};
 
 				const char* aa_yaw_list[] = {
-					"None",
-					"Backwards",
-					"Spin",
-					"LBY",
-					"Freestand"
+XorStr("None"),
+XorStr("Backwards"),
+XorStr("Spin"),
+XorStr("LBY"),
+XorStr("Freestand"),
+XorStr("Custom"),
+XorStr("Jitter"),
 				};
 
-				ImGui::Separator("Antiaim");
-				ImGui::Combo("Pitch", &g_Options.ragebot_antiaim_pitch, aa_pitch_list, IM_ARRAYSIZE(aa_pitch_list));
-				ImGui::Combo("Yaw", &g_Options.ragebot_antiaim_yaw, aa_yaw_list, IM_ARRAYSIZE(aa_yaw_list));
-				ImGui::Checkbox("Desync", &g_Options.ragebot_antiaim_desync);
-				ImGui::Checkbox("LBY Flick", &g_Options.breaklby);
-				if (g_Options.ragebot_antiaim_yaw == 2) {
-					ImGui::SliderInt("Spin Speed", &g_Options.spinspeed, 1.f, 10.f, "%.f");
-				}
-				ImGui::Text("Invert AA Key"); ImGui::SameLine(); ImGui::Hotkey("                                                                                                                                                                                 ", &g_Options.invertaa);
-				ImGui::Separator("Others");
-				ImGui::Text("Slowwalk Key"); ImGui::SameLine(); ImGui::Hotkey("                                                            ", &g_Options.ragebot_slowwalk_key);
-				ImGui::Spacing();
-				ImGui::SliderInt("Slowwalk Speed", &g_Options.ragebot_slowwalk_amt, 0, 100);
-				ImGui::Spacing();
-				ImGui::Checkbox("Fakeping", &g_Options.fakeping);
-				if (g_Options.fakeping) {
-					ImGui::SliderInt("Ping", &g_Options.fakepingzzz, 1.f, 1000.f, "%.f");
-					ImGui::Text("On Key"); ImGui::SameLine(); ImGui::Hotkey("                                                                                             ", &g_Options.fakepingkey);
-				}
-				//ImGui::Checkbox("Resolver", &g_Options.rageresolver);
+				const char* desyncpresets[] = {
+XorStr("None"),
+XorStr("Low Delta"),
+XorStr("Normal"),
+XorStr("Custom"),
+XorStr("Spin")
+				};
 
-			} 			
+				const char* indcpos[] = {
+XorStr("None"),
+XorStr("Origin"),
+XorStr("Right Arm"),
+XorStr("Left Arm"),
+XorStr("Head")
+				};
+
+				const char* breakertype[] = {
+XorStr("LBY"),
+XorStr("LBY Reverse"),
+XorStr("Balance")
+				};
+
+				float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
+
+				ImGui::Separator(XorStr("Antiaim"));
+				ImGui::Combo(XorStr("Pitch"), &g_Options.ragebot_antiaim_pitch, aa_pitch_list, IM_ARRAYSIZE(aa_pitch_list));
+				ImGui::Combo(XorStr("Yaw"), &g_Options.ragebot_antiaim_yaw, aa_yaw_list, IM_ARRAYSIZE(aa_yaw_list));
+				ImGui::Checkbox(XorStr("Desync"), &g_Options.ragebot_antiaim_desync);
+				ImGui::Checkbox(XorStr("Body Breaker"), &g_Options.breaklby);
+				if (g_Options.breaklby)
+					ImGui::Combo(XorStr("Breaker Type"), &g_Options.breakertp, breakertype, IM_ARRAYSIZE(breakertype));
+
+				if (g_Options.ragebot_antiaim_yaw == 2)
+					ImGui::SliderInt(XorStr("Spin Speed"), &g_Options.spinspeed, 1.f, 10.f, XorStr("%.f"));
+
+				if (g_Options.ragebot_antiaim_yaw == 5)
+				{
+					ImGui::SliderInt(XorStr("Real Degree"), &g_Options.customreal, -180.f, 180.f, XorStr("%.f"));
+					ImGui::Spacing();
+				}
+				if (g_Options.ragebot_antiaim_yaw == 6)
+				{
+					ImGui::SliderInt(XorStr("Jitter Degree"), &g_Options.jitterdegree, 0, 180.f, XorStr("%.f"));
+					ImGui::Spacing();
+				}
+
+				if (g_Options.spinroll == false)
+					ImGui::SliderFloat(XorStr("Real Roll"), &g_Options.realroll, -60.f, 60.f, XorStr("%.f"));
+				else
+					ImGui::SliderInt(XorStr("Roll Spin Speed"), &g_Options.spinrollspeed, 1.f, 10.f, XorStr("%.f"));
+
+				ImGui::Checkbox(XorStr("Spin Roll"), &g_Options.spinroll);
+				ImGui::Spacing();
+
+				if (g_Options.ragebot_antiaim_desync)
+				{
+					if (g_Options.spinroll2 == false)
+						ImGui::SliderFloat(XorStr("Fake Roll"), &g_Options.roll, -60.f, 60.f, XorStr("%.f"));
+					else
+						ImGui::SliderInt(XorStr("Fake Roll Spin Speed"), &g_Options.spinroll2speed, 1.f, 10.f, XorStr("%.f"));
+					ImGui::Checkbox(XorStr("Spin Fake Roll"), &g_Options.spinroll2);
+					ImGui::Combo(XorStr("Fake Preset"), &g_Options.fakepreset, desyncpresets, IM_ARRAYSIZE(desyncpresets));
+					if (g_Options.fakepreset == 3)
+						ImGui::SliderInt(XorStr("Fake Degree"), &g_Options.fakedegree, -180.f, 180.f, XorStr("%.f"));
+					if (g_Options.fakepreset == 4)
+						ImGui::SliderInt(XorStr("Fake Spin Speed"), &g_Options.fakespinsp, 1.f, 10.f, XorStr("%.f"));
+					ImGui::Combo(XorStr("Indicator Pos"), &g_Options.indicatorhb, indcpos, IM_ARRAYSIZE(indcpos));
+				}
+				ImGui::Text(XorStr("Invert AA Key")); ImGui::SameLine(group_w - 50); ImGui::Hotkey(XorStr("##invertkey"), &g_Options.invertaa);
+				ImGui::Separator(XorStr("Others"));
+
+				if (g_Options.ragebot_antiaim_desync)
+				{
+					ImGui::Checkbox(XorStr("Show Fake"), &g_Options.showfake);
+				}
+				ImGui::Checkbox(XorStr("Randomize Fake"), &g_Options.randomizefake);
+				ImGui::Checkbox(XorStr("No Packets on Shot"), &g_Options.nopacketonshot);
+				ImGui::Checkbox(XorStr("Air Stuck"), &g_Options.urrstuck); ImGui::SameLine(group_w - 50); ImGui::Hotkey(XorStr("##airstuckkey"), &g_Options.urrstuckkey);
+				ImGui::Checkbox(XorStr("Fakeping"), &g_Options.fakeping);
+				if (g_Options.fakeping) {
+					ImGui::SliderInt(XorStr("Ping"), &g_Options.fakepingzzz, 1.f, 1000.f, XorStr("%.f"));
+					ImGui::Text(XorStr("On Key")); ImGui::SameLine(group_w - 50); ImGui::Hotkey(XorStr("##fakepingkey"), &g_Options.fakepingkey);
+				}
+				ImGui::Checkbox(XorStr("Fakelag"), &g_Options.fakelag);
+
+				if (g_Options.fakelag)
+					ImGui::SliderInt(XorStr("Ticks"), &g_Options.faketicks, 1, 16, XorStr("%.f"));
+				ImGui::Checkbox(XorStr("Slowwalk"), &g_Options.slowwalk); ImGui::SameLine(group_w - 50); ImGui::Hotkey(XorStr("##slowwalkkey"), &g_Options.ragebot_slowwalk_key);
+				if (g_Options.slowwalk) {
+					ImGui::Spacing();
+					ImGui::SliderInt(XorStr("Speed"), &g_Options.ragebot_slowwalk_amt, 0, 100);
+					ImGui::Spacing();
+				}
+				ImGui::Checkbox(XorStr("Fakeduck"), &g_Options.fakeduck); ImGui::SameLine(group_w - 50); ImGui::Hotkey(XorStr("                                                                                                            "), &g_Options.fdkey);
+				ImGui::Checkbox(XorStr("Slidewalk"), &g_Options.slidebruh);
+			}
 			ImGui::EndChild();
 		}
 
 		if (tab == 0)
 		{
-			static int definition_index = WEAPON_INVALID;
-
-			auto localPlayer = C_BasePlayer::GetPlayerByIndex(g_EngineClient->GetLocalPlayer());
-			if (g_EngineClient->IsInGame() && localPlayer && localPlayer->IsAlive() && localPlayer->m_hActiveWeapon() && localPlayer->m_hActiveWeapon()->IsGun())
-				definition_index = localPlayer->m_hActiveWeapon()->m_Item().m_iItemDefinitionIndex();
-			else
-				definition_index = WEAPON_INVALID;
-			if (definition_index == WEAPON_INVALID)definition_index = WEAPON_DEAGLE;
+			float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
 			ImGui::SetCursorPos({ 21,65 });
-			ImGui::BeginChild("##1", { 166,520 });
+			ImGui::BeginChild(XorStr("##1"), { 176 ,520 });
 			{
-				float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
-				ImGui::Separator("Aimbot");
-				ImGui::Checkbox("Enabled", &g_Options.aimbot.enabled);
-				ImGui::Text("Fov");
+
+				ImGui::Separator(XorStr("Aimbot"));
+				ImGui::Checkbox(XorStr("Enabled"), &g_Options.aimbot.enabled); ImGui::SameLine(); ImGui::Hotkey(XorStr("##aimkey"), &g_Options.aimbot.aimkey);
+				ImGui::Text(XorStr("Fov"));
 				ImGui::Spacing();
-				ImGui::SliderFloat("##Fov", &g_Options.aimbot.fov, 0.f, 20.f, "%.f");
+				ImGui::SliderFloat(XorStr("##Fov"), &g_Options.aimbot.fov, 0.f, 20.f, XorStr("%.f"));
 				ImGui::Spacing();
-				ImGui::Text("Smooth");
+				if (!g_Options.aimbot.humanized)
+					ImGui::Text(XorStr("Smooth"));
+				if (g_Options.aimbot.humanized)
+					ImGui::Text(XorStr("Max Smooth"));
+				ImGui::SameLine(); ImGui::Checkbox(XorStr("Humanized"), &g_Options.aimbot.humanized);
 				ImGui::Spacing();
-				ImGui::SliderFloat("##Smooth", &g_Options.aimbot.smoof, 1.f, 20.f, "%.f");
+				ImGui::SliderFloat(XorStr("##Smooth"), &g_Options.aimbot.smoof, 1.f, 20.f, XorStr("%.f"));
 				ImGui::Spacing();
-				if (ImGui::BeginCombo("##hitbox_filter", "Hitboxes"))
+				if (ImGui::BeginCombo(XorStr("##hitbox_filter"), XorStr("Hitboxes")))
 				{
-					ImGui::Selectable("Head", &g_Options.aimbot.head, ImGuiSelectableFlags_DontClosePopups);
-					ImGui::Selectable("Chest", &g_Options.aimbot.chest, ImGuiSelectableFlags_DontClosePopups);
-					ImGui::Selectable("Pelvis", &g_Options.aimbot.pelvis, ImGuiSelectableFlags_DontClosePopups);
-					ImGui::Selectable("Arms", &g_Options.aimbot.arms, ImGuiSelectableFlags_DontClosePopups);
-					ImGui::Selectable("Hands", &g_Options.aimbot.hands, ImGuiSelectableFlags_DontClosePopups);
-					ImGui::Selectable("Legs", &g_Options.aimbot.legs, ImGuiSelectableFlags_DontClosePopups);
-					ImGui::Selectable("Feet", &g_Options.aimbot.feet, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Head"), &g_Options.aimbot.head, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Neck"), &g_Options.aimbot.neck, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Chest"), &g_Options.aimbot.chest, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Stomach"), &g_Options.aimbot.stomach, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Pelvis"), &g_Options.aimbot.pelvis, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Arms"), &g_Options.aimbot.arms, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Hands"), &g_Options.aimbot.hands, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Legs"), &g_Options.aimbot.legs, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Feet"), &g_Options.aimbot.feet, ImGuiSelectableFlags_DontClosePopups);
 
 					ImGui::EndCombo();
 				}
 
-				ImGui::Separator("Others");
-				ImGui::Checkbox("Hitchance", &g_Options.aimbot.hc);
-				if (g_Options.aimbot.hc)
-					ImGui::SliderInt("Hitchance %", &g_Options.aimbot.hitchance, 1, 100, "%.f");
-				ImGui::Checkbox("Backtrack", &g_Options.misc_backtrack);
-				if (g_Options.misc_backtrack) {
-					ImGui::SliderInt("Ticks", &g_Options.backtix, 0.f, 62.f, "%.f");
+				ImGui::Checkbox(XorStr("No Aimbot If Spec"), &g_Options.aimbot.noaonspec);
+				ImGui::Checkbox(XorStr("Backtrack"), &g_Options.aimbot.backtrack);
+				if (g_Options.aimbot.backtrack) {
+					ImGui::SliderInt(XorStr("Ticks"), &g_Options.aimbot.backtix, 0.f, 12.f, XorStr("%.f"));
 				}
-				ImGui::Checkbox("Silent", &g_Options.aimbot.silent);
+				ImGui::Checkbox(XorStr("Silent"), &g_Options.aimbot.silent);
 				if (g_Options.aimbot.silent) {
-					ImGui::Text("  Silent fov");
+					ImGui::Text(XorStr("  Silent fov"));
 					ImGui::Spacing();
-					ImGui::SliderFloat("##Silentfov", &g_Options.aimbot.silentfov, 0.f, 360.f, "%.f");
+					ImGui::SliderFloat(XorStr("##Silentfov"), &g_Options.aimbot.silentfov, 0.f, 180.f, XorStr("%.f"));
 					ImGui::Spacing();
 				}
-				ImGui::Checkbox("Safe Head", &g_Options.aimbot.safehead);
-				ImGui::Checkbox("Fast Aimbot", &g_Options.aimbot.fastaimbot);
-				ImGui::Checkbox("Autofire##autofire", &g_Options.aimbot.autofire);
-				ImGui::Checkbox("Autorevolver", &g_Options.aimbot.autorevolver1);
-				ImGui::Checkbox("Autowall##autowall", &g_Options.aimbot.autowall);
+				ImGui::Checkbox(XorStr("Autofire##autofire"), &g_Options.aimbot.autofire); ImGui::SameLine(); ImGui::Hotkey(XorStr("##afkey"), &g_Options.aimbot.afkey);
+				if (g_Options.aimbot.enabled)
+				{
+					ImGui::Text(XorStr("Min Dmg"));
+					ImGui::Spacing();
+					ImGui::SliderInt(XorStr("##nmindamage"), &g_Options.aimbot.mindmg, 1, 100, XorStr("%i"));
+				}
+				ImGui::Checkbox(XorStr("Autowall##autowall"), &g_Options.aimbot.autowall);
 				if (g_Options.aimbot.autowall) {
 					ImGui::Spacing();
 					ImGui::SameLine();
-					ImGui::Text("Min Damage");
+					ImGui::Text(XorStr("AWall Min Dmg"));
 					ImGui::Spacing();
-					ImGui::SliderInt("##minDamage", &g_Options.aimbot.autowallmin, 1, 100, "%i");
+					ImGui::SliderInt(XorStr("##minDamage"), &g_Options.aimbot.autowallmin, 1, 100, XorStr("%i"));
 				}
-					ImGui::Checkbox("RCS##rcs", &g_Options.aimbot.rcs);
-
-					const char* rcs_types[] = {
-						"Type: Legit",
-						"Type: HvH"
-					};
-
-					if (ImGui::BeginCombo("##type", rcs_types[g_Options.aimbot.rcstype], ImGuiComboFlags_NoArrowButton))
-					{
-						for (int i = 0; i < IM_ARRAYSIZE(rcs_types); i++)
-						{
-							if (ImGui::Selectable(rcs_types[i], i == g_Options.aimbot.rcstype))
-								g_Options.aimbot.rcstype = i;
-						}
-
-						ImGui::EndCombo();
-					}
-					ImGui::SliderInt("  X", &g_Options.aimbot.x, 0, 100, "%i");
-					ImGui::Spacing();		ImGui::Spacing();		ImGui::Spacing();
-					ImGui::SliderInt("  Y", &g_Options.aimbot.y, 0, 100, "%i");
+				if (g_Options.aimbot.enabled || g_Options.aimbot.autowall)
+				{
+					ImGui::Text(XorStr("Dmg Override")); ImGui::SameLine(); ImGui::Hotkey(XorStr("                                                                                                                                                "), &g_Options.aimbot.dmgovrdk);
+					ImGui::Spacing();
+					ImGui::SliderInt(XorStr("##mindmgovrr"), &g_Options.aimbot.dmgovrd, 1, 100, XorStr("%i"));
 				}
-				ImGui::EndChild();
+
+				ImGui::Checkbox(XorStr("Multipoint"), &g_Options.aimbot.multipoint);
+				if (g_Options.aimbot.multipoint)
+					ImGui::SliderFloat(XorStr("Scale"), &g_Options.aimbot.mpscale, 0, 1);
+
+				ImGui::Checkbox(XorStr("RCS##rcs"), &g_Options.aimbot.rcs);
+
+				ImGui::SliderInt(XorStr("  X"), &g_Options.aimbot.x, 0, 100, XorStr("%i"));
+				ImGui::Spacing();		ImGui::Spacing();		ImGui::Spacing();
+				ImGui::SliderInt(XorStr("  Y"), &g_Options.aimbot.y, 0, 100, XorStr("%i"));
 			}
+			ImGui::EndChild();
+			ImGui::SetCursorPos({ 31 + 188,65 });
+			ImGui::BeginChild(XorStr("##3"), { 166,520 });
+			{
+				ImGui::Separator(XorStr("Rage / Other"));
+				ImGui::Checkbox(XorStr("Hitchance"), &g_Options.aimbot.hc);
+				if (g_Options.aimbot.hc)
+					ImGui::SliderInt(XorStr("Hitchance %"), &g_Options.aimbot.hitchance, 1, 100, XorStr("%.f"));
+				ImGui::Checkbox(XorStr("Zeusbot"), &g_Options.aimbot.zeusbot);
+				ImGui::Checkbox(XorStr("Safe Head"), &g_Options.aimbot.safehead);
+				ImGui::Checkbox(XorStr("Doubletap"), &g_Options.aimbot.dt); ImGui::SameLine(); ImGui::Hotkey(XorStr("##dtkey"), &g_Options.aimbot.dthotkey);
+				if (g_Options.aimbot.dt)
+				{
+					ImGui::Text(XorStr("DT Ticks"));
+					ImGui::Spacing();
+					ImGui::SliderInt(XorStr("##dtticks"), &g_Options.aimbot.dtticks, 1, 14, XorStr("%i"));
+				}
+				ImGui::Checkbox(XorStr("Fast Aimbot"), &g_Options.aimbot.fastaimbot);
+				ImGui::Checkbox(XorStr("Autorevolver"), &g_Options.aimbot.autorevolver1);
+				ImGui::Checkbox(XorStr("Resolver (Finally)"), &g_Options.aimbot.rageresolver);
+				if (g_Options.aimbot.rageresolver)
+				{
+					ImGui::Checkbox(XorStr("Print Resolver Logs"), &g_Options.aimbot.printresolver);
+				}
+			}
+			ImGui::EndChild();
+		}
 
 		if (tab == 1)
 		{
 			ImGui::SetCursorPos({ 21,65 });
-			ImGui::BeginChild("##1", { 166 ,580 });
+			ImGui::BeginChild(XorStr("##1"), { 176 ,545 });
 			{
-				ImGui::Separator("ESP");
+				ImGui::Separator(XorStr("ESP"));
 				float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
 
-					ImGui::Checkbox("Far ESP", &g_Options.faresp);
-					ImGui::Checkbox("Team ESP", &g_Options.teamesp);
-					ImGui::Checkbox("Boxes", &g_Options.esp_player_boxes);
-					ImGui::Checkbox("Occluded ", &g_Options.esp_player_boxesOccluded);
-					ImGui::Checkbox("Names", &g_Options.esp_player_names);
-					ImGui::Checkbox("Health", &g_Options.esp_player_health);
-					ImGui::Checkbox("Armour", &g_Options.esp_player_armour);
-					ImGui::Checkbox("Weapons", &g_Options.esp_player_weapons);
-					ImGui::Checkbox("Dropped Weapons", &g_Options.esp_dropped_weapons);
-					ImGui::Checkbox("Flash Kill Check", &g_Options.flashkillcheck);
-					ImGui::Separator("Viewmodel");
+				const char* boxtype[] = {
+				XorStr("Normal"),
+				XorStr("Corners")
+				};
+
+				ImGui::Checkbox(XorStr("Dormant ESP"), &g_Options.dormantesp);
+				ImGui::Checkbox(XorStr("Far ESP"), &g_Options.faresp);
+				ImGui::Checkbox(XorStr("Boxes"), &g_Options.esp_player_boxes);
+				if (g_Options.esp_player_boxes)
+					ImGui::Combo(XorStr("Style"), &g_Options.boxtype, boxtype, IM_ARRAYSIZE(boxtype));
+				ImGui::Checkbox(XorStr("Skeletons"), &g_Options.skeletonesp);
+				if (g_Options.skeletonesp)
+					ImGui::SliderFloat(XorStr("Thickness##skelthicc"), &g_Options.skelethicc, 0.1, 4);
+				ImGui::Checkbox(XorStr("Snaplines"), &g_Options.snaplines);
+				if (g_Options.snaplines)
+					ImGui::SliderFloat(XorStr("Thickness##snapthicc"), &g_Options.snapthicc, 0.1, 4);
+				ImGui::Checkbox(XorStr("Player Indicator "), &g_Options.playerind);
+				ImGui::Checkbox(XorStr("Occluded "), &g_Options.esp_player_boxesOccluded);
+				ImGui::Checkbox(XorStr("Names"), &g_Options.esp_player_names);
+				ImGui::Checkbox(XorStr("Health"), &g_Options.esp_player_health);
+				ImGui::Checkbox(XorStr("Armor"), &g_Options.esp_player_armour);
+				ImGui::Checkbox(XorStr("Weapons"), &g_Options.esp_player_weapons);
+				ImGui::Checkbox(XorStr("Dropped Weapons"), &g_Options.esp_dropped_weapons);
+				ImGui::Checkbox(XorStr("Flash Kill Check"), &g_Options.flashkillcheck);
+				ImGui::Separator(XorStr("World"));
+				ImGui::Spacing();
+				ImGui::SliderInt(XorStr("Fov"), &g_Options.fovchangaaa, 0, 30, XorStr("%.f"));
+				ImGui::Checkbox(XorStr("Aspect Ratio"), &g_Options.aspectchange);
+				if (g_Options.aspectchange) {
 					ImGui::Spacing();
-					ImGui::Checkbox("Viewmodel Changer", &g_Options.enablechanger);
-					if (g_Options.enablechanger) {
-						ImGui::Spacing();
-						ImGui::SliderInt("FOV", &g_Options.viewmodel_fov, 0.0, 120.0, "%.f");
-						ImGui::Spacing();
-						ImGui::SliderInt("X", &g_Options.viewmodel_offset_x, -20.0, 20.0, "%.f");
-						ImGui::Spacing();
-						ImGui::SliderInt("Y", &g_Options.viewmodel_offset_y, -20.0, 20.0, "%.f");
-						ImGui::Spacing();
-						ImGui::SliderInt("Z", &g_Options.viewmodel_offset_z, -20.0, 20.0, "%.f");
-					};
+					ImGui::SliderFloat(XorStr("Ratio"), &g_Options.aspectratio, 0.10, 3);
+				};
+				ImGui::Spacing();
+				ImGui::Text(XorStr("Viewmodel Fov"));
+				ImGui::SliderFloat(XorStr("##viewmodelfov"), &g_Options.viewmodel_fov, 0, 89);
+				ImGui::Text(XorStr("X"));
+				ImGui::SliderFloat(XorStr("##X"), &g_Options.viewmodel_offset_x, -50.0, 50.0);
+				ImGui::Text(XorStr("Y"));
+				ImGui::SliderFloat(XorStr("##Y"), &g_Options.viewmodel_offset_y, -50.0, 50.0);
+				ImGui::Text(XorStr("Z"));
+				ImGui::SliderFloat(XorStr("##Z"), &g_Options.viewmodel_offset_z, -50.0, 50.0);
+				ImGui::Text(XorStr("Roll"));
+				ImGui::SliderFloat(XorStr("##Roll"), &g_Options.viewmodel_offset_roll, -180, 180);
 
-				}
-				ImGui::EndChild();
-
-				ImGui::SetCursorPos({ 417, 65 });
-				ImGui::BeginChild("##2", { 166, 315 });
-				{
-					float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
-
-					ImGui::Separator("Colors");
-					if (g_Options.esp_player_boxes) {
-						ImGui::Text("Boxes"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemies Visible   ", &g_Options.color_esp_enemy_visible);
-					}
-					if (g_Options.esp_player_boxesOccluded && g_Options.esp_player_boxes) {
-						ImGui::Text("Boxes XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemies Occluded      ", &g_Options.color_esp_enemy_occluded);
-					}
-					if (g_Options.esp_player_names) {
-						ImGui::Text("Names"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Names Color ", &g_Options.color_name_player);
-					}
-					if (g_Options.esp_player_armour) {
-						ImGui::Text("Armour"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Armour Color ", &g_Options.color_armour_player);
-					}
-					if (g_Options.esp_player_weapons) {
-						ImGui::Text("Weapons"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Weapons Color ", &g_Options.color_esp_weapons);
-					}
-					if (g_Options.chams_player_enabled) {
-						ImGui::Text("Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemy Visible ", &g_Options.color_chams_player_enemy_visible);
-					}
-					if (g_Options.player_material == 4 && g_Options.chams_player_enabled) {
-						ImGui::Text("Double Enemy"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Enemies", &g_Options.glowcolorenemy);
-					}
-					if (g_Options.player_material == 5 && g_Options.chams_player_enabled) {
-						ImGui::Text("Double Enemy"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Enemies", &g_Options.glowcolorenemy);
-					}
-					if (g_Options.player_material == 6 && g_Options.chams_player_enabled) {
-						ImGui::Text("Double Enemy"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Enemies", &g_Options.glowcolorenemy);
-					}
-					if (g_Options.player_material == 4 && g_Options.teamchams) {
-						ImGui::Text("Double Team"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Team", &g_Options.glowcolor);
-					}
-					if (g_Options.player_material == 5 && g_Options.teamchams) {
-						ImGui::Text("Double Team"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Team", &g_Options.glowcolor);
-					}
-					if (g_Options.player_material == 6 && g_Options.teamchams) {
-						ImGui::Text("Double Team"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Team", &g_Options.glowcolor);
-					}
-					if (g_Options.player_material == 4 && g_Options.localchams) {
-						ImGui::Text("Double Local"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Local", &g_Options.glowcolorlocal);
-					}
-					if (g_Options.player_material == 5 && g_Options.localchams) {
-						ImGui::Text("Double Local"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Local", &g_Options.glowcolorlocal);
-					}
-					if (g_Options.player_material == 6 && g_Options.localchams) {
-						ImGui::Text("Double Local"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Color Local", &g_Options.glowcolorlocal);
-					}
-					if (g_Options.chams_player_ignorez) {
-						ImGui::Text("Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Enemy Occluded ", &g_Options.color_chams_player_enemy_occluded);
-					}
-					if (g_Options.chams_player_enabled && g_Options.teamchams) {
-						ImGui::Text("Team Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Team Visible ", &g_Options.color_chams_player_ally_visible);
-					}
-					if (g_Options.chams_player_ignorez && g_Options.teamchams) {
-						ImGui::Text("Team Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Team Occluded ", &g_Options.color_chams_player_ally_occluded);
-					}
-					if (g_Options.chams_player_enabled && g_Options.localchams) {
-						ImGui::Text("Local Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Kill Visible ", &g_Options.color_chams_player_local_visible);
-					}
-					if (g_Options.chams_player_ignorez && g_Options.localchams) {
-						ImGui::Text("Local Chams XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Kill Occluded ", &g_Options.color_chams_player_local_occluded);
-					}
-					if (g_Options.chams_arms_enabled && g_Options.arms_material == 3) {
-						ImGui::Text("Double Arms"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Arms", &g_Options.glowcolorarms);
-					}
-					if (g_Options.chams_arms_enabled && g_Options.arms_material == 4) {
-						ImGui::Text("Double Arms"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Arms", &g_Options.glowcolorarms);
-					}
-					if (g_Options.chams_arms_enabled && g_Options.arms_material == 5) {
-						ImGui::Text("Double Arms"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Arms", &g_Options.glowcolorarms);
-					}
-					if (g_Options.chams_arms_enabled) {
-						ImGui::Text("Arm Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Arms", &g_Options.color_chams_arms_visible);
-					}
-					if (g_Options.chams_arms_ignorez) {
-						ImGui::Text("Arms XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Arms XQZ", &g_Options.color_chams_arms_occluded);
-					}
-					if (g_Options.chams_strap_enabled && g_Options.strap_material == 3) {
-						ImGui::Text("Double Strap"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Strap", &g_Options.glowcolorstrap);
-					}
-					if (g_Options.chams_strap_enabled && g_Options.strap_material == 4) {
-						ImGui::Text("Double Strap"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Strap", &g_Options.glowcolorstrap);
-					}
-					if (g_Options.chams_strap_enabled && g_Options.strap_material == 5) {
-						ImGui::Text("Double Strap"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Strap", &g_Options.glowcolorstrap);
-					}
-					if (g_Options.chams_strap_enabled && g_Options.strap_material == 6) {
-						ImGui::Text("Double Strap"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Double Strap", &g_Options.glowcolorstrap);
-					}
-					if (g_Options.chams_strap_enabled) {
-						ImGui::Text("Strap Chams"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Strap", &g_Options.color_chams_strap_visible);
-					}
-					if (g_Options.chams_strap_ignorez) {
-						ImGui::Text("Strap XQZ"); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a("Strap XQZ", &g_Options.color_chams_strap_occluded);
-					}
-				}
-				ImGui::EndChild();
-
-				ImGui::SetCursorPos({ 31 + 166,65 });
-				ImGui::BeginChild("##2", { 166,276 });
-				{
-
-
-					float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
-
-
-
-
-				}
-				ImGui::EndChild();
-
-				ImGui::SetCursorPos({ 31 + 188,65 });
-				ImGui::BeginChild("##3", { 166,620 /*nice*/ });
-				{
-					ImGui::Separator("Chams");
-
-					float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
-
-
-					ImGui::Checkbox("Enabled ", &g_Options.chams_player_enabled);
-					if (g_Options.chams_player_enabled) {
-						ImGui::Checkbox("Occluded", &g_Options.chams_player_ignorez);
-						ImGui::Checkbox("Team Chams", &g_Options.teamchams);
-						ImGui::Checkbox("Local Chams", &g_Options.localchams);
-						ImGui::Checkbox("Arms Chams", &g_Options.chams_arms_enabled);
-						if (g_Options.chams_arms_enabled) {
-							ImGui::Checkbox("Arms XQZ", &g_Options.chams_arms_ignorez);
-						}
-
-						ImGui::Checkbox("Strap Chams", &g_Options.chams_strap_enabled);
-						if (g_Options.chams_strap_enabled) {
-							ImGui::Checkbox("Strap XQZ", &g_Options.chams_strap_ignorez);
-						}
-					}
-
-					const char* MatList[] = {
-"Textured",
-"Flat",
-"Shine",
-"Velvet",
-"Animated",
-"Glow",
-"Double"
-					};
-
-					const char* MatList2[] = {
-"Textured",
-"Flat",
-"Shine",
-"Animated",
-"Glow",
-"Double"
-					};
-
-					const char* MatList3[] = {
-"Textured",
-"Flat",
-"Shine",
-"Animated",
-"Glow",
-"Double"
-//"AdvancedAim"
-					};
-
-					ImGui::Combo("Player Mat", &g_Options.player_material, MatList, IM_ARRAYSIZE(MatList));
-
-					if (g_Options.chams_strap_enabled) {
-						ImGui::Combo("Strap Mat", &g_Options.strap_material, MatList3, IM_ARRAYSIZE(MatList3));
-					}
-					if (g_Options.chams_arms_enabled) {
-						ImGui::Combo("Arms Mat", &g_Options.arms_material, MatList2, IM_ARRAYSIZE(MatList2));
-					}
-
-					ImGui::Spacing();
-					ImGui::Separator("Others");
-					ImGui::Spacing();
-					ImGui::Checkbox("EB Effects", &g_Options.ebdetection);
-					ImGui::Checkbox("FOV In Scope", &g_Options.fovscope);
-					ImGui::Checkbox("Draw FOV", &g_Options.drawfov);
-					ImGui::Checkbox("Force Crosshair", &g_Options.sniper_xhair);
-					ImGui::Checkbox("No smoke", &g_Options.no_smoke);
-					ImGui::Checkbox("No flash", &g_Options.no_flash);
-					ImGui::Checkbox("Flash Indicator", &g_Options.bowlsfreshcut);
-					ImGui::Checkbox("Shot Info", &g_Options.shotinfo);
-					ImGui::Checkbox("Floating Ragdolls", &g_Options.ragfloat);
-					ImGui::Checkbox("Recoil Crosshair", &g_Options.rcross);
-					ImGui::Checkbox("Grenade Prediction", &g_Options.pnade);
-					ImGui::Checkbox("Thirdperson", &g_Options.misc_thirdperson); ImGui::SameLine(); ImGui::Hotkey("            ", &g_Options.misc_thirdperson_key);
-					ImGui::Spacing();
-					ImGui::SliderInt("Fov", &g_Options.fovchangaaa, 0, 120, "%.f");
-					ImGui::Checkbox("Aspect Ratio", &g_Options.aspectchange);
-					if (g_Options.aspectchange) {
-						ImGui::Spacing();
-						ImGui::SliderFloat("Ratio", &g_Options.aspectratio, 0.10, 3);
-					};
-
-				}
-				ImGui::EndChild();
 			}
-			else if (tab == 2) {
+			ImGui::EndChild();
 
-				ImGui::SetCursorPos({ 21,65 });
-				ImGui::BeginChild("##1", { 166 ,585 });
+			ImGui::SetCursorPos({ 417, 65 });
+			ImGui::BeginChild(XorStr("##2"), { 166, 420 });
+			{
+				float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
+
+				ImGui::Separator(XorStr("Colors"));
+				if (g_Options.esp_player_boxes) {
+					ImGui::Text(XorStr("Boxes")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Enemies Visible   "), &g_Options.color_esp_enemy_visible);
+				}
+				if (g_Options.esp_player_boxesOccluded && g_Options.esp_player_boxes) {
+					ImGui::Text(XorStr("Boxes XQZ")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Enemies Occluded      "), &g_Options.color_esp_enemy_occluded);
+				}
+				if (g_Options.esp_player_names) {
+					ImGui::Text(XorStr("Names")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Names Color "), &g_Options.color_name_player);
+				}
+				if (g_Options.skeletonesp) {
+					ImGui::Text(XorStr("Skeletons")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Skeleton Color "), &g_Options.color_skemletom);
+				}
+				if (g_Options.snaplines) {
+					ImGui::Text(XorStr("Snaplines")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Snapline Color "), &g_Options.color_cumming);
+				}
+				if (g_Options.esp_player_armour) {
+					ImGui::Text(XorStr("Armor")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Armor Color "), &g_Options.color_armour_player);
+				}
+				if (g_Options.esp_player_weapons) {
+					ImGui::Text(XorStr("Weapons")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Weapons Color "), &g_Options.color_esp_weapons);
+				}
+				if (g_Options.chams_player_enabled) {
+					ImGui::Text(XorStr("Chams")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Enemy Visible "), &g_Options.color_chams_player_enemy_visible);
+				}
+				if (g_Options.player_material >= 4 && g_Options.chams_player_enabled) {
+					ImGui::Text(XorStr("Double Enemy")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Double Color Enemies"), &g_Options.glowcolorenemy);
+				}
+				if (g_Options.chams_player_ignorez) {
+					ImGui::Text(XorStr("Chams XQZ")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Enemy Occluded "), &g_Options.color_chams_player_enemy_occluded);
+				}
+				if (g_Options.chams_player_enabled && g_Options.teamchams) {
+					ImGui::Text(XorStr("Team Chams")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Team Visible "), &g_Options.color_chams_player_ally_visible);
+				}
+				if (g_Options.player_material >= 4 && g_Options.teamchams) {
+					ImGui::Text(XorStr("Double Team")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Double Color Team"), &g_Options.glowcolor);
+				}
+				if (g_Options.chams_player_ignorez && g_Options.teamchams) {
+					ImGui::Text(XorStr("Team Chams XQZ")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Team Occluded "), &g_Options.color_chams_player_ally_occluded);
+				}
+				if (g_Options.chams_player_enabled && g_Options.localchams) {
+					ImGui::Text(XorStr("Local Chams")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Local Visible "), &g_Options.color_chams_player_local_visible);
+				}
+				if (g_Options.player_material >= 4 && g_Options.localchams) {
+					ImGui::Text(XorStr("Double Local")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Double Color Local"), &g_Options.glowcolorlocal);
+				}
+				if (g_Options.chams_player_ignorez && g_Options.localchams) {
+					ImGui::Text(XorStr("Local Chams XQZ")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Local Occluded "), &g_Options.color_chams_player_local_occluded);
+				}
+				if (g_Options.chams_arms_enabled) {
+					ImGui::Text(XorStr("Arm Chams")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Arms"), &g_Options.color_chams_arms_visible);
+				}
+				if (g_Options.chams_arms_enabled && g_Options.arms_material >= 3 && g_Options.strap_material != 5) {
+					ImGui::Text(XorStr("Double Arms")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Double Arms"), &g_Options.glowcolorarms);
+				}
+				if (g_Options.chams_arms_enabled) {
+					ImGui::Text(XorStr("Sleeve Chams")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Sleeves"), &g_Options.color_chams_sleeve_visible);
+				}
+				if (g_Options.chams_strap_enabled) {
+					ImGui::Text(XorStr("Strap Chams")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Strap"), &g_Options.color_chams_strap_visible);
+				}
+				if (g_Options.chams_strap_enabled && g_Options.strap_material >= 3 && g_Options.strap_material != 5) {
+					ImGui::Text(XorStr("Double Strap")); ImGui::SameLine(group_w - 20); ImGuiEx::ColorEdit4a(XorStr("Double Strap"), &g_Options.glowcolorstrap);
+				}
+			}
+			ImGui::EndChild();
+
+			ImGui::SetCursorPos({ 31 + 188,65 });
+			ImGui::BeginChild(XorStr("##3"), { 166,550 });
+			{
+				ImGui::Separator(XorStr("Chams"));
+
+				float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
+
+
+				ImGui::Checkbox(XorStr("Enabled "), &g_Options.chams_player_enabled);
+				if (g_Options.chams_player_enabled) {
+					ImGui::Checkbox(XorStr("Occluded"), &g_Options.chams_player_ignorez);
+					ImGui::Checkbox(XorStr("Team Chams"), &g_Options.teamchams);
+					ImGui::Checkbox(XorStr("Local Chams"), &g_Options.localchams);
+					ImGui::Checkbox(XorStr("Arm Chams"), &g_Options.chams_arms_enabled);
+					ImGui::Checkbox(XorStr("Strap Chams"), &g_Options.chams_strap_enabled);
+					ImGui::Checkbox(XorStr("Draw OG Mdl"), &g_Options.drawogplaya);
+				}
+
+				const char* MatList[] = {
+XorStr("Textured"),
+XorStr("Flat"),
+XorStr("Shine"),
+XorStr("Velvet"),
+XorStr("Glow"),
+XorStr("Double")
+				};
+
+				const char* MatList3[] = {
+XorStr("Textured"),
+XorStr("Flat"),
+XorStr("Shine"),
+XorStr("Glow"),
+XorStr("Double"),
+XorStr("Velvet")
+				};
+
+				const char* MatList2[] = {
+XorStr("Textured"),
+XorStr("Flat"),
+XorStr("Shine"),
+XorStr("Glow"),
+XorStr("Double"),
+XorStr("Velvet")
+//XorStr("Intellect"),
+//XorStr("AdvancedAim")
+				};
+
+				ImGui::Combo(XorStr("Player Mat"), &g_Options.player_material, MatList, IM_ARRAYSIZE(MatList));
+
+				if (g_Options.chams_strap_enabled) {
+					ImGui::Combo(XorStr("Strap Mat"), &g_Options.strap_material, MatList2, IM_ARRAYSIZE(MatList2));
+				}
+				if (g_Options.chams_arms_enabled) {
+					ImGui::Combo(XorStr("Arm Mat"), &g_Options.arms_material, MatList3, IM_ARRAYSIZE(MatList3));
+				}
+
+				ImGui::Spacing();
+				ImGui::Separator(XorStr("Others"));
+				ImGui::Spacing();
+				ImGui::Checkbox(XorStr("FOV In Scope"), &g_Options.fovscope);
+				if (g_Options.fovscope)
+				ImGui::Checkbox(XorStr("Viewmodel In Scope"), &g_Options.viewmodelinscope);
+				ImGui::Checkbox(XorStr("Draw FOV"), &g_Options.drawfov);
+				ImGui::Checkbox(XorStr("Force Crosshair"), &g_Options.sniper_xhair);
+				ImGui::Checkbox(XorStr("No smoke"), &g_Options.no_smoke);
+				ImGui::Checkbox(XorStr("No flash"), &g_Options.no_flash);
+				ImGui::Checkbox(XorStr("Floating Ragdolls"), &g_Options.ragfloat);
+				ImGui::Checkbox(XorStr("Recoil Crosshair"), &g_Options.rcross);
+				ImGui::Checkbox(XorStr("Grenade Prediction"), &g_Options.pnade);
+				ImGui::Checkbox(XorStr("Thirdperson"), &g_Options.misc_thirdperson); ImGui::SameLine(); ImGui::Hotkey(XorStr("##thirdpersonkey"), &g_Options.misc_thirdperson_key);
+				if (g_Options.misc_thirdperson)
+					ImGui::Checkbox(XorStr("Thirdperson Spectate"), &g_Options.thirdinspec);
+				ImGui::Spacing();
+
+			}
+			ImGui::EndChild();
+		}
+		else if (tab == 2) {
+
+			ImGui::SetCursorPos({ 21,65 });
+			ImGui::BeginChild(XorStr("##1"), { 166 ,585 });
+			{
+				ImGui::Separator(XorStr("World"));
+				if (ImGui::BeginCombo(XorStr("##removals"), XorStr("Removals")))
 				{
-					ImGui::Separator("World");
-					if (ImGui::BeginCombo("##removals", "Removals"))
-					{
-						ImGui::Selectable("Recoil", &g_Options.fatassmf, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Processing", &g_Options.disablepro, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Blur", &g_Options.removeblur, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Scope", &g_Options.noscope, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Recoil"), &g_Options.fatassmf, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Processing"), &g_Options.disablepro, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Blur"), &g_Options.removeblur, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Scope"), &g_Options.noscope, ImGuiSelectableFlags_DontClosePopups);
 
-						ImGui::EndCombo();
-					}
-					ImGui::Checkbox("Matrix Mode", &g_Options.matrix);
-					ImGui::Checkbox("Metallic Mode", &g_Options.metallica);
-					ImGui::Checkbox("Fullbright", &g_Options.fullbright);
-					ImGui::Checkbox("Sky Changer", &g_Options.sky_changer);
-					const char* SkyList[] = {
-	"Night",
-	"Baggage",
-	"Tibet",
-	"Vietnam",
-	"Lunacy",
-	"Embassy",
-	"Italy",
-	"Jungle",
-	"Office",
-	"Day",
-	"Cloudy",
-	"Dust"
-					};
-					if (g_Options.sky_changer) {
-						ImGui::Combo("Sky", &g_Options.skyshitsssss, SkyList, IM_ARRAYSIZE(SkyList));
-					}
-					ImGui::Text("Model Ambience");
-					ImGui::SliderFloat("  ", &g_Options.amibence, 0, 1500);
-					ImGui::Checkbox("Color Modulation", &g_Options.colormodulation);
-					if (g_Options.colormodulation) {
-						ImGui::Checkbox("Nightmode", &g_Options.colormodulate);
-						if (g_Options.colormodulate)
-							ImGui::Checkbox("Asus Props", &g_Options.asusprops);
-					}
-					ImGui::Separator("Glow");
-					ImGui::Spacing();
-					ImGui::SliderFloat("R Glow", &g_Options.worldglowr, 0, 1);
-					ImGui::Spacing();
-					ImGui::SliderFloat("G Glow", &g_Options.worldglowg, 0, 1);
-					ImGui::Spacing();
-					ImGui::SliderFloat("B Glow", &g_Options.worldglowb, 0, 1);
-					ImGui::Separator("Fog");
-					ImGui::Checkbox("Override Fog", &g_Options.fogchanga);
-					ImGui::Spacing();
-					ImGui::SliderInt("Distance", &g_Options.fogfardamn, 0, 2500);
-					ImGui::Spacing();
-					ImGui::SliderInt("Thickness", &g_Options.fogdens, 0, 100);
-					ImGui::Text("Fog Color");
+					ImGui::EndCombo();
+				}
+				ImGui::Checkbox(XorStr("Matrix Mode"), &g_Options.matrix);
+				ImGui::Checkbox(XorStr("Metallic Mode"), &g_Options.metallica);
+				ImGui::Checkbox(XorStr("Fullbright"), &g_Options.fullbright);
+				ImGui::Checkbox(XorStr("Sky Changer"), &g_Options.sky_changer);
+				const char* SkyList[] = {
+XorStr("Night"),
+XorStr("Baggage"),
+XorStr("Tibet"),
+XorStr("Vietnam"),
+XorStr("Lunacy"),
+XorStr("Embassy"),
+XorStr("Italy"),
+XorStr("Jungle"),
+XorStr("Office"),
+XorStr("Day"),
+XorStr("Cloudy"),
+XorStr("Dust")
+				};
+				if (g_Options.sky_changer) {
+					ImGui::Combo(XorStr("Sky"), &g_Options.skyshitsssss, SkyList, IM_ARRAYSIZE(SkyList));
+				}
+				ImGui::Text(XorStr("Model Ambience"));
+				ImGui::SliderFloat(XorStr("  "), &g_Options.amibence, 0, 1500);
+				ImGui::Checkbox(XorStr("Color Modulation"), &g_Options.colormodulate);
+				if (g_Options.colormodulate) {
+					ImGui::Text(XorStr("World Color"));
 					ImGui::SameLine();
-					ImGuiEx::ColorEdit3("Fog Color", &g_Options.fogcoluh);
+					ImGuiEx::ColorEdit3(XorStr("World Color"), &g_Options.nightmodecolor);
+					ImGui::Checkbox(XorStr("Prop Modulation"), &g_Options.propstoo);
+					if (g_Options.propstoo) {
+						ImGui::Text(XorStr("Prop Color"));
+						ImGui::SameLine();
+						ImGuiEx::ColorEdit4a(XorStr("Prop Color"), &g_Options.propcolor);
+					}
 				}
-				ImGui::EndChild();
+				ImGui::Text(XorStr("World Glow"));
+				ImGui::SameLine();
+				ImGuiEx::ColorEdit3(XorStr("World Glow"), &g_Options.color_worldglow);
+				ImGui::Separator(XorStr("Fog"));
+				ImGui::Checkbox(XorStr("Override Fog"), &g_Options.fogchanga);
+				ImGui::Spacing();
+				ImGui::SliderInt(XorStr("Distance"), &g_Options.fogfardamn, 0, 2500);
+				ImGui::Spacing();
+				ImGui::SliderInt(XorStr("Thickness"), &g_Options.fogdens, 0, 100);
+				ImGui::Text(XorStr("Fog Color"));
+				ImGui::SameLine();
+				ImGuiEx::ColorEdit3(XorStr("Fog Color"), &g_Options.fogcoluh);
 			}
+			ImGui::EndChild();
+		}
 
-			else if (tab == 3)
+		else if (tab == 3)
+		{
+			ImGui::SetCursorPos({ 31 + 188,65 });
+			ImGui::BeginChild(XorStr("##3"), { 166,420 });
 			{
-				ImGui::SetCursorPos({ 31 + 188,65 });
-				ImGui::BeginChild("##3", { 166,420});
-				{
-					ImGui::Separator("General");
+				ImGui::Separator(XorStr("General"));
 
-					float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
-					static char newname[64];
-					//Ha penis
-					ImGui::Checkbox("Watermark##hc", &g_Options.misc_watermark);
-					//Fast Shit Doe
-					ImGui::Checkbox("AntiOBS", &g_Options.antiobs);
-					ImGui::Checkbox("Hitsounds", &g_Options.misc_hitmarker);
-					const char* HitList[] = {
-	"Metallic",
-		"Agree",
-		"Disagree",
-		"Electric",
-		"FranzJ",
-		"Spark",
-		"Gmod",
-		"Found Game",
-					};
-					if (g_Options.misc_hitmarker) {
-						ImGui::Combo("Sound", &g_Options.hitmarkersound, HitList, IM_ARRAYSIZE(HitList));
-					}
-					ImGui::Checkbox("Velocity Graph", &g_Options.Velocity);
-					ImGui::SameLine(group_w - 20);
-					ImGuiEx::ColorEdit4("Velocity Color", &g_Options.Velocitycol);
-					if (ImGui::BeginCombo("Velocity", "Velocity"))
-					{
-						ImGui::Selectable("Outline", &g_Options.outline, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Last jump", &g_Options.lastjump, ImGuiSelectableFlags_DontClosePopups);
-						ImGui::Selectable("Last jump outline", &g_Options.lastjumpoutline, ImGuiSelectableFlags_DontClosePopups);
-
-						ImGui::EndCombo();
-					}
-
-					//Misc Man Shit FRFR
-					const char* ClantagTypes[] = {
-"Animated",
-	"Discord",
-	"Static",
-	"Reverse"
-					};
-					ImGui::Checkbox("Chat Spam", &g_Options.misc_chatspam);
-					ImGui::Checkbox("Clantag", &g_Options.clantag);
-					if (g_Options.clantag) {
-						ImGui::Combo("Type", &g_Options.clantagtype, ClantagTypes, IM_ARRAYSIZE(ClantagTypes));
-					}
-					ImGui::Checkbox("Auto Accept", &g_Options.autoaccept);
-					if (ImGui::Button("Change Name")) {
-						//NameChange
-						void NameChange(); {
-							static bool changed_name = false;
-							static float name = 0;
-							if (g_Options.namec != name) {
-								changed_name = false;
-							}
-							if (!changed_name) {
-								switch (g_Options.namec) {
-								case 0:
-									Utils::SetName(newname);
-									break;
-								}
-								changed_name = false;
-								name = g_Options.namec;
-							}
-						};
-					}
-					ImGui::InputText("##namec", newname, 1000);
-					ImGui::Spacing();
-					ImGui::Separator("Accents");
-					ImGui::Spacing();
-					ImGui::Text("Menu Accents"); ImGui::SameLine(); ImGuiEx::ColorEdit4("Menu Accents", &g_Options.menucolor);
-
+				float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
+				static char newname[64];
+				//Ha penis
+				ImGui::Checkbox(XorStr("Watermark##hc"), &g_Options.misc_watermark);
+				//Fast Shit Doe
+				ImGui::Checkbox(XorStr("AntiOBS"), &g_Options.antiobs);
+				ImGui::Checkbox(XorStr("Hitsounds"), &g_Options.misc_hitmarker);
+				const char* HitList[] = {
+XorStr("Metallic"),
+	XorStr("Agree"),
+	XorStr("Disagree"),
+	XorStr("Electric"),
+	XorStr("FranzJ"),
+	XorStr("Spark"),
+	XorStr("Gmod"),
+	XorStr("Found Game")
+				};
+				if (g_Options.misc_hitmarker) {
+					ImGui::Combo(XorStr("Sound"), &g_Options.hitmarkersound, HitList, IM_ARRAYSIZE(HitList));
 				}
-				ImGui::EndChild();
-
-				ImGui::SetCursorPos({ 417, 65 });
-				ImGui::BeginChild("##2", { 166, 460 });
+				ImGui::Checkbox(XorStr("Velocity Graph"), &g_Options.Velocity);
+				ImGui::SameLine(group_w - 20);
+				ImGuiEx::ColorEdit4(XorStr("Velocity Color"), &g_Options.Velocitycol);
+				if (ImGui::BeginCombo(XorStr("Velocity"), XorStr("Velocity")))
 				{
-					ImGui::Separator("Movement");
-					float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
+					ImGui::Selectable(XorStr("Outline"), &g_Options.outline, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Last jump"), &g_Options.lastjump, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Last jump outline"), &g_Options.lastjumpoutline, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Graph"), &g_Options.velgraphline, ImGuiSelectableFlags_DontClosePopups);
 
-					const char* EbModes[] = {
-"OG",
-"Experimental"
-					};
-
-					//NOT COOL!!!
-					ImGui::Checkbox("No Duck Cooldown", &g_Options.nocool);
-					ImGui::Checkbox("Bhop", &g_Options.misc_bhop);
-					ImGui::Checkbox("Autostrafe", &g_Options.autostrafe); ImGui::SameLine(group_w - 50);     ImGui::Hotkey(" ", &g_Options.AutoStafe_key);
-					ImGui::Checkbox("Edgebug", &g_Options.edge_bug); ImGui::SameLine(group_w - 50);          ImGui::Hotkey("  ", &g_Options.edge_bug_key);
-					if (g_Options.edge_bug)
-						ImGui::Combo("Eb Mode", &g_Options.ebmode, EbModes, IM_ARRAYSIZE(EbModes));
-					ImGui::Checkbox("Jumpbug", &g_Options.jump_bug); ImGui::SameLine(group_w - 50);          ImGui::Hotkey("   ", &g_Options.jump_bug_key);
-					ImGui::Checkbox("Edge jump", &g_Options.edgejump.enabled); ImGui::SameLine(group_w - 50); ImGui::Hotkey("    ", &g_Options.edgejump.hotkey);
-					ImGui::Checkbox("Blockbot", &g_Options.blockbot); ImGui::SameLine(group_w - 50); ImGui::Hotkey("                                                                                                                                                                                                                                                                                                                                      ", &g_Options.bbkey);
-					ImGui::Checkbox("Duck In Air", &g_Options.ducknair);
-					ImGui::Checkbox("Spectator List", &g_Options.speclist);
-					ImGui::Separator("Test");
-					ImGui::Checkbox("Test Features", &g_Options.enablebeta);
-					if (g_Options.enablebeta) {
-						ImGui::Checkbox("Fast Shiftwalk Charge", &g_Options.slidewalk);
-						ImGui::Checkbox("Sexdick", &g_Options.sexdick1);
-					}
-					ImGui::EndChild();
+					ImGui::EndCombo();
 				}
 
-				ImGui::SetCursorPos({ 21,65 });
-				ImGui::BeginChild("##1", { 166 ,580 });
-				{
-					ImGui::Separator("Config");
-
-					static int selected = 0;
-					static char cfgName[64];
-
-					std::vector<std::string> cfgList;
-					ReadDirectory(g_Options.folder, cfgList);
-					ImGui::PushItemWidth(150.f);
-					if (!cfgList.empty())
-					{
-						if (ImGui::BeginCombo("##SelectConfig", cfgList[selected].c_str(), ImGuiComboFlags_NoArrowButton))
-						{
-							for (size_t i = 0; i < cfgList.size(); i++)
-							{
-								if (ImGui::Selectable(cfgList[i].c_str(), i == selected))
-									selected = i;
-							}
-							ImGui::EndCombo();
-
+				//Misc Man Shit FRFR
+				const char* ClantagTypes[] = {
+XorStr("Animated"),
+	XorStr("Discord"),
+	XorStr("Static"),
+	XorStr("Wrong"),
+	XorStr("Fuck"),
+	XorStr("Big Fuck")
+				};
+				const char* ChatSpamType[] = {
+XorStr("Guga Rep"),
+	XorStr("BLM")
+				};
+				ImGui::Checkbox(XorStr("Chat Spam"), &g_Options.misc_chatspam);
+				if (g_Options.misc_chatspam)
+					ImGui::Combo(XorStr("Type##chatspam"), &g_Options.chatspamtype, ChatSpamType, IM_ARRAYSIZE(ChatSpamType));
+				ImGui::Checkbox(XorStr("Clantag"), &g_Options.clantag);
+				if (g_Options.clantag) {
+					ImGui::Combo(XorStr("Type##clantag"), &g_Options.clantagtype, ClantagTypes, IM_ARRAYSIZE(ClantagTypes));
+				}
+				ImGui::Checkbox(XorStr("Rank Reveal"), &g_Options.rankreveal);
+				ImGui::Checkbox(XorStr("Auto Accept"), &g_Options.autoaccept);
+				if (ImGui::Button(XorStr("Change Name"))) {
+					//NameChange
+					void NameChange(); {
+						static bool changed_name = false;
+						static float name = 0;
+						if (g_Options.namec != name) {
+							changed_name = false;
 						}
-						if (ImGui::Button("Save Config"))
-							g_Options.SaveSettings(cfgList[selected]);
-						//ImGui::SameLine();
-						if (ImGui::Button("Load Config"))
-							g_Options.LoadSettings(cfgList[selected]);
-						//ImGui::SameLine();
-						if (ImGui::Button("Delete Config"))
-						{
-							g_Options.DeleteSettings(cfgList[selected]);
-							selected = 0;
-						}
-						//	ImGui::Separator();
-					}
-					ImGui::InputText("##configname", cfgName, 24);
-					//ImGui::SameLine();
-					if (ImGui::Button("Create Config"))
-					{
-						if (strlen(cfgName))
-							g_Options.SaveSettings(cfgName + std::string(".ini"));
-					}
-					ImGui::PopItemWidth();
-				}
-				ImGui::EndChild();
-
-			}
-			else if (tab == 4)
-			{
-				static std::string selected_weapon_name = "";
-				static std::string selected_skin_name = "";
-				static auto definition_vector_index = 0;
-				auto& entries = g_Options.changers.skin.m_items;
-				ImGui::SetCursorPos({ 21,65 });
-				ImGui::BeginChild("##1", { 166,525 });
-				{
-					ImGui::Spacing();
-					ImGui::Spacing();
-
-					{
-						for (size_t w = 0; w < k_weapon_names.size(); w++)
-						{
-							switch (w)
-							{
+						if (!changed_name) {
+							switch (g_Options.namec) {
 							case 0:
-								ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.f), "Knife");
-								break;
-							case 2:
-								ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.f), "Gloves");
-								break;
-							case 4:
-								ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.f), "Pistols");
-								break;
-							case 14:
-								ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.f), "Smgs");
-								break;
-							case 21:
-								ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.f), "Rifles");
-								break;
-							case 28:
-								ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.f), "Snipers");
-								break;
-							case 32:
-								ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.f), "Heavy");
-								break;
-							case 34:
-								ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.f), "Shotguns");
+								Utils::SetName(newname);
 								break;
 							}
-
-							if (ImGui::Selectable(k_weapon_names[w].name, definition_vector_index == w))
-							{
-								definition_vector_index = w;
-							}
+							changed_name = false;
+							name = g_Options.namec;
 						}
-					}
-					//ImGui::ListBoxFooter();
-
-				}
-				ImGui::EndChild();
-
-				ImGui::SetCursorPos({ 31 + 380,65 });
-				ImGui::BeginChild("##4", { 166,275 });
-				{
-					ImGui::Separator("Playermodel");
-					ImGui::Text("   T Player Model");
-					ImGui::PushItemWidth(160.f);
-					ImGui::Combo("##TPlayerModel", &g_Options.playerModelT, "Default\0Cmdr. Goggles\0Cmdr. Wet Sox\0Lieutenant Rex Krikey\0Michael Syfers\0Operator\0Special Agent Ava\0Markus Delrow\0Sous-Lieutenant Medic\0Chem-Haz Capitaine\0Chef d'Escadron Rouchard\0Aspirant\0Officer Jacques Beltram\0D Squadron Officer\0B Squadron Officer\0Seal Team 6 Soldier\0Buckshot\0Lt. Commander Ricksaw\0Buckshot\0Commando Company\0Two Times' McCoy\0Two Times' McCoy2\0Primeiro Tenente\0Cmdr. Mae 'Dead Cold' Jamison\0Lieutenant Farlow\0John 'Van Healen' Kask\0Bio-Haz Specialist\0Sergeant Bombson\0Chem-Haz Specialist\0Getaway Sally\0Number K\0Little Kev\0Safecracker Voltzmann\0Bloody Darryl The Strapped\0Sir Bloody Loudmouth Darryl\0Sir Bloody Darryl Royale\0Sir Bloody Skullhead Darryl\0Sir Bloody Silent Darryl\0Sir Bloody Miami Darryl\0Street Soldier\0Soldier\0Slingshot\0Enforcer\0Mr. Muhlik\0Prof. Shahmat\0Osiris\0Ground Rebel\0The Elite Mr. Muhlik\0Trapper\0Trapper Aggressor\0Vypa Sista of the Revolution\0Col. Mangos Dabisi\0'Medium Rare' Crasswater\0Crasswater The Forgotten\0Elite Trapper Solman\0'The Doctor' Romanov\0Blackwolf\0Maximus\0Dragomir\0Rezan The Ready\0Rezan the Redshirt\0Dragomir\0");
-
-					ImGui::Text("   CT Player Model");
-					ImGui::PushItemWidth(160.f);
-					ImGui::Combo("##CTPlayerModel", &g_Options.playerModelCT, "Default\0Cmdr. Goggles\0Cmdr. Wet Sox\0Lieutenant Rex Krikey\0Michael Syfers\0Operator\0Special Agent Ava\0Markus Delrow\0Sous-Lieutenant Medic\0Chem-Haz Capitaine\0Chef d'Escadron Rouchard\0Aspirant\0Officer Jacques Beltram\0D Squadron Officer\0B Squadron Officer\0Seal Team 6 Soldier\0Buckshot\0Lt. Commander Ricksaw\0Buckshot\0Commando Company\0Two Times' McCoy\0Two Times' McCoy2\0Primeiro Tenente\0Cmdr. Mae 'Dead Cold' Jamison\0Lieutenant Farlow\0John 'Van Healen' Kask\0Bio-Haz Specialist\0Sergeant Bombson\0Chem-Haz Specialist\0Getaway Sally\0Number K\0Little Kev\0Safecracker Voltzmann\0Bloody Darryl The Strapped\0Sir Bloody Loudmouth Darryl\0Sir Bloody Darryl Royale\0Sir Bloody Skullhead Darryl\0Sir Bloody Silent Darryl\0Sir Bloody Miami Darryl\0Street Soldier\0Soldier\0Slingshot\0Enforcer\0Mr. Muhlik\0Prof. Shahmat\0Osiris\0Ground Rebel\0The Elite Mr. Muhlik\0Trapper\0Trapper Aggressor\0Vypa Sista of the Revolution\0Col. Mangos Dabisi\0'Medium Rare' Crasswater\0Crasswater The Forgotten\0Elite Trapper Solman\0'The Doctor' Romanov\0Blackwolf\0Maximus\0Dragomir\0Rezan The Ready\0Rezan the Redshirt\0Dragomir\0");
-
-				}
-				ImGui::EndChild();
-
-				ImGui::SetCursorPos({ 31 + 166,65 });
-				ImGui::BeginChild("##2", { 210,525 });
-				{
-					ImGui::Spacing();
-					ImGui::Spacing();
-					auto& selected_entry = entries[k_weapon_names[definition_vector_index].definition_index];
-					auto& satatt = g_Options.changers.skin.statrack_items[k_weapon_names[definition_vector_index].definition_index];
-					selected_entry.definition_index = k_weapon_names[definition_vector_index].definition_index;
-					selected_entry.definition_vector_index = definition_vector_index;
-					if (selected_entry.definition_index == WEAPON_KNIFE || selected_entry.definition_index == WEAPON_KNIFE_T)
-					{
-						ImGui::PushItemWidth(160.f);
-
-						ImGui::Combo("", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
-							{
-								*out_text = k_knife_names.at(idx).name;
-								return true;
-							}, nullptr, k_knife_names.size(), 10);
-						selected_entry.definition_override_index = k_knife_names.at(selected_entry.definition_override_vector_index).definition_index;
-
-					}
-					else if (selected_entry.definition_index == GLOVE_T_SIDE || selected_entry.definition_index == GLOVE_CT_SIDE)
-					{
-						ImGui::PushItemWidth(160.f);
-
-						ImGui::Combo("", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
-							{
-								*out_text = k_glove_names.at(idx).name;
-								return true;
-							}, nullptr, k_glove_names.size(), 10);
-						selected_entry.definition_override_index = k_glove_names.at(selected_entry.definition_override_vector_index).definition_index;
-					}
-					else {
-						static auto unused_value = 0;
-						selected_entry.definition_override_vector_index = 0;
-					}
-
-					if (selected_entry.definition_index != GLOVE_T_SIDE &&
-						selected_entry.definition_index != GLOVE_CT_SIDE &&
-						selected_entry.definition_index != WEAPON_KNIFE &&
-						selected_entry.definition_index != WEAPON_KNIFE_T)
-					{
-						selected_weapon_name = k_weapon_names_preview[definition_vector_index].name;
-					}
-					else
-					{
-						if (selected_entry.definition_index == GLOVE_T_SIDE ||
-							selected_entry.definition_index == GLOVE_CT_SIDE)
-						{
-							selected_weapon_name = k_glove_names_preview.at(selected_entry.definition_override_vector_index).name;
-						}
-						if (selected_entry.definition_index == WEAPON_KNIFE ||
-							selected_entry.definition_index == WEAPON_KNIFE_T)
-						{
-							selected_weapon_name = k_knife_names_preview.at(selected_entry.definition_override_vector_index).name;
-						}
-					}
-					if (skins_parsed)
-					{
-						static char filter_name[32];
-						std::string filter = filter_name;
-
-						bool is_glove = selected_entry.definition_index == GLOVE_T_SIDE ||
-							selected_entry.definition_index == GLOVE_CT_SIDE;
-
-						bool is_knife = selected_entry.definition_index == WEAPON_KNIFE ||
-							selected_entry.definition_index == WEAPON_KNIFE_T;
-
-						int cur_weapidx = 0;
-						if (!is_glove && !is_knife)
-						{
-							cur_weapidx = k_weapon_names[definition_vector_index].definition_index;
-							//selected_weapon_name = k_weapon_names_preview[definition_vector_index].name;
-						}
-						else
-						{
-							if (selected_entry.definition_index == GLOVE_T_SIDE ||
-								selected_entry.definition_index == GLOVE_CT_SIDE)
-							{
-								cur_weapidx = k_glove_names.at(selected_entry.definition_override_vector_index).definition_index;
-							}
-							if (selected_entry.definition_index == WEAPON_KNIFE ||
-								selected_entry.definition_index == WEAPON_KNIFE_T)
-							{
-								cur_weapidx = k_knife_names.at(selected_entry.definition_override_vector_index).definition_index;
-
-							}
-						}
-
-
-
-						auto weaponName = weaponnames(cur_weapidx);
-
-						{
-							if (selected_entry.definition_index != GLOVE_T_SIDE && selected_entry.definition_index != GLOVE_CT_SIDE)
-							{
-								if (ImGui::Selectable(" - ", selected_entry.paint_kit_index == -1))
-								{
-									selected_entry.paint_kit_vector_index = -1;
-									selected_entry.paint_kit_index = -1;
-									selected_skin_name = "";
-								}
-
-								int lastID = ImGui::GetItemID();
-								for (size_t w = 0; w < k_skins.size(); w++)
-								{
-									for (auto names : k_skins[w].weaponName)
-									{
-										std::string name = k_skins[w].name;
-
-										if (g_Options.changers.skin.show_cur)
-										{
-											if (names != weaponName)
-												continue;
-										}
-
-										if (name.find(filter) != name.npos)
-										{
-											ImGui::PushID(lastID++);
-
-											ImGui::PushStyleColor(ImGuiCol_Text, skins::get_color_ratiry(is_knife && g_Options.changers.skin.show_cur ? 6 : k_skins[w].rarity));
-											{
-												if (ImGui::Selectable(name.c_str(), selected_entry.paint_kit_vector_index == w))
-												{
-													selected_entry.paint_kit_vector_index = w;
-													selected_entry.paint_kit_index = k_skins[selected_entry.paint_kit_vector_index].id;
-													selected_skin_name = k_skins[w].name_short;
-												}
-											}
-											ImGui::PopStyleColor();
-
-											ImGui::PopID();
-										}
-									}
-								}
-							}
-							else
-							{
-								int lastID = ImGui::GetItemID();
-
-								if (ImGui::Selectable(" - ", selected_entry.paint_kit_index == -1))
-								{
-									selected_entry.paint_kit_vector_index = -1;
-									selected_entry.paint_kit_index = -1;
-									selected_skin_name = "";
-								}
-
-								for (size_t w = 0; w < k_gloves.size(); w++)
-								{
-									for (auto names : k_gloves[w].weaponName)
-									{
-										std::string name = k_gloves[w].name;
-
-
-										if (g_Options.changers.skin.show_cur)
-										{
-											if (names != weaponName)
-												continue;
-										}
-
-										if (name.find(filter) != name.npos)
-										{
-											ImGui::PushID(lastID++);
-
-											ImGui::PushStyleColor(ImGuiCol_Text, skins::get_color_ratiry(6));
-											{
-												if (ImGui::Selectable(name.c_str(), selected_entry.paint_kit_vector_index == w))
-												{
-													selected_entry.paint_kit_vector_index = w;
-													selected_entry.paint_kit_index = k_gloves[selected_entry.paint_kit_vector_index].id;
-													selected_skin_name = k_gloves[selected_entry.paint_kit_vector_index].name_short;
-												}
-											}
-											ImGui::PopStyleColor();
-
-											ImGui::PopID();
-										}
-									}
-								}
-							}
-						}
-						//	ImGui::ListBoxFooter();
-					}
-					else
-					{
-						ImGui::Text("skins parsing, wait...");
 					};
-					//ImGui::Checkbox("skin preview", &g_Options.changers.skin.skin_preview);
+				}
+				ImGui::InputText(XorStr("##namec"), newname, 1000);
+				ImGui::Spacing();
+				ImGui::Separator(XorStr("Accents"));
+				ImGui::Spacing();
+				ImGui::Text(XorStr("Menu Accents")); ImGui::SameLine(); ImGuiEx::ColorEdit4(XorStr("Menu Accents"), &g_Options.menucolor);
+
+			}
+			ImGui::EndChild();
+
+			ImGui::SetCursorPos({ 417, 65 });
+			ImGui::BeginChild(XorStr("##2"), { 178, 520 });
+			{
+				ImGui::Separator(XorStr("Movement"));
+				float group_w = ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().FramePadding.x * 2;
+
+				int screenx;
+				int screeny;
+				g_EngineClient->GetScreenSize(screenx, screeny);
+
+				//NOT COOL!!!
+				ImGui::Checkbox(XorStr("No Duck Cooldown"), &g_Options.nocool);
+				ImGui::Checkbox(XorStr("Bhop"), &g_Options.misc_bhop);
+				const char* Autostrafe[] = {
+XorStr("Normal"),
+XorStr("Directional")
+				};
+				ImGui::Checkbox(XorStr("Autostrafe"), &g_Options.autostrafe); ImGui::SameLine(group_w - 50);     ImGui::Hotkey(XorStr("##strafekey"), &g_Options.AutoStafe_key);
+				if (g_Options.autostrafe) {
+					ImGui::Combo(XorStr("Strafe Type"), &g_Options.autostrafemode, Autostrafe, IM_ARRAYSIZE(Autostrafe));
+				}
+				ImGui::Checkbox(XorStr("Edgebug"), &g_Options.edge_bug); ImGui::SameLine(group_w - 50);          ImGui::Hotkey(XorStr("##ebkey"), &g_Options.edge_bug_key);
+				ImGui::Checkbox(XorStr("Jumpbug"), &g_Options.jump_bug); ImGui::SameLine(group_w - 50);          ImGui::Hotkey(XorStr("##jbkey"), &g_Options.jump_bug_key);
+				ImGui::Checkbox(XorStr("Edge jump"), &g_Options.edgejump.enabled); ImGui::SameLine(group_w - 50); ImGui::Hotkey(XorStr("##ejkey"), &g_Options.edgejump.hotkey);
+				ImGui::Checkbox(XorStr("Long jump"), &g_Options.longjump); ImGui::SameLine(group_w - 50); ImGui::Hotkey(XorStr("##ljkey"), &g_Options.ljkey);
+				ImGui::Checkbox(XorStr("Blockbot"), &g_Options.blockbot); ImGui::SameLine(group_w - 50); ImGui::Hotkey(XorStr("##blockbotkey"), &g_Options.bbkey);
+				ImGui::Checkbox(XorStr("Duck In Air"), &g_Options.ducknair); ImGui::SameLine(group_w - 50); ImGui::Hotkey(XorStr("##dairkey"), &g_Options.diarkey);
+				ImGui::Checkbox(XorStr("Spectator List"), &g_Options.speclist);
+				if (g_Options.speclist)
+				{
+					ImGui::SliderInt(XorStr("X"), &g_Options.specx, 1, screenx);
+					ImGui::Spacing();
+					ImGui::SliderInt(XorStr("Y"), &g_Options.specy, 1, screeny);
+				}
+				ImGui::Checkbox(XorStr("Quick Stop"), &g_Options.quickstop);
+				ImGui::Checkbox(XorStr("Preserve Killfeed"), &g_Options.drugs);
+				ImGui::Spacing();
+				ImGui::Separator(XorStr("Playermodel"));
+				ImGui::Text(XorStr("   T Player Model"));
+				ImGui::PushItemWidth(160.f);
+				ImGui::Combo(XorStr("##TPlayerModel"), &g_Options.playerModelT, XorStr("Default\0Cmdr. Goggles\0Cmdr. Wet Sox\0Lieutenant Rex Krikey\0Michael Syfers\0Operator\0Special Agent Ava\0Markus Delrow\0Sous-Lieutenant Medic\0Chem-Haz Capitaine\0Chef d'Escadron Rouchard\0Aspirant\0Officer Jacques Beltram\0D Squadron Officer\0B Squadron Officer\0Seal Team 6 Soldier\0Buckshot\0Lt. Commander Ricksaw\0Buckshot\0Commando Company\0Two Times' McCoy\0Two Times' McCoy2\0Primeiro Tenente\0Cmdr. Mae 'Dead Cold' Jamison\0Lieutenant Farlow\0John 'Van Healen' Kask\0Bio-Haz Specialist\0Sergeant Bombson\0Chem-Haz Specialist\0Getaway Sally\0Number K\0Little Kev\0Safecracker Voltzmann\0Bloody Darryl The Strapped\0Sir Bloody Loudmouth Darryl\0Sir Bloody Darryl Royale\0Sir Bloody Skullhead Darryl\0Sir Bloody Silent Darryl\0Sir Bloody Miami Darryl\0Street Soldier\0Soldier\0Slingshot\0Enforcer\0Mr. Muhlik\0Prof. Shahmat\0Osiris\0Ground Rebel\0The Elite Mr. Muhlik\0Trapper\0Trapper Aggressor\0Vypa Sista of the Revolution\0Col. Mangos Dabisi\0'Medium Rare' Crasswater\0Crasswater The Forgotten\0Elite Trapper Solman\0'The Doctor' Romanov\0Blackwolf\0Maximus\0Dragomir\0Rezan The Ready\0Rezan the Redshirt\0Dragomir\0"));
+
+				ImGui::Text(XorStr("   CT Player Model"));
+				ImGui::PushItemWidth(160.f);
+				ImGui::Combo(XorStr("##CTPlayerModel"), &g_Options.playerModelCT, XorStr("Default\0Cmdr. Goggles\0Cmdr. Wet Sox\0Lieutenant Rex Krikey\0Michael Syfers\0Operator\0Special Agent Ava\0Markus Delrow\0Sous-Lieutenant Medic\0Chem-Haz Capitaine\0Chef d'Escadron Rouchard\0Aspirant\0Officer Jacques Beltram\0D Squadron Officer\0B Squadron Officer\0Seal Team 6 Soldier\0Buckshot\0Lt. Commander Ricksaw\0Buckshot\0Commando Company\0Two Times' McCoy\0Two Times' McCoy2\0Primeiro Tenente\0Cmdr. Mae 'Dead Cold' Jamison\0Lieutenant Farlow\0John 'Van Healen' Kask\0Bio-Haz Specialist\0Sergeant Bombson\0Chem-Haz Specialist\0Getaway Sally\0Number K\0Little Kev\0Safecracker Voltzmann\0Bloody Darryl The Strapped\0Sir Bloody Loudmouth Darryl\0Sir Bloody Darryl Royale\0Sir Bloody Skullhead Darryl\0Sir Bloody Silent Darryl\0Sir Bloody Miami Darryl\0Street Soldier\0Soldier\0Slingshot\0Enforcer\0Mr. Muhlik\0Prof. Shahmat\0Osiris\0Ground Rebel\0The Elite Mr. Muhlik\0Trapper\0Trapper Aggressor\0Vypa Sista of the Revolution\0Col. Mangos Dabisi\0'Medium Rare' Crasswater\0Crasswater The Forgotten\0Elite Trapper Solman\0'The Doctor' Romanov\0Blackwolf\0Maximus\0Dragomir\0Rezan The Ready\0Rezan the Redshirt\0Dragomir\0"));
+				ImGui::Spacing();
+				ImGui::Separator(XorStr("Test"));
+				ImGui::Checkbox(XorStr("Test Features"), &g_Options.enabletest);
+				if (g_Options.enabletest)
+				{
+					ImGui::Checkbox(XorStr("Autostop"), &g_Options.aimbot.autostop);
+				}
+
+				ImGui::EndChild();
+			}
+
+			ImGui::SetCursorPos({ 21,65 });
+			ImGui::BeginChild(XorStr("##1"), { 166 ,520 });
+			{
+				ImGui::Separator(XorStr("Config"));
+
+				static int selected = 0;
+				static char cfgName[64];
+
+				std::vector<std::string> cfgList;
+				ReadDirectory(g_Options.folder, cfgList);
+				ImGui::PushItemWidth(150.f);
+				if (!cfgList.empty())
+				{
+					if (ImGui::BeginCombo(XorStr("##SelectConfig"), cfgList[selected].c_str(), ImGuiComboFlags_NoArrowButton))
+					{
+						for (size_t i = 0; i < cfgList.size(); i++)
+						{
+							if (ImGui::Selectable(cfgList[i].c_str(), i == selected))
+								selected = i;
+						}
+						ImGui::EndCombo();
+
+					}
+					if (ImGui::Button(XorStr("Save Config")))
+						g_Options.SaveSettings(cfgList[selected]);
+					if (ImGui::Button(XorStr("Load Config")))
+						g_Options.LoadSettings(cfgList[selected]);
+					if (ImGui::Button(XorStr("Delete Config")))
+					{
+						g_Options.DeleteSettings(cfgList[selected]);
+						selected = 0;
+					}
+				}
+				ImGui::InputText(XorStr("##configname"), cfgName, 24);
+				if (ImGui::Button(XorStr("Create Config")))
+				{
+					if (strlen(cfgName))
+						g_Options.SaveSettings(cfgName + std::string(XorStr(".cfg")));
+				}
+				ImGui::PopItemWidth();
+			}
+			ImGui::EndChild();
+
+		}
+		ImGui::PopFont();
+	}
+	ImGui::End();
+}*/
+// kys
+void spacing() {
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 8);
+}
+
+void sliderspacing() {
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 28);
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 8);
+}
+void colspacing() {
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	ImGui::SameLine(window->Size.x - 18 - 8);
+}
+void colspacing2() {
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	ImGui::SameLine(window->Size.x - 45);
+}
+void colspacing3() {
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	ImGui::SameLine(window->Size.x - 45 - 19);
+}
+void keybindspacing() {
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	ImGui::SameLine(window->Size.x - 62);
+}
+void Menu::Render()
+{
+	//RenderRadio();
+
+#define alphaflags uiColorEditFlags_NoInputs | uiColorEditFlags_AlphaPreview | uiColorEditFlags_AlphaBar | uiColorEditFlags_NoOptions
+#define noalphaflags uiColorEditFlags_NoInputs | uiColorEditFlags_NoAlpha
+
+	static int tab = 0;
+	ImGuiStyle* Style = &ImGui::GetStyle();
+	ImColor bg(9.f / 255.f, 9.f / 255.f, 9.f / 255.f, alpha);
+	ImColor grey(122, 122, 122, (int)(alpha * 255));
+	ImColor accent(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), (int)(alpha * 255));
+
+	Style->WindowBorderSize = 0.5;
+	Style->FrameBorderSize = 0.5;
+	Style->ChildBorderSize = 0.5;
+	Style->WindowRounding = 0;
+	Style->ChildRounding = 0;
+	Style->FrameRounding = 0;
+	Style->ScrollbarSize = 6;
+	Style->ScrollbarRounding = 0;
+	Style->PopupRounding = 0;
+	Style->GrabRounding = 0;
+	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
+	Style->Colors[ImGuiCol_TitleBg] = ImColor(9, 9, 9);
+	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_WindowBg] = ImColor(9, 9, 9);
+	Style->Colors[ImGuiCol_ChildBg] = ImColor(9, 9, 9, 0);
+	Style->Colors[ImGuiCol_FrameBg] = ImColor(18, 18, 18);
+	Style->Colors[ImGuiCol_Button] = ImColor(18, 18, 18);
+	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(19, 19, 19);
+	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
+	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
+
+	//lol
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.f, 0.f, 0.f, 0.f));
+	ImGui::PushStyleColor(ImGuiCol_ScrollbarBg, ImVec4(0.f, 0.f, 0.f, 0.f));
+	ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(bg));
+
+	ImGui::PushFont(g_MenuFont);
+
+	static int testint = 100;
+	static int testint2 = 0;
+	static int testint3 = 0;
+	static int testint4 = 0;
+
+	auto flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | NULL | ImGuiWindowFlags_NoCollapse | NULL | NULL | NULL;
+
+	int w, h;
+	g_EngineClient->GetScreenSize(w, h);
+	int x = w / 2;
+	int y = h / 2;
+
+	float end_width = 727;
+
+	static float m_alpha = 1.f;
+	static float m_width = 0.f;
+
+	if (_visible)
+		m_width = std::clamp(m_width + (3.f * end_width * ImGui::GetIO().DeltaTime * (_visible ? 1.f : -1.f)), 0.0001f, end_width);
+	else
+		m_width = std::clamp(m_width - (3.f * end_width * ImGui::GetIO().DeltaTime * (_visible ? -1.f : 1.f)), 0.0001f, end_width);
+
+	if (m_width == end_width)
+		m_alpha = std::clamp(m_alpha + (3.f * ImGui::GetIO().DeltaTime * (_visible ? 1.f : -1.f)), 0.0001f, 1.f);
+	else
+		m_alpha = std::clamp(m_alpha - (3.f * ImGui::GetIO().DeltaTime * (_visible ? -1.f : 1.f)), 0.0001f, 1.f);
+
+
+	// set alpha in class to use later in widgets
+	alpha = m_alpha;
+
+	if (m_width <= 0.0001f && !_visible)
+		return;
+
+
+	int rightsidesize = end_width;
+	int verticalsize = 500;
+
+	ImVec2 startsize = ImVec2(500, verticalsize); //setup sum vars
+
+
+	rightsidesize = m_width;
+	verticalsize = startsize.y;
+
+
+	ImVec2 pos = ImVec2(x + (startsize.x / 2 ), y + (startsize.y / 2));
+
+	ImGui::SetNextWindowPos(ImVec2{ x + (startsize.x / 2), y + (startsize.y / 2) }, ImGuiSetCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(m_width, startsize.y), ImGuiSetCond_Always);
+
+
+	//"PLEASE NO SCAMMER BIG MON 🥵🍆💦"
+	if (ImGui::Begin(("Gugerhax"), &_visible, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoBackground | ImGuiColorEditFlags_NoInputs | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoResize)) {
+
+
+		verticalsize = ImGui::GetWindowHeight();
+		pos = ImGui::GetWindowPos();
+
+
+
+		//bg
+		ImGui::GetWindowDrawList()->AddRectFilledMultiColor(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y), ImVec2(ImGui::GetWindowPos().x + rightsidesize, ImGui::GetWindowPos().y + verticalsize), bg, bg, bg, bg);
+
+		//surrounding lines fuck u rocco
+		ImGui::GetWindowDrawList()->AddRectFilledMultiColor(ImVec2(ImGui::GetWindowPos().x + 5, ImGui::GetWindowPos().y + verticalsize), ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y), accent, accent, accent, accent);
+		ImGui::GetWindowDrawList()->AddRectFilledMultiColor(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + 7), ImVec2(ImGui::GetWindowPos().x + rightsidesize, ImGui::GetWindowPos().y), accent, accent, accent, accent);
+		ImGui::GetWindowDrawList()->AddRectFilledMultiColor(ImVec2(ImGui::GetWindowPos().x + rightsidesize - 4, ImGui::GetWindowPos().y + verticalsize), ImVec2(ImGui::GetWindowPos().x + rightsidesize, ImGui::GetWindowPos().y), accent, accent, accent, accent);
+
+		ImGui::GetWindowDrawList()->AddRectFilledMultiColor(ImVec2(ImGui::GetWindowPos().x + 116 + 37, ImGui::GetWindowPos().y), ImVec2(ImGui::GetWindowPos().x + 115 + 37, ImGui::GetWindowPos().y + verticalsize), accent, accent, accent, accent);
+		ImGui::GetWindowDrawList()->AddRectFilledMultiColor(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + verticalsize), ImVec2(ImGui::GetWindowPos().x + rightsidesize, ImGui::GetWindowPos().y + verticalsize - 1), accent, accent, accent, accent);
+
+
+		ImGui::SetCursorPos(ImVec2(3, -32));
+		ImGui::Image(Menu::Get().bg, ImVec2(150, 150), ImVec2(0, 0), ImVec2(1, 1), ImVec4(1.f, 1.f, 1.f, alpha));
+		ImGui::SetCursorPos(ImVec2(3, -32));
+		ImGui::Image(Menu::Get().guger, ImVec2(150, 150), ImVec2(0, 0), ImVec2(1, 1), ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), (int)(alpha * 255)));
+
+		static int tab = 0;
+
+
+		if (m_alpha <= 1.f)
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, m_alpha);
+
+		widget_alpha = alpha;
+
+		ImGui::SetCursorPos(ImVec2(0, 130));
+
+		if (Tab(XorStr("Aimbot"), ImVec2(163, 36), tab == 0, legiticonD))
+			tab = 0;
+
+		int tabspacing = 23;
+
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + tabspacing);
+		ImGui::SetCursorPosX(0);
+		if (Tab(XorStr("Antiaim"), ImVec2(163, 36), tab == 1, rageiconD))
+			tab = 1;
+
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + tabspacing);
+		ImGui::SetCursorPosX(0);
+		if (Tab(XorStr("Visuals"), ImVec2(163, 36), tab == 2, visualsiconD))
+			tab = 2;
+
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + tabspacing);
+		ImGui::SetCursorPosX(0);
+		if (Tab(XorStr("Chams"), ImVec2(163, 36), tab == 4, skinsiconD))
+			tab = 4;
+
+
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + tabspacing);
+		ImGui::SetCursorPosX(0);
+		if (Tab(XorStr("World"), ImVec2(163, 36), tab == 5, cfgiconD))
+			tab = 5;
+
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + tabspacing);
+		ImGui::SetCursorPosX(0);
+		if (Tab(XorStr("Misc"), ImVec2(163, 36), tab == 3, misciconD))
+			tab = 3;
+
+
+		//aimbot
+		if (tab == 0) {
+			ImGui::SetCursorPos(ImVec2(173, 50));
+			ImGui::BeginChild("Aimbot", ImVec2(254, 428)); {
+
+				ImGui::Spacing();
+				ImGui::Spacing();
+				spacing();
+				ImGui::Checkbox(XorStr("Enabled"), &g_Options.aimbot.enabled); keybindspacing(); ImGui::Hotkey(XorStr("##aimkey"), &g_Options.aimbot.aimkey);
+				sliderspacing();
+				ImGui::SliderInt(XorStr("Fov"), &g_Options.aimbot.fov, 0, 20, XorStr("%.f"));
+				sliderspacing();
+				ImGui::SliderInt(XorStr("Smooth"), &g_Options.aimbot.smoof, 1, 20, XorStr("%.f"));
+				spacing();
+				if (ImGui::BeginCombo(XorStr("##hitbox_filter"), XorStr("Hitboxes")))
+				{
+					ImGui::Selectable(XorStr("Head"), &g_Options.aimbot.head, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Neck"), &g_Options.aimbot.neck, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Chest"), &g_Options.aimbot.chest, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Stomach"), &g_Options.aimbot.stomach, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Pelvis"), &g_Options.aimbot.pelvis, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Arms"), &g_Options.aimbot.arms, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Hands"), &g_Options.aimbot.hands, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Legs"), &g_Options.aimbot.legs, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Feet"), &g_Options.aimbot.feet, ImGuiSelectableFlags_DontClosePopups);
+
+					ImGui::EndCombo();
+				}
+
+				spacing();
+				ImGui::Checkbox(XorStr("No Aimbot If Spec"), &g_Options.aimbot.noaonspec);
+				spacing();
+				ImGui::Checkbox(XorStr("Backtrack"), &g_Options.aimbot.backtrack);
+				if (g_Options.aimbot.backtrack) {
+					sliderspacing();
+					ImGui::SliderInt(XorStr("Ticks"), &g_Options.aimbot.backtix, 0.f, 12.f, XorStr("%.f"));
+				}
+				spacing();
+				ImGui::Checkbox(XorStr("Silent"), &g_Options.aimbot.silent);
+				if (g_Options.aimbot.silent) {
+					sliderspacing();
+					ImGui::SliderFloat(XorStr("Silent fov"), &g_Options.aimbot.silentfov, 0.f, 180.f, XorStr("%.f"));
+				}
+				spacing();
+				ImGui::Checkbox(XorStr("Autofire"), &g_Options.aimbot.autofire); keybindspacing(); ImGui::Hotkey(XorStr("##afkey"), &g_Options.aimbot.afkey);
+				if (g_Options.aimbot.enabled)
+				{
+					sliderspacing();
+					ImGui::SliderInt(XorStr("Min Dmg"), &g_Options.aimbot.mindmg, 1, 100, XorStr("%i"));
+				}
+				spacing();
+				ImGui::Checkbox(XorStr("Autowall"), &g_Options.aimbot.autowall);
+				if (g_Options.aimbot.autowall) {
+					sliderspacing();
+					ImGui::SliderInt(XorStr("AWall Min Dmg"), &g_Options.aimbot.autowallmin, 1, 100, XorStr("%i"));
+				}
+				if (g_Options.aimbot.enabled || g_Options.aimbot.autowall)
+				{
+					sliderspacing();
+					ImGui::SliderInt(XorStr("Dmg Override"), &g_Options.aimbot.dmgovrd, 1, 100, XorStr("%i"));
+					spacing();
+					ImGui::Text(XorStr("Override Key"));
+					keybindspacing();
+					ImGui::Hotkey(XorStr("                                                                                                                                                "), &g_Options.aimbot.dmgovrdk);
+				}
+
+				spacing();
+				ImGui::Checkbox(XorStr("Multipoint"), &g_Options.aimbot.multipoint);
+				if (g_Options.aimbot.multipoint)
+				{
+					sliderspacing();
+					ImGui::SliderFloat(XorStr("Scale"), &g_Options.aimbot.mpscale, 0, 1);
+				}
+				spacing();
+				ImGui::Checkbox(XorStr("RCS"), &g_Options.aimbot.rcs);
+
+				if (g_Options.aimbot.rcs) {
+					sliderspacing();
+					ImGui::SliderInt(XorStr("  X"), &g_Options.aimbot.x, 0, 100, XorStr("%i"));
+					sliderspacing();
+					ImGui::SliderInt(XorStr("  Y"), &g_Options.aimbot.y, 0, 100, XorStr("%i"));
+				}
+			}
+			spacing();
+			ImGui::EndChild();
+
+			ImGui::SameLine(0, 21);
+
+			ImGui::BeginChild("Rage / Other", ImVec2(254, 428)); {
+
+				ImGui::Spacing();
+				ImGui::Spacing();
+				spacing();
+				ImGui::Checkbox(XorStr("Hitchance"), &g_Options.aimbot.hc);
+				if (g_Options.aimbot.hc)
+				{
+					sliderspacing();
+					ImGui::SliderInt(XorStr("Hitchance %"), &g_Options.aimbot.hitchance, 1, 100, XorStr("%.f"));
+					if (g_Options.aimbot.dt)
+					{
+						sliderspacing();
+						ImGui::SliderInt(XorStr("DT Hitchance"), &g_Options.aimbot.dthc, 1, 100, XorStr("%.f"));
+					}
+				}
+				spacing();
+				ImGui::Checkbox(XorStr("Zeusbot"), &g_Options.aimbot.zeusbot);
+				spacing();
+				ImGui::Checkbox(XorStr("Safe Head"), &g_Options.aimbot.safehead);
+				spacing();
+				ImGui::Checkbox(XorStr("Doubletap"), &g_Options.aimbot.dt); keybindspacing(); ImGui::Hotkey(XorStr("##dtkey"), &g_Options.aimbot.dthotkey);
+				if (g_Options.aimbot.dt)
+				{
+					sliderspacing();
+					ImGui::SliderInt(XorStr("DT Ticks"), &g_Options.aimbot.dtticks, 1, 14, XorStr("%i"));
+				}
+				spacing();
+				ImGui::Checkbox(XorStr("Fast Aimbot"), &g_Options.aimbot.fastaimbot);
+				spacing();
+				ImGui::Checkbox(XorStr("Autorevolver"), &g_Options.aimbot.autorevolver1);
+				spacing();
+				ImGui::Checkbox(XorStr("Autostop"), &g_Options.aimbot.autostop);
+				spacing();
+				ImGui::Checkbox(XorStr("Resolver (Finally)"), &g_Options.aimbot.rageresolver);
+				if (g_Options.aimbot.rageresolver)
+				{
+					spacing();
+					ImGui::Checkbox(XorStr("Print Resolver Logs"), &g_Options.aimbot.printresolver);
+				}
+				spacing();
+			}
+			ImGui::EndChild();
+
+
+		}
+
+		//aa
+		if (tab == 1) {
+			ImGui::SetCursorPos(ImVec2(173, 50));
+			ImGui::BeginChild("Antiaim", ImVec2(529, 428)); {
+
+				ImGui::Spacing();
+				ImGui::Spacing();
+				spacing();
+
+				const char* aa_pitch_list[] = {
+XorStr("None"),
+XorStr("Offset"),
+XorStr("Down"),
+XorStr("Up"),
+XorStr("Zero"),
+XorStr("Fake Up"),
+XorStr("Fake Down"),
+XorStr("Fake Zero")
 
 
 				};
-				ImGui::EndChild();
 
-				ImGui::SetCursorPos({ 21,610 });
-				ImGui::BeginChild("##3", { 230,62 });
+				const char* aa_yaw_list[] = {
+XorStr("None"),
+XorStr("Backwards"),
+XorStr("Spin"),
+XorStr("LBY"),
+XorStr("Freestand"),
+XorStr("Custom")
+				};
+
+				const char* desyncpresets[] = {
+XorStr("None"),
+XorStr("Low Delta"),
+XorStr("Normal"),
+XorStr("Custom"),
+XorStr("Spin")
+				};
+
+				const char* indcpos[] = {
+XorStr("None"),
+XorStr("Origin"),
+XorStr("Right Arm"),
+XorStr("Left Arm"),
+XorStr("Head")
+				};
+
+				const char* breakertype[] = {
+XorStr("LBY"),
+XorStr("LBY Reverse"),
+XorStr("Auto LBY"),
+XorStr("Balance"),
+				};
+
+				ImGui::Combo(XorStr("Pitch"), &g_Options.ragebot_antiaim_pitch, aa_pitch_list, IM_ARRAYSIZE(aa_pitch_list));
+				//ImGui::Text(Misc::Get().readwebdata().c_str());
+				spacing();
+				ImGui::Combo(XorStr("Yaw"), &g_Options.ragebot_antiaim_yaw, aa_yaw_list, IM_ARRAYSIZE(aa_yaw_list));
+				spacing();
+				ImGui::Checkbox(XorStr("Desync"), &g_Options.ragebot_antiaim_desync);
+				spacing();
+				ImGui::Checkbox(XorStr("Body Breaker"), &g_Options.breaklby);
+				if (g_Options.breaklby)
 				{
-					auto& selected_entry = entries[k_weapon_names[definition_vector_index].definition_index];
-					ImGui::InputInt("Seed", &selected_entry.seed);
-					ImGui::Spacing();
-					ImGui::Spacing();
-					ImGui::SliderFloat("Wear", &selected_entry.wear, 0.01, 1.00f);
-					ImGui::Spacing();
-					if (ImGui::Button("Force Update"))
+					spacing();
+					ImGui::Combo(XorStr("Breaker Type"), &g_Options.breakertp, breakertype, IM_ARRAYSIZE(breakertype));
+				}
+				if (g_Options.ragebot_antiaim_yaw == 2)
+				{
+					sliderspacing();
+					ImGui::SliderInt(XorStr("Spin Speed"), &g_Options.spinspeed, 1.f, 10.f, XorStr("%.f"));
+				}
+				if (g_Options.ragebot_antiaim_yaw == 5)
+				{
+					sliderspacing();
+					ImGui::SliderInt(XorStr("Real Degree"), &g_Options.customreal, -180.f, 180.f, XorStr("%.f"));
+				}
+				if (g_Options.ragebot_antiaim_yaw == 6)
+				{
+					sliderspacing();
+					ImGui::SliderInt(XorStr("Jitter Degree"), &g_Options.jitterdegree, 0, 180.f, XorStr("%.f"));
+				}
+
+				if (g_Options.spinroll == false)
+				{
+					//sliderspacing();
+					//ImGui::SliderFloat(XorStr("Real Roll"), &g_Options.realroll, -60.f, 60.f, XorStr("%.f"));
+				}
+				else
+				{
+					//sliderspacing();
+					//ImGui::SliderInt(XorStr("Roll Spin Speed"), &g_Options.spinrollspeed, 1.f, 10.f, XorStr("%.f"));
+				}
+				//spacing();
+
+				//ImGui::Checkbox(XorStr("Spin Roll"), &g_Options.spinroll);
+
+				if (g_Options.ragebot_antiaim_desync)
+				{
+					if (g_Options.spinroll2 == false)
 					{
-						//	if (next_enb_time <= g_GlobalVars->curtime)
-						{
-							static auto clear_hud_weapon_icon_fn =
-								reinterpret_cast<std::int32_t(__thiscall*)(void*, std::int32_t)>(
-									Utils::PatternScan2("client.dll", "55 8B EC 51 53 56 8B 75 08 8B D9 57 6B FE 2C 89 5D FC"));
-
-							auto element = FindHudElement<std::uintptr_t*>("CCSGO_HudWeaponSelection");
-
-							if (element)
-							{
-								auto hud_weapons = reinterpret_cast<hud_weapons_t*>(std::uintptr_t(element) - 0xa0);
-								if (hud_weapons != nullptr)
-								{
-
-									if (*hud_weapons->get_weapon_count())
-									{
-										for (std::int32_t i = 0; i < *hud_weapons->get_weapon_count(); i++)
-											i = clear_hud_weapon_icon_fn(hud_weapons, i);
-
-										typedef void(*ForceUpdate) (void);
-										static ForceUpdate FullUpdate = (ForceUpdate)Utils::PatternScan2("engine.dll", "A1 ? ? ? ? B9 ? ? ? ? 56 FF 50 14 8B 34 85");
-										FullUpdate();
-
-										g_ClientState->ForceFullUpdate();
-									}
-								}
-							}
-
-							//next_enb_time = g_GlobalVars->curtime + 1.f;
-						}
+						//sliderspacing();
+						//ImGui::SliderFloat(XorStr("Fake Roll"), &g_Options.roll, -60.f, 60.f, XorStr("%.f"));
 					}
+					else
+					{
+						//sliderspacing();
+						//ImGui::SliderInt(XorStr("Fake Roll Spin Speed"), &g_Options.spinroll2speed, 1.f, 10.f, XorStr("%.f"));
+					}
+					//spacing();
+					//ImGui::Checkbox(XorStr("Spin Fake Roll"), &g_Options.spinroll2);
+					spacing();
+					ImGui::Combo(XorStr("Fake Preset"), &g_Options.fakepreset, desyncpresets, IM_ARRAYSIZE(desyncpresets));
+					if (g_Options.fakepreset == 3)
+					{
+						sliderspacing();
+						ImGui::SliderInt(XorStr("Fake Degree"), &g_Options.fakedegree, -180.f, 180.f, XorStr("%.f"));
+					}
+					if (g_Options.fakepreset == 4)
+					{
+						sliderspacing();
+						ImGui::SliderInt(XorStr("Fake Spin Speed"), &g_Options.fakespinsp, 1.f, 10.f, XorStr("%.f"));
+					}
+					spacing();
+					ImGui::Combo(XorStr("Indicator Pos"), &g_Options.indicatorhb, indcpos, IM_ARRAYSIZE(indcpos));
+				}
+				spacing();
+				ImGui::Text(XorStr("Invert AA Key")); keybindspacing(); ImGui::Hotkey(XorStr("##invertkey"), &g_Options.invertaa);
+				ImGui::Separator(XorStr("Others"));
+				spacing();
+				ImGui::Checkbox(XorStr("Randomize Fake"), &g_Options.randomizefake);
+				spacing();
+				ImGui::Checkbox(XorStr("No Packets on Shot"), &g_Options.nopacketonshot);
+				spacing();
+				ImGui::Checkbox(XorStr("Air Stuck"), &g_Options.urrstuck); keybindspacing(); ImGui::Hotkey(XorStr("##airstuckkey"), &g_Options.urrstuckkey);
+				spacing();
+				ImGui::Checkbox(XorStr("Fakeping"), &g_Options.fakeping);
+				if (g_Options.fakeping) {
+					sliderspacing();
+					ImGui::SliderInt(XorStr("Ping"), &g_Options.fakepingzzz, 1.f, 1000.f, XorStr("%.f"));
+					spacing();
+					ImGui::Text(XorStr("On Key")); keybindspacing(); ImGui::Hotkey(XorStr("##fakepingkey"), &g_Options.fakepingkey);
+				}
+				spacing();
+				ImGui::Checkbox(XorStr("Fakelag"), &g_Options.fakelag);
+
+				if (g_Options.fakelag)
+				{
+					sliderspacing();
+					ImGui::SliderInt(XorStr("Ticks"), &g_Options.faketicks, 1, 16, XorStr("%.f"));
+				}
+				spacing();
+				ImGui::Checkbox(XorStr("Slowwalk"), &g_Options.slowwalk); keybindspacing(); ImGui::Hotkey(XorStr("##slowwalkkey"), &g_Options.ragebot_slowwalk_key);
+				if (g_Options.slowwalk) {
+					sliderspacing();
+					ImGui::SliderInt(XorStr("Speed"), &g_Options.ragebot_slowwalk_amt, 0, 100);
+				}
+				spacing();
+				ImGui::Checkbox(XorStr("Fakeduck"), &g_Options.fakeduck); keybindspacing(); ImGui::Hotkey(XorStr("                                                                                                            "), &g_Options.fdkey);
+				spacing();
+				ImGui::Checkbox(XorStr("Slidewalk"), &g_Options.slidebruh);
+				spacing();
+			}
+			ImGui::EndChild();
+
+
+		}
+
+		//esp
+		if (tab == 2) {
+			ImGui::SetCursorPos(ImVec2(173, 50));
+			ImGui::BeginChild("ESP", ImVec2(254, 428)); {
+
+				ImGui::Spacing();
+				ImGui::Spacing();
+				spacing();
+				const char* boxtype[] = {
+				XorStr("Normal"),
+				XorStr("Corners")
+				};
+
+				ImGui::Checkbox(XorStr("Dormant ESP"), &g_Options.dormantesp);
+				spacing();
+				ImGui::Checkbox(XorStr("Far ESP"), &g_Options.faresp);
+				spacing();
+				ImGui::Checkbox(XorStr("Boxes"), &g_Options.esp_player_boxes); colspacing(); ImGuiEx::ColorEdit4a(XorStr("Enemies Visible   "), &g_Options.color_esp_enemy_visible);
+				if (g_Options.esp_player_boxesOccluded) {
+					colspacing2(); ImGuiEx::ColorEdit4a(XorStr("Enemies Occluded      "), &g_Options.color_esp_enemy_occluded);
+				}
+				spacing();
+				if (g_Options.esp_player_boxes)
+				{
+					spacing();
+					ImGui::Combo(XorStr("Style"), &g_Options.boxtype, boxtype, IM_ARRAYSIZE(boxtype));
+					spacing();
+				}
+				ImGui::Checkbox(XorStr("Skeletons"), &g_Options.skeletonesp); colspacing(); ImGuiEx::ColorEdit4a(XorStr("Skeleton Color "), &g_Options.color_skemletom);
+				spacing();
+				if (g_Options.skeletonesp)
+				{
+					sliderspacing();
+					ImGui::SliderFloat(XorStr("Thickness##skelthicc"), &g_Options.skelethicc, 0.1, 4);
+					spacing();
+				}
+				ImGui::Checkbox(XorStr("Snaplines"), &g_Options.snaplines); colspacing(); ImGuiEx::ColorEdit4a(XorStr("Snapline Color "), &g_Options.color_cumming);
+				if (g_Options.snaplines)
+				{
+					sliderspacing();
+					ImGui::SliderFloat(XorStr("Thickness##snapthicc"), &g_Options.snapthicc, 0.1, 4);
+				}
+				spacing();
+				ImGui::Checkbox(XorStr("Player Indicator "), &g_Options.playerind);
+				spacing();
+				ImGui::Checkbox(XorStr("Occluded "), &g_Options.esp_player_boxesOccluded);
+				spacing();
+				ImGui::Checkbox(XorStr("Names"), &g_Options.esp_player_names); colspacing(); ImGuiEx::ColorEdit4a(XorStr("Names Color "), &g_Options.color_name_player);
+				spacing();
+				ImGui::Checkbox(XorStr("Health"), &g_Options.esp_player_health);
+				spacing();
+				ImGui::Checkbox(XorStr("Armor"), &g_Options.esp_player_armour); colspacing(); ImGuiEx::ColorEdit4a(XorStr("Armor Color "), &g_Options.color_armour_player);
+				spacing();
+				ImGui::Checkbox(XorStr("Weapons"), &g_Options.esp_player_weapons); colspacing(); ImGuiEx::ColorEdit4a(XorStr("Weapons Color "), &g_Options.color_esp_weapons);
+				spacing();
+				ImGui::Checkbox(XorStr("Dropped Weapons"), &g_Options.esp_dropped_weapons);
+				spacing();
+				ImGui::Checkbox(XorStr("Flash Kill Check"), &g_Options.flashkillcheck);
+				spacing();
+			}
+			ImGui::EndChild();
+
+			ImGui::SameLine(0, 21);
+
+			ImGui::SetCursorPos(ImVec2(448, 50));
+			ImGui::BeginChild("Others", ImVec2(254, 428)); {
+
+				ImGui::Spacing();
+				ImGui::Spacing();
+				spacing();
+				ImGui::Checkbox(XorStr("FOV In Scope"), &g_Options.fovscope);
+				spacing();
+				if (g_Options.fovscope)
+				{
+					ImGui::Checkbox(XorStr("Viewmodel In Scope"), &g_Options.viewmodelinscope);
+					spacing();
+				}
+				ImGui::Checkbox(XorStr("Draw FOV"), &g_Options.drawfov);
+				spacing();
+				ImGui::Checkbox(XorStr("Force Crosshair"), &g_Options.sniper_xhair);
+				spacing();
+				ImGui::Checkbox(XorStr("No smoke"), &g_Options.no_smoke);
+				spacing();
+				ImGui::Checkbox(XorStr("No flash"), &g_Options.no_flash);
+				spacing();
+				ImGui::Checkbox(XorStr("Floating Ragdolls"), &g_Options.ragfloat);
+				spacing();
+				ImGui::Checkbox(XorStr("Recoil Crosshair"), &g_Options.rcross);
+				spacing();
+				ImGui::Checkbox(XorStr("Grenade Prediction"), &g_Options.pnade);
+				spacing();
+				ImGui::Checkbox(XorStr("Thirdperson"), &g_Options.misc_thirdperson); keybindspacing(); ImGui::Hotkey(XorStr("##thirdpersonkey"), &g_Options.misc_thirdperson_key);
+				if (g_Options.misc_thirdperson)
+				{
+					spacing();
+					ImGui::Checkbox(XorStr("Thirdperson Spectate"), &g_Options.thirdinspec);
+				}
+				sliderspacing();
+				ImGui::SliderInt(XorStr("Fov"), &g_Options.fovchangaaa, 0, 30, XorStr("%.f"));
+				spacing();
+				ImGui::Checkbox(XorStr("Aspect Ratio"), &g_Options.aspectchange);
+				if (g_Options.aspectchange) {
+					sliderspacing();
+					ImGui::SliderFloat(XorStr("Ratio"), &g_Options.aspectratio, 0.10, 3);
+				};
+				sliderspacing();
+				ImGui::SliderFloat(XorStr("Viewmodel Fov"), &g_Options.viewmodel_fov, 0, 89);
+				sliderspacing();
+				ImGui::SliderFloat(XorStr("X"), &g_Options.viewmodel_offset_x, -50.0, 50.0);
+				sliderspacing();
+				ImGui::SliderFloat(XorStr("Y"), &g_Options.viewmodel_offset_y, -50.0, 50.0);
+				sliderspacing();
+				ImGui::SliderFloat(XorStr("Z"), &g_Options.viewmodel_offset_z, -50.0, 50.0);
+				sliderspacing();
+				ImGui::SliderFloat(XorStr("Roll"), &g_Options.viewmodel_offset_roll, -180, 180);
+				spacing();
+
+			}
+			ImGui::EndChild();
+
+		}
+
+		//chams
+		if (tab == 4) {
+			ImGui::SetCursorPos(ImVec2(173, 50));
+			ImGui::BeginChild("Chams", ImVec2(254, 428)); {
+
+				ImGui::Spacing();
+				ImGui::Spacing();
+				spacing();
+				ImGui::Checkbox(XorStr("Enabled "), &g_Options.chams_player_enabled); if (g_Options.chams_player_enabled) {
+					colspacing(); ImGuiEx::ColorEdit4a(XorStr("Enemy Visible "), &g_Options.color_chams_player_enemy_visible);
+					if (g_Options.chams_player_ignorez)
+					{
+						colspacing2(); ImGuiEx::ColorEdit4a(XorStr("Enemy Occluded "), &g_Options.color_chams_player_enemy_occluded);
+					}
+					if (g_Options.player_material >= 4) {
+						colspacing3(); ImGuiEx::ColorEdit4a(XorStr("Double Color Enemies"), &g_Options.glowcolorenemy);
+					}
+					spacing();
+					ImGui::Checkbox(XorStr("Occluded"), &g_Options.chams_player_ignorez);
+					spacing();
+					ImGui::Checkbox(XorStr("Team Chams"), &g_Options.teamchams); colspacing(); ImGuiEx::ColorEdit4a(XorStr("Team Visible "), &g_Options.color_chams_player_ally_visible);
+					if (g_Options.chams_player_ignorez)
+					{
+						colspacing2(); ImGuiEx::ColorEdit4a(XorStr("Team Occluded "), &g_Options.color_chams_player_ally_occluded);
+					}
+					if (g_Options.player_material >= 4) {
+						colspacing3(); ImGuiEx::ColorEdit4a(XorStr("Double Color Team"), &g_Options.glowcolor);
+					}
+					spacing();
+					ImGui::Checkbox(XorStr("Local Chams"), &g_Options.localchams); colspacing(); ImGuiEx::ColorEdit4a(XorStr("Local Visible "), &g_Options.color_chams_player_local_visible);
+					if (g_Options.chams_player_ignorez)
+					{
+						colspacing2(); ImGuiEx::ColorEdit4a(XorStr("Local Occluded "), &g_Options.color_chams_player_local_occluded);
+					}
+					if (g_Options.player_material >= 4) {
+						colspacing3(); ImGuiEx::ColorEdit4a(XorStr("Double Color Local"), &g_Options.glowcolorlocal);
+					}
+					spacing();
+					if (g_Options.ragebot_antiaim_desync) {
+						ImGui::Checkbox(XorStr("Desync Chams [BETA] "), &g_Options.chams_fake_enabled); colspacing(); ImGuiEx::ColorEdit4a(XorStr("Fake Chams "), &g_Options.color_chams_fake);
+						spacing();
+					}
+					ImGui::Checkbox(XorStr("Arm Chams"), &g_Options.chams_arms_enabled); colspacing(); ImGuiEx::ColorEdit4a(XorStr("Arms "), &g_Options.color_chams_arms_visible);
+					if (g_Options.arms_material >= 3 && g_Options.arms_material != 5) {
+						colspacing2(); ImGuiEx::ColorEdit4a(XorStr("Double Arms"), &g_Options.glowcolorarms);
+					}
+					spacing();
+					ImGui::Checkbox(XorStr("Strap Chams"), &g_Options.chams_strap_enabled); colspacing(); ImGuiEx::ColorEdit4a(XorStr("Strap "), &g_Options.color_chams_strap_visible);
+					if (g_Options.strap_material >= 3 && g_Options.strap_material != 5) {
+						colspacing2(); ImGuiEx::ColorEdit4a(XorStr("Double Strap"), &g_Options.glowcolorstrap);
+					}
+					spacing();
+					ImGui::Checkbox(XorStr("Draw OG Mdl"), &g_Options.drawogplaya);
+				}
+				spacing();
+
+				const char* MatList[] = {
+XorStr("Textured"),
+XorStr("Flat"),
+XorStr("Shine"),
+XorStr("Velvet"),
+XorStr("Glow"),
+XorStr("Double")
+				};
+
+				const char* MatList3[] = {
+XorStr("Textured"),
+XorStr("Flat"),
+XorStr("Shine"),
+XorStr("Glow"),
+XorStr("Double"),
+XorStr("Velvet")
+				};
+
+				const char* MatList2[] = {
+XorStr("Textured"),
+XorStr("Flat"),
+XorStr("Shine"),
+XorStr("Glow"),
+XorStr("Double"),
+XorStr("Velvet")
+//XorStr("Intellect"),
+//XorStr("AdvancedAim")
+				};
+
+				ImGui::Combo(XorStr("Player Mat"), &g_Options.player_material, MatList, IM_ARRAYSIZE(MatList));
+				spacing();
+
+				ImGui::Combo(XorStr("Strap Mat"), &g_Options.strap_material, MatList2, IM_ARRAYSIZE(MatList2));
+				spacing();
+
+				ImGui::Combo(XorStr("Arm Mat"), &g_Options.arms_material, MatList3, IM_ARRAYSIZE(MatList3));
+				spacing();
+
+				spacing();
+			}
+			ImGui::EndChild();
+
+			ImGui::SameLine(0, 21);
+		}
+
+		//world
+		if (tab == 5) {
+			ImGui::SetCursorPos(ImVec2(173, 50));
+			ImGui::BeginChild("World", ImVec2(254, 428)); {
+
+				ImGui::Spacing();
+				ImGui::Spacing();
+				spacing();
+				if (ImGui::BeginCombo(XorStr("##removals"), XorStr("Removals")))
+				{
+					ImGui::Selectable(XorStr("Recoil"), &g_Options.fatassmf, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Processing"), &g_Options.disablepro, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Blur"), &g_Options.removeblur, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Scope"), &g_Options.noscope, ImGuiSelectableFlags_DontClosePopups);
+
+					ImGui::EndCombo();
+				}
+				spacing();
+				ImGui::Checkbox(XorStr("Matrix Mode"), &g_Options.matrix);
+				spacing();
+				ImGui::Checkbox(XorStr("Metallic Mode"), &g_Options.metallica);
+				spacing();
+				ImGui::Checkbox(XorStr("Fullbright"), &g_Options.fullbright);
+				spacing();
+				ImGui::Checkbox(XorStr("Sky Changer"), &g_Options.sky_changer);
+				if (!g_Options.sky_changer) {
+					sliderspacing();
+				}
+				const char* SkyList[] = {
+XorStr("Night"),
+XorStr("Baggage"),
+XorStr("Tibet"),
+XorStr("Vietnam"),
+XorStr("Lunacy"),
+XorStr("Embassy"),
+XorStr("Italy"),
+XorStr("Jungle"),
+XorStr("Office"),
+XorStr("Day"),
+XorStr("Cloudy"),
+XorStr("Dust")
+				};
+				if (g_Options.sky_changer) {
+					spacing();
+					ImGui::Combo(XorStr("Sky"), &g_Options.skyshitsssss, SkyList, IM_ARRAYSIZE(SkyList));
+					sliderspacing();
+				}
+
+				ImGui::SliderFloat(XorStr("Model Ambience"), &g_Options.amibence, 0, 1500);
+				spacing();
+				ImGui::Checkbox(XorStr("Color Modulation"), &g_Options.colormodulate);
+				if (g_Options.colormodulate) {
+					spacing();
+					ImGui::Text(XorStr("World Color"));
+					ImGui::SameLine();
+					ImGuiEx::ColorEdit3(XorStr("World Color"), &g_Options.nightmodecolor);
+					spacing();
+					ImGui::Checkbox(XorStr("Prop Modulation"), &g_Options.propstoo);
+					if (g_Options.propstoo) {
+						spacing();
+						ImGui::Text(XorStr("Prop Color"));
+						ImGui::SameLine();
+						ImGuiEx::ColorEdit4a(XorStr("Prop Color"), &g_Options.propcolor);
+					}
+				}
+				spacing();
+				ImGui::Text(XorStr("World Glow"));
+				ImGui::SameLine();
+				ImGuiEx::ColorEdit3(XorStr("World Glow"), &g_Options.color_worldglow);
+				spacing();
+				ImGui::Separator(XorStr("Fog"));
+				spacing();
+				ImGui::Checkbox(XorStr("Override Fog"), &g_Options.fogoverride);
+				sliderspacing();
+				ImGui::SliderInt(XorStr("Distance"), &g_Options.fogfardamn, 0, 2500);
+				sliderspacing();
+				ImGui::SliderInt(XorStr("Thickness"), &g_Options.fogdens, 0, 100);
+				spacing();
+				ImGui::Text(XorStr("Fog Color"));
+				ImGui::SameLine();
+				ImGuiEx::ColorEdit3(XorStr("Fog Color"), &g_Options.fogcoluh);
+				spacing();
+			}
+			ImGui::EndChild();
+		}
+
+		/*if (tab == 5) {
+			auto& entries = g_Options.changers.skin.m_items;
+			static auto definition_vector_index = 0;
+			auto& selected_entry = entries[k_weapon_names[definition_vector_index].definition_index];
+			auto& satatt = g_Options.changers.skin.statrack_items[k_weapon_names[definition_vector_index].definition_index];
+			selected_entry.definition_index = k_weapon_names[definition_vector_index].definition_index;
+			selected_entry.definition_vector_index = definition_vector_index;
+
+
+
+			ImGui::SetCursorPos(ImVec2(173, 50));
+			ImGui::BeginChild("Weapon", ImVec2(254, 428)); {
+
+				ImGui::Spacing();
+
+				for (size_t w = 0; w < k_weapon_names.size(); w++) {
+					if (ImGui::Selectable(k_weapon_names[w].name, definition_vector_index == w)) {
+						definition_vector_index = w;
+					}
+				}
+
+			}
+			ImGui::EndChild();
+
+			ImGui::SameLine(0, 21);
+
+			ImGui::BeginChild("Colors", ImVec2(254, 428)); {
+				ImGui::Spacing();
+				ImGui::Spacing();
+				spacing();
+				if (ImGui::Checkbox(("Enabled"), &selected_entry.enabled))
+					g_ClientState->ForceFullUpdate();
+				spacing();
+				ImGui::InputText(("Nametag"), selected_entry.name, 32);
+				ImGui::Spacing();
+				spacing();
+				if (ImGui::Checkbox(("Stattrak"), &selected_entry.stat_trak))
+					g_ClientState->ForceFullUpdate();
+				spacing();
+				if (ImGui::InputInt(("Stattrak #"), &satatt.statrack_new.counter))
+					g_ClientState->ForceFullUpdate();
+
+				spacing();
+				if (ImGui::InputInt(("Seed"), &selected_entry.seed))
+					g_ClientState->ForceFullUpdate();
+				sliderspacing();
+				if (ImGui::SliderFloat(("Wear:"), &selected_entry.wear, FLT_MIN, 100.f, "%.10f", 5))
+					g_ClientState->ForceFullUpdate();
+
+				ImGui::Spacing();
+				spacing();
+
+				if (selected_entry.definition_index != GLOVE_T_SIDE) {
+					if (ImGui::Combo(("Paint kit:"), &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text) {
+						*out_text = k_skins[idx].name.c_str();
+						return true;
+						}, nullptr, k_skins.size(), 20))
+						g_ClientState->ForceFullUpdate();
+						selected_entry.paint_kit_index = k_skins[selected_entry.paint_kit_vector_index].id;
 
 				}
-				ImGui::EndChild();
+				else {
+					if (ImGui::Combo(("Paint kit:"), &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text) {
+						*out_text = k_gloves[idx].name.c_str();
+						return true;
+						}, nullptr, k_gloves.size(), 20))
+						g_ClientState->ForceFullUpdate();
+						selected_entry.paint_kit_index = k_gloves[selected_entry.paint_kit_vector_index].id;
+
+				}
+				ImGui::Spacing();
+				spacing();
+				if (selected_entry.definition_index == WEAPON_KNIFE || selected_entry.definition_index == WEAPON_KNIFEGG) {
+					if (ImGui::Combo(("Knife:"), &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text) {
+						*out_text = k_knife_names.at(idx).name;
+						return true;
+						}, nullptr, k_knife_names.size(), 10))
+						g_ClientState->ForceFullUpdate();
+						selected_entry.definition_override_index = k_knife_names.at(selected_entry.definition_override_vector_index).definition_index;
+
+				}
+				else if (selected_entry.definition_index == GLOVE_T_SIDE || selected_entry.definition_index == GLOVE_CT_SIDE) {
+					if (ImGui::Combo(("Gloves:"), &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text) {
+						*out_text = k_glove_names.at(idx).name;
+						return true;
+						}, nullptr, k_glove_names.size(), 10))
+						g_ClientState->ForceFullUpdate();
+						selected_entry.definition_override_index = k_glove_names.at(selected_entry.definition_override_vector_index).definition_index;
+
+				}
+				else {
+					static auto unused_value = 0;
+					selected_entry.definition_override_vector_index = 0;
+				}
 			}
-			ImGui::PopFont();
+			ImGui::EndChild();
+		}*/
+
+		//misc
+		if (tab == 3) {
+			ImGui::SetCursorPos(ImVec2(173, 50));
+			ImGui::BeginChild("Configs", ImVec2(254, 193)); {
+
+				ImGui::Spacing();
+				ImGui::Spacing();
+				spacing();
+				static int selected = 0;
+				static char cfgName[64];
+
+				std::vector<std::string> cfgList;
+				ReadDirectory(g_Options.folder, cfgList);
+				ImGui::PushItemWidth(150.f);
+				if (!cfgList.empty())
+				{
+					if (ImGui::BeginCombo(XorStr("##SelectConfig"), cfgList[selected].c_str(), ImGuiComboFlags_NoArrowButton))
+					{
+						for (size_t i = 0; i < cfgList.size(); i++)
+						{
+							if (ImGui::Selectable(cfgList[i].c_str(), i == selected))
+								selected = i;
+						}
+						ImGui::EndCombo();
+
+					}
+					spacing();
+					if (ImGui::Button(XorStr("Save Config")))
+					{
+						g_Options.SaveSettings(cfgList[selected]);
+					}
+					spacing();
+					if (ImGui::Button(XorStr("Load Config")))
+					{
+						g_Options.LoadSettings(cfgList[selected]);
+					}
+					spacing();
+					if (ImGui::Button(XorStr("Delete Config")))
+					{
+						g_Options.DeleteSettings(cfgList[selected]);
+						selected = 0;
+					}
+					spacing();
+				}
+				ImGui::InputText(XorStr("##configname"), cfgName, 24);
+				spacing();
+				if (ImGui::Button(XorStr("Create Config")))
+				{
+					if (strlen(cfgName))
+						g_Options.SaveSettings(cfgName + std::string(XorStr(".cfg")));
+				}
+				spacing();
+				ImGui::PopItemWidth();
+			}
+			ImGui::EndChild();
+
+
+			ImGui::SetCursorPos(ImVec2(448, 50));
+			ImGui::BeginChild("Misc", ImVec2(254, 428)); {
+				spacing();
+				int screenx;
+				int screeny;
+				g_EngineClient->GetScreenSize(screenx, screeny);
+
+				//NOT COOL!!!
+				ImGui::Checkbox(XorStr("No Duck Cooldown"), &g_Options.nocool);
+				spacing();
+				ImGui::Checkbox(XorStr("Bhop"), &g_Options.misc_bhop);
+				spacing();
+				const char* Autostrafe[] = {
+XorStr("Normal"),
+XorStr("Directional")
+				};
+				ImGui::Checkbox(XorStr("Autostrafe"), &g_Options.autostrafe); keybindspacing(); ImGui::Hotkey(XorStr("##strafekey"), &g_Options.AutoStafe_key);
+				spacing();
+				if (g_Options.autostrafe) {
+					ImGui::Combo(XorStr("Type"), &g_Options.autostrafemode, Autostrafe, IM_ARRAYSIZE(Autostrafe));
+					spacing();
+				}
+				ImGui::Checkbox(XorStr("Edgebug"), &g_Options.edge_bug); keybindspacing();          ImGui::Hotkey(XorStr("##ebkey"), &g_Options.edge_bug_key);
+				spacing();
+				ImGui::Checkbox(XorStr("Jumpbug"), &g_Options.jump_bug); keybindspacing();          ImGui::Hotkey(XorStr("##jbkey"), &g_Options.jump_bug_key);
+				spacing();
+				ImGui::Checkbox(XorStr("Edge jump"), &g_Options.edgejump.enabled); keybindspacing(); ImGui::Hotkey(XorStr("##ejkey"), &g_Options.edgejump.hotkey);
+				spacing();
+				ImGui::Checkbox(XorStr("Long jump"), &g_Options.longjump); keybindspacing(); ImGui::Hotkey(XorStr("##ljkey"), &g_Options.ljkey);
+				spacing();
+				ImGui::Checkbox(XorStr("Blockbot"), &g_Options.blockbot); keybindspacing(); ImGui::Hotkey(XorStr("##blockbotkey"), &g_Options.bbkey);
+				spacing();
+				ImGui::Checkbox(XorStr("Duck In Air"), &g_Options.ducknair); keybindspacing(); ImGui::Hotkey(XorStr("##dairkey"), &g_Options.diarkey);
+				spacing();
+				ImGui::Checkbox(XorStr("Spectator List"), &g_Options.speclist);
+				if (g_Options.speclist)
+				{
+					sliderspacing();
+					ImGui::SliderInt(XorStr("X"), &g_Options.specx, 1, screenx);
+					sliderspacing();
+					ImGui::SliderInt(XorStr("Y"), &g_Options.specy, 1, screeny);
+				}
+				spacing();
+				ImGui::Checkbox(XorStr("Quick Stop"), &g_Options.quickstop);
+				spacing();
+				ImGui::Checkbox(XorStr("Preserve Killfeed"), &g_Options.drugs);
+				spacing();
+				ImGui::Separator(XorStr("Movement Recorder"));
+				spacing();
+				ImGui::Text(XorStr("Record Movement")); keybindspacing(); ImGui::Hotkey(XorStr("##recordahh"), &g_Options.movementrecord);
+				spacing();
+				ImGui::Text(XorStr("Play Movement")); keybindspacing(); ImGui::Hotkey(XorStr("##playaahh"), &g_Options.movementplay);
+				spacing();
+				ImGui::Checkbox(XorStr("Force VAngles"), &g_Options.forceangles);
+				spacing();
+				if (ImGui::Button(XorStr("Refresh")))
+					movement_recorder::Get().load_records();
+				spacing();
+
+			}
+			ImGui::EndChild();
+
+			ImGui::SetCursorPos(ImVec2(173, 278));
+			ImGui::BeginChild("Others", ImVec2(254, 200)); {
+				spacing();
+				static char newname[64];
+				//Ha penis
+				ImGui::Checkbox(XorStr("Watermark"), &g_Options.misc_watermark);
+				spacing();
+				//Fast Shit Doe
+				ImGui::Checkbox(XorStr("AntiOBS"), &g_Options.antiobs);
+				spacing();
+				ImGui::Checkbox(XorStr("Hitsounds"), &g_Options.misc_hitmarker);
+				spacing();
+				const char* HitList[] = {
+XorStr("Metallic"),
+	XorStr("Agree"),
+	XorStr("Disagree"),
+	XorStr("Electric"),
+	XorStr("FranzJ"),
+	XorStr("Spark"),
+	XorStr("Gmod"),
+	XorStr("Found Game")
+				};
+				if (g_Options.misc_hitmarker) {
+					ImGui::Combo(XorStr("Sound"), &g_Options.hitmarkersound, HitList, IM_ARRAYSIZE(HitList));
+					spacing();
+				}
+				ImGui::Checkbox(XorStr("Velocity"), &g_Options.Velocity);
+				ImGui::SameLine();
+				ImGuiEx::ColorEdit4(XorStr("Velocity Color"), &g_Options.Velocitycol);
+				spacing();
+				if (ImGui::BeginCombo(XorStr("Velocity"), XorStr("Velocity")))
+				{
+					ImGui::Selectable(XorStr("Outline"), &g_Options.outline, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Last jump"), &g_Options.lastjump, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Last jump outline"), &g_Options.lastjumpoutline, ImGuiSelectableFlags_DontClosePopups);
+					ImGui::Selectable(XorStr("Graph"), &g_Options.velgraphline, ImGuiSelectableFlags_DontClosePopups);
+
+					ImGui::EndCombo();
+				}
+				spacing();
+
+				//Misc Man Shit FRFR
+				const char* ClantagTypes[] = {
+XorStr("Animated"),
+	XorStr("Discord"),
+	XorStr("Static"),
+	XorStr("Wrong"),
+	XorStr("Fuck"),
+	XorStr("Big Fuck"),
+	XorStr("Email Me")
+				};
+				const char* ChatSpamType[] = {
+XorStr("Guga Rep"),
+	XorStr("BLM")
+				};
+				ImGui::Checkbox(XorStr("Chat Spam"), &g_Options.misc_chatspam);
+				spacing();
+				if (g_Options.misc_chatspam)
+				{
+					ImGui::Combo(XorStr("Type##chatspam"), &g_Options.chatspamtype, ChatSpamType, IM_ARRAYSIZE(ChatSpamType));
+					spacing();
+				}
+				ImGui::Checkbox(XorStr("Clantag"), &g_Options.clantag);
+				spacing();
+				if (g_Options.clantag) {
+					ImGui::Combo(XorStr("Type##clantag"), &g_Options.clantagtype, ClantagTypes, IM_ARRAYSIZE(ClantagTypes));
+					spacing();
+				}
+				ImGui::Checkbox(XorStr("Rank Reveal"), &g_Options.rankreveal);
+				spacing();
+				ImGui::Checkbox(XorStr("Auto Accept"), &g_Options.autoaccept);
+				spacing();
+				if (ImGui::Button(XorStr("Change Name"))) {
+					//NameChange
+					void NameChange(); {
+						static bool changed_name = false;
+						static float name = 0;
+						if (g_Options.namec != name) {
+							changed_name = false;
+						}
+						if (!changed_name) {
+							switch (g_Options.namec) {
+							case 0:
+								Utils::SetName(newname);
+								break;
+							}
+							changed_name = false;
+							name = g_Options.namec;
+						}
+					};
+				}
+				spacing();
+				ImGui::InputText(XorStr("##namec"), newname, 1000);
+				spacing();
+				ImGui::Separator(XorStr("Accents"));
+				spacing();
+				ImGui::Text(XorStr("Menu Accents")); ImGui::SameLine(); ImGuiEx::ColorEdit4(XorStr("Menu Accents"), &g_Options.menucolor);
+				spacing();
+				ImGui::Separator(XorStr("Playermodel"));
+				ImGui::Text(XorStr("   T Player Model"));
+				spacing();
+				ImGui::Combo(XorStr("##TPlayerModel"), &g_Options.playerModelT, XorStr("Default\0Cmdr. Goggles\0Cmdr. Wet Sox\0Lieutenant Rex Krikey\0Michael Syfers\0Operator\0Special Agent Ava\0Markus Delrow\0Sous-Lieutenant Medic\0Chem-Haz Capitaine\0Chef d'Escadron Rouchard\0Aspirant\0Officer Jacques Beltram\0D Squadron Officer\0B Squadron Officer\0Seal Team 6 Soldier\0Buckshot\0Lt. Commander Ricksaw\0Buckshot\0Commando Company\0Two Times' McCoy\0Two Times' McCoy2\0Primeiro Tenente\0Cmdr. Mae 'Dead Cold' Jamison\0Lieutenant Farlow\0John 'Van Healen' Kask\0Bio-Haz Specialist\0Sergeant Bombson\0Chem-Haz Specialist\0Getaway Sally\0Number K\0Little Kev\0Safecracker Voltzmann\0Bloody Darryl The Strapped\0Sir Bloody Loudmouth Darryl\0Sir Bloody Darryl Royale\0Sir Bloody Skullhead Darryl\0Sir Bloody Silent Darryl\0Sir Bloody Miami Darryl\0Street Soldier\0Soldier\0Slingshot\0Enforcer\0Mr. Muhlik\0Prof. Shahmat\0Osiris\0Ground Rebel\0The Elite Mr. Muhlik\0Trapper\0Trapper Aggressor\0Vypa Sista of the Revolution\0Col. Mangos Dabisi\0'Medium Rare' Crasswater\0Crasswater The Forgotten\0Elite Trapper Solman\0'The Doctor' Romanov\0Blackwolf\0Maximus\0Dragomir\0Rezan The Ready\0Rezan the Redshirt\0Dragomir\0"));
+				spacing();
+				ImGui::Text(XorStr("   CT Player Model"));
+				spacing();
+				ImGui::Combo(XorStr("##CTPlayerModel"), &g_Options.playerModelCT, XorStr("Default\0Cmdr. Goggles\0Cmdr. Wet Sox\0Lieutenant Rex Krikey\0Michael Syfers\0Operator\0Special Agent Ava\0Markus Delrow\0Sous-Lieutenant Medic\0Chem-Haz Capitaine\0Chef d'Escadron Rouchard\0Aspirant\0Officer Jacques Beltram\0D Squadron Officer\0B Squadron Officer\0Seal Team 6 Soldier\0Buckshot\0Lt. Commander Ricksaw\0Buckshot\0Commando Company\0Two Times' McCoy\0Two Times' McCoy2\0Primeiro Tenente\0Cmdr. Mae 'Dead Cold' Jamison\0Lieutenant Farlow\0John 'Van Healen' Kask\0Bio-Haz Specialist\0Sergeant Bombson\0Chem-Haz Specialist\0Getaway Sally\0Number K\0Little Kev\0Safecracker Voltzmann\0Bloody Darryl The Strapped\0Sir Bloody Loudmouth Darryl\0Sir Bloody Darryl Royale\0Sir Bloody Skullhead Darryl\0Sir Bloody Silent Darryl\0Sir Bloody Miami Darryl\0Street Soldier\0Soldier\0Slingshot\0Enforcer\0Mr. Muhlik\0Prof. Shahmat\0Osiris\0Ground Rebel\0The Elite Mr. Muhlik\0Trapper\0Trapper Aggressor\0Vypa Sista of the Revolution\0Col. Mangos Dabisi\0'Medium Rare' Crasswater\0Crasswater The Forgotten\0Elite Trapper Solman\0'The Doctor' Romanov\0Blackwolf\0Maximus\0Dragomir\0Rezan The Ready\0Rezan the Redshirt\0Dragomir\0"));
+				spacing();
+				//ImGui::Separator(XorStr("Test"));
+				//spacing();
+				//ImGui::Checkbox(XorStr("Test Features"), &g_Options.enabletest);
+				//spacing();
+				//if (g_Options.enabletest)
+				//{
+					
+					//spacing();
+				//}
+
+			}
+			ImGui::EndChild();
 		}
-		ImGui::End();
+		ImGui::PopStyleVar(ImGuiStyleVar_Alpha);
 	}
+	ImGui::End();
+}
 
 
-	void Menu::Toggle()
-	{
-		_visible = !_visible;
-	}
+void Menu::Toggle()
+{
+	_visible = !_visible;
+}
 
-	void Menu::CreateStyle()
-	{
+void Menu::CreateStyle()
+{
 
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.900000f, 0.900000f, 0.900000f, 1.000000f));
-		ImGui::PushStyleColor(ImGuiCol_TextDisabled, ImVec4(0.600000f, 0.600000f, 0.600000f, 1.000000f));
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.000000f, 0.000000f, 0.000000f, 0.4f));
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.000000f, 0.000000f, 0.000000f, 0.000000f));
-		ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.110000f, 0.110000f, 0.110000f, 0.920000f));
-		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.500000f, 0.500000f, 0.500000f, 0.500000f));
-		ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.000000f, 0.000000f, 0.000000f, 0.000000f));
-		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.430000f, 0.430000f, 0.430000f, 0.390000f));
-		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.470000f, 0.470000f, 0.470000f, 0.400000f));
-		ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.40000f, 0.40000f, 0.40000f, 0.690000f));
-		ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.270000f, 0.270000f, 0.540000f, 0.830000f));
-		ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.320000f, 0.320000f, 0.630000f, 0.870000f));
-		ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, ImVec4(0.400000f, 0.400000f, 0.800000f, 0.200000f));
-		ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.400000f, 0.400000f, 0.550000f, 0.800000f));
-		ImGui::PushStyleColor(ImGuiCol_ScrollbarBg, ImVec4(0.200000f, 0.250000f, 0.300000f, 0.00000f));
-		ImGui::PushStyleColor(ImGuiCol_ScrollbarGrab, ImVec4(0.400000f, 0.400000f, 0.800000f, 0.00000f));
-		ImGui::PushStyleColor(ImGuiCol_ScrollbarGrabHovered, ImVec4(0.400000f, 0.400000f, 0.800000f, 0.00000f));
-		ImGui::PushStyleColor(ImGuiCol_ScrollbarGrabActive, ImVec4(0.410000f, 0.390000f, 0.800000f, 0.00000f));
-		ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(0.900000f, 0.900000f, 0.900000f, 0.500000f));
-		ImGui::PushStyleColor(ImGuiCol_SliderGrab, ImVec4(1.000000f, 1.000000f, 1.000000f, 0.300000f));
-		ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.410000f, 0.390000f, 0.800000f, 0.600000f));
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.350000f, 0.400000f, 0.610000f, 0.0000f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.400000f, 0.480000f, 0.710000f, 0.0000f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.460000f, 0.540000f, 0.800000f, 0.000000f));
-		ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.400000f, 0.400000f, 0.400000f, 0.450000f));
-		ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.400000f, 0.400000f, 0.400000f, 0.800000f));
-		ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.400000f, 0.400000f, 0.400000f, 0.800000f));
-		ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255));
-		ImGui::PushStyleColor(ImGuiCol_SeparatorHovered, ImVec4(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255));
-		ImGui::PushStyleColor(ImGuiCol_SeparatorActive, ImVec4(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255));
-		ImGui::PushStyleColor(ImGuiCol_ResizeGrip, ImVec4(1.000000f, 1.000000f, 1.000000f, 0.160000f));
-		ImGui::PushStyleColor(ImGuiCol_ResizeGripHovered, ImVec4(0.780000f, 0.820000f, 1.000000f, 0.600000f));
-		ImGui::PushStyleColor(ImGuiCol_ResizeGripActive, ImVec4(0.780000f, 0.820000f, 1.000000f, 0.900000f));
-		ImGui::PushStyleColor(ImGuiCol_TextSelectedBg, ImVec4(0.000000f, 0.000000f, 1.000000f, 0.350000f));
-		ImGui::PushStyleColor(ImGuiCol_DragDropTarget, ImVec4(1.000000f, 1.000000f, 0.000000f, 0.900000f));
-	}
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.900000f, 0.900000f, 0.900000f, 1.000000f));
+	ImGui::PushStyleColor(ImGuiCol_TextDisabled, ImVec4(0.600000f, 0.600000f, 0.600000f, 1.000000f));
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.000000f, 0.000000f, 0.000000f, 0.4f));
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.000000f, 0.000000f, 0.000000f, 0.000000f));
+	ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.110000f, 0.110000f, 0.110000f, 0.920000f));
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.500000f, 0.500000f, 0.500000f, 0.500000f));
+	ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.000000f, 0.000000f, 0.000000f, 0.000000f));
+	ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.430000f, 0.430000f, 0.430000f, 0.390000f));
+	ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.470000f, 0.470000f, 0.470000f, 0.400000f));
+	ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.40000f, 0.40000f, 0.40000f, 0.690000f));
+	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.270000f, 0.270000f, 0.540000f, 0.830000f));
+	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.320000f, 0.320000f, 0.630000f, 0.870000f));
+	ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, ImVec4(0.400000f, 0.400000f, 0.800000f, 0.200000f));
+	ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.400000f, 0.400000f, 0.550000f, 0.800000f));
+	ImGui::PushStyleColor(ImGuiCol_ScrollbarBg, ImVec4(0.200000f, 0.250000f, 0.300000f, 0.00000f));
+	ImGui::PushStyleColor(ImGuiCol_ScrollbarGrab, ImVec4(0.400000f, 0.400000f, 0.800000f, 0.00000f));
+	ImGui::PushStyleColor(ImGuiCol_ScrollbarGrabHovered, ImVec4(0.400000f, 0.400000f, 0.800000f, 0.00000f));
+	ImGui::PushStyleColor(ImGuiCol_ScrollbarGrabActive, ImVec4(0.410000f, 0.390000f, 0.800000f, 0.00000f));
+	ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(0.900000f, 0.900000f, 0.900000f, 0.500000f));
+	ImGui::PushStyleColor(ImGuiCol_SliderGrab, ImVec4(1.000000f, 1.000000f, 1.000000f, 0.300000f));
+	ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.410000f, 0.390000f, 0.800000f, 0.600000f));
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.350000f, 0.400000f, 0.610000f, 0.0000f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.400000f, 0.480000f, 0.710000f, 0.0000f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.460000f, 0.540000f, 0.800000f, 0.000000f));
+	ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.400000f, 0.400000f, 0.400000f, 0.450000f));
+	ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.400000f, 0.400000f, 0.400000f, 0.800000f));
+	ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.400000f, 0.400000f, 0.400000f, 0.800000f));
+	ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255));
+	ImGui::PushStyleColor(ImGuiCol_SeparatorHovered, ImVec4(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255));
+	ImGui::PushStyleColor(ImGuiCol_SeparatorActive, ImVec4(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255));
+	ImGui::PushStyleColor(ImGuiCol_ResizeGrip, ImVec4(1.000000f, 1.000000f, 1.000000f, 0.160000f));
+	ImGui::PushStyleColor(ImGuiCol_ResizeGripHovered, ImVec4(0.780000f, 0.820000f, 1.000000f, 0.600000f));
+	ImGui::PushStyleColor(ImGuiCol_ResizeGripActive, ImVec4(0.780000f, 0.820000f, 1.000000f, 0.900000f));
+	ImGui::PushStyleColor(ImGuiCol_TextSelectedBg, ImVec4(0.000000f, 0.000000f, 1.000000f, 0.350000f));
+	ImGui::PushStyleColor(ImGuiCol_DragDropTarget, ImVec4(1.000000f, 1.000000f, 0.000000f, 0.900000f));
+}

@@ -221,6 +221,15 @@ typedef void(*OnLevelShutdownFunc_t)(void* pUserData);
 typedef unsigned short MaterialHandle_t;
 DECLARE_POINTER_HANDLE(MaterialLock_t);
 
+
+template <typename FuncType>
+__forceinline static FuncType call_virtual(void* ppClass, int index)
+{
+	int* pVTable = *(int**)ppClass; //-V206
+	int dwAddress = pVTable[index]; //-V108
+	return (FuncType)(dwAddress);
+}
+
 class IMaterialSystem : public IAppSystem
 {
 public:
@@ -316,39 +325,60 @@ public:
 	virtual ITexture* CreateNamedRenderTargetTextureEx(const char* pRTName, int w, int h, RenderTargetSizeMode_t sizeMode, ImageFormat format, MaterialRenderTargetDepth_t depth = MATERIAL_RT_DEPTH_SHARED, unsigned int textureFlags = TEXTUREFLAGS_CLAMPS | TEXTUREFLAGS_CLAMPT, unsigned int renderTargetFlags = 0) = 0;
 	virtual ITexture* CreateNamedRenderTargetTexture(const char* pRTName, int w, int h, RenderTargetSizeMode_t sizeMode, ImageFormat format, MaterialRenderTargetDepth_t depth = MATERIAL_RT_DEPTH_SHARED, bool bClampTexCoords = true, bool bAutoMipMap = false) = 0;
 	virtual ITexture* CreateNamedRenderTargetTextureEx2(const char* pRTName, int w, int h, RenderTargetSizeMode_t sizeMode, ImageFormat format, MaterialRenderTargetDepth_t depth = MATERIAL_RT_DEPTH_SHARED, unsigned int textureFlags = TEXTUREFLAGS_CLAMPS | TEXTUREFLAGS_CLAMPT, unsigned int renderTargetFlags = 0) = 0;
-	IMaterial* pFindMaterial(char const* pMaterialName, const char* pTextureGroupName, bool complain = true, const char* pComplainPrefix = NULL)
-	{
-		typedef IMaterial* (__thiscall* oFindMaterial)(PVOID, char const*, char const*, bool, char const*);
-		return CallVFunction< oFindMaterial >(this, 84)(this, pMaterialName, pTextureGroupName, complain, pComplainPrefix);
+
+	auto pGetBackBufferFormat() -> ImageFormat {
+		using Fn = ImageFormat(__thiscall*)(void*);
+		return call_virtual< Fn >(this, 36)(this);
 	}
 
-	IMaterial* pCreateMaterial(const char* pMaterialName, KeyValues* pVMTKeyValues)
-	{
-		typedef IMaterial* (__thiscall* oCreateMaterial)(PVOID, const char*, KeyValues*);
-		return CallVFunction<oCreateMaterial>(this, 83)(this, pMaterialName, pVMTKeyValues);
+	auto pCreateMaterial(const char* name, KeyValues* key) -> IMaterial* {
+		using Fn = IMaterial * (__thiscall*)(void*, const char*, KeyValues*);
+		return call_virtual< Fn >(this, 83)(this, name, key);
 	}
 
-	MaterialHandle_t pFirstMaterial()
-	{
-		typedef MaterialHandle_t(__thiscall* FirstMaterialFn)(void*);
-		return CallVFunction<FirstMaterialFn>(this, 86)(this);
+	auto pFindMaterial(const char* name, const char* texture_group_name, bool complain = true, const char* complain_prefix = nullptr) -> IMaterial* {
+		using Fn = IMaterial * (__thiscall*)(void*, const char*, const char*, bool, const char*);
+		return call_virtual< Fn >(this, 84)(this, name, texture_group_name, complain, complain_prefix);
 	}
 
-	MaterialHandle_t pNextMaterial(MaterialHandle_t h)
-	{
-		typedef MaterialHandle_t(__thiscall* NextMaterialFn)(void*, MaterialHandle_t);
-		return CallVFunction<NextMaterialFn>(this, 87)(this, h);
+	auto pFirstMaterial() -> MaterialHandle_t {
+		using Fn = MaterialHandle_t(__thiscall*)(void*);
+		return call_virtual< Fn >(this, 86)(this);
 	}
 
-	MaterialHandle_t pInvalidMaterial()
-	{
-		typedef MaterialHandle_t(__thiscall* InvalidMaterialFn)(void*);
-		return CallVFunction<InvalidMaterialFn>(this, 88)(this);
+	auto pNextMaterial(MaterialHandle_t h) -> MaterialHandle_t {
+		using Fn = MaterialHandle_t(__thiscall*)(void*, MaterialHandle_t);
+		return call_virtual< Fn >(this, 87)(this, h);
 	}
 
-	IMaterial* pGetMaterial(MaterialHandle_t h)
-	{
-		typedef IMaterial* (__thiscall* GetMaterialFn)(void*, MaterialHandle_t);
-		return CallVFunction<GetMaterialFn>(this, 89)(this, h);
+	auto pInvalidMaterial() -> MaterialHandle_t {
+		using Fn = MaterialHandle_t(__thiscall*)(void*);
+		return call_virtual< Fn >(this, 88)(this);
 	}
+
+	auto pGetMaterial(MaterialHandle_t h) -> IMaterial* {
+		using Fn = IMaterial * (__thiscall*)(void*, MaterialHandle_t);
+		return call_virtual< Fn >(this, 89)(this, h);
+	}
+
+	auto pBeginRenderTargetAllocation() -> void {
+		using Fn = void(__thiscall*)(void*);
+		return call_virtual< Fn >(this, 94)(this);
+	}
+
+	auto pEndRenderTargetAllocation() -> void {
+		using Fn = void(__thiscall*)(void*);
+		return call_virtual< Fn >(this, 95)(this);
+	}
+
+	auto pCreateNamedRenderTargetTextureEx(const char* name, int w, int h, RenderTargetSizeMode_t sizeMode, ImageFormat format, MaterialRenderTargetDepth_t depth, unsigned int textureFlags, unsigned int renderTargetFlags) -> ITexture* {
+		using Fn = ITexture * (__thiscall*)(void*, const char*, int, int, RenderTargetSizeMode_t, ImageFormat, MaterialRenderTargetDepth_t, unsigned int, unsigned int);
+		return call_virtual< Fn >(this, 97)(this, name, w, h, sizeMode, format, depth, textureFlags, renderTargetFlags);
+	}
+
+	auto pGetRenderContext() -> IMatRenderContext* {
+		using Fn = IMatRenderContext * (__thiscall*)(void*);
+		return call_virtual< Fn >(this, 115)(this);
+	}
+
 };

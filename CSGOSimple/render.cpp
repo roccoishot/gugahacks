@@ -9,15 +9,27 @@
 #include "options.hpp"
 #include "helpers/math.hpp"
 #include <ctime>
+#include "Globals.h"
+#include "xor.h"
+#include "./features/Misc.hpp"
+
+#ifdef ENABLE_XOR
+#define XorStr _xor_ 
+#else
+#define XorStr
+#endif
+#pragma intrinsic(_ReturnAddress)  
 
 ImFont* g_Menufont;
 ImFont* g_pDefaultFont;
 ImFont* g_VeloFont;
-ImFont* g_Fuck;
 ImFont* g_Cum;
 ImFont* g_SpectatorListFont;
+ImFont* g_MenuFont;
+ImFont* uhFont;
 ImFont* g_Frotnite;
 ImFont* Cummed;
+ImFont* SHitted;
 ImDrawListSharedData _data;
 
 std::mutex render_mutex;
@@ -54,21 +66,25 @@ void Render::GetFonts() {
 		0,
 	};
 	ImGuiIO& io = ImGui::GetIO();
-	g_SpectatorListFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\corbelb.ttf", 12.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+	g_SpectatorListFont = io.Fonts->AddFontFromFileTTF(XorStr("C:\\Windows\\Fonts\\corbelb.ttf"), 48.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+
+	g_MenuFont = io.Fonts->AddFontFromFileTTF(XorStr("C:\\Windows\\Fonts\\corbelb.ttf"), 15.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+	uhFont = io.Fonts->AddFontFromFileTTF(XorStr("C:\\Windows\\Fonts\\corbelb.ttf"), 18.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+
+	SHitted = io.Fonts->AddFontFromFileTTF(XorStr("C:\\Windows\\Fonts\\corbelb.ttf"), 24.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+
+	//#include "./Roccofont2-Regular.c"
+	//g_pDefaultFont = io.Fonts->AddFontFromMemoryTTF(roccofont, 48.f, NULL, nullptr);
 
 	// esp font
-	g_pDefaultFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\corbelb.ttf", 12.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
-	
+	g_pDefaultFont = io.Fonts->AddFontFromFileTTF(XorStr("C:\\Windows\\Fonts\\corbelb.ttf"), 48.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 
 	// font for watermark; just example
-	g_VeloFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(u8"C:\\Windows\\Fonts\\verdanab.ttf", 30.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+	g_VeloFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(XorStr(u8"C:\\Windows\\Fonts\\verdanab.ttf"), 48.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 
-	// font for watermark; just example
-	g_Fuck = ImGui::GetIO().Fonts->AddFontFromFileTTF(u8"C:\\Windows\\Fonts\\Karla-Regular.ttf", 30.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+	g_Cum = ImGui::GetIO().Fonts->AddFontFromFileTTF(XorStr(u8"C:\\Windows\\Fonts\\bahnschrift.ttf"), 48.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 
-	g_Cum = ImGui::GetIO().Fonts->AddFontFromFileTTF(u8"C:\\Windows\\Fonts\\bahnschrift.ttf", 48.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
-
-	Cummed = ImGui::GetIO().Fonts->AddFontFromFileTTF(u8"C:\\Windows\\Fonts\\corbelb.ttf", 12.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+	Cummed = ImGui::GetIO().Fonts->AddFontFromFileTTF(XorStr(u8"C:\\Windows\\Fonts\\corbelb.ttf"), 48.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 }
 
 void Render::ClearDrawList() {
@@ -79,61 +95,85 @@ void Render::ClearDrawList() {
 
 void Render::BeginScene() {
 	int a = g_Options.aimbot.fov;
-	int b = 12;
+	int b = 11;
 	long long c = a * b;
 	int screenWidth, screenHeight;
 	g_EngineClient->GetScreenSize(screenWidth, screenHeight);
 	draw_list->Clear();
 	draw_list->PushClipRectFullScreen();
 
-	if (g_Options.bowlsfreshcut && g_EngineClient->IsInGame() && g_LocalPlayer->IsFlashed()) {
-		Render::Get().RenderText("FLASHED", (screenWidth / 2) + 5, (screenHeight / 2) + 5, 18.f, Color(120, 208, 255), false, true, g_VeloFont);
-	}
+	std::string watermark = (XorStr("| GUGAHACKS.KITCHEN |"));
 
-	if (g_Options.sexdick.enabled) {
-		Render::Get().RenderText("SEXDICK", screenWidth / 2, (screenHeight / 2) + 15, 14.f, g_Options.menucolor, true, true, g_VeloFont);
+	if (g_EngineClient->IsInGame())
+	{
+		std::string negro = g_EngineClient->GetNetChannelInfo()->GetAddress();
+		if (negro.find(XorStr("[")) != std::string::npos)
+			Globals::valve = true;
+		else
+			Globals::valve = false;
+		if (negro.find(XorStr("74.91.124.24:27015")) != std::string::npos)
+			Globals::stepping = true;
+		else
+			Globals::stepping = false;
 	}
 
 	if (g_Options.misc_watermark) {
-	#define VERSION ("| Made By Roccoishot, Sopmk, and You're Mother. |")
-		auto watermark = VERSION;
-		watermark = VERSION;
-		Render::Get().RenderText(watermark, 10, 5, 18.f, g_Options.menucolor, false, true, g_VeloFont);
+		if (g_EngineClient->IsInGame())
+		{
+			int ping;
 
-		if (g_EngineClient->IsInGame()) {
+			auto nci = g_EngineClient->GetNetChannelInfo();
+
+			if (nci)
+			{
+				auto latency = g_EngineClient->IsPlayingDemo() ? 0.0f : nci->GetAvgLatency(FLOW_OUTGOING);
+
+				if (latency) //-V550
+				{
+					static auto cl_updaterate = g_CVar->FindVar(XorStr("cl_updaterate"));
+					latency -= 0.5f / cl_updaterate->GetFloat();
+				}
+
+				ping = (int)(max(0.0f, latency) * 1000.0f);
+			}
+			auto negronuts = std::to_string((int)ping);
+
+			std::string negro = g_EngineClient->GetNetChannelInfo()->GetAddress();
 			auto server = g_EngineClient->GetNetChannelInfo()->GetAddress();
-			if (!strcmp(server, ("loopback")))
-				server = ("Local server");
-			std::string username = g_LocalPlayer->GetPlayerInfo().szName;
-#define VERSION ("| Made By Roccoishot, Sopmk, and You're Mother. | ")
-			auto watermark = VERSION + username + (" | ") + server + (" | ");
-			watermark = VERSION + username + (" | ") + server + (" | ");
-			Render::Get().RenderText(watermark, 10, 5, 18.f, g_Options.menucolor, false, true, g_VeloFont);
+			if (!strcmp(server, (XorStr("loopback"))))
+				server = (XorStr("Local server"));
+			if (negro.find(XorStr("[")) != std::string::npos)
+				server = (XorStr("Valve Server"));
+			if (!strcmp(server, (XorStr("74.91.124.24:27015"))))
+				server = (XorStr("Big Steppa"));
+			if (!strcmp(server, (XorStr("192.223.26.36:27015"))))
+				server = (XorStr("Luckys Gay Ass Server"));
+			std::string cum = (XorStr(" | "));
+			auto tickrate = std::to_string((int)(1.0f / g_GlobalVars->interval_per_tick));
+			watermark = (XorStr("| GUGAHACKS.KITCHEN")) + cum + server + cum + XorStr("Ping: ") + negronuts + cum;
 		}
+
+		Render::Get().RenderText(watermark, 10, 5, 16.f, g_Options.menucolor, false, true, SHitted);
 	}
 
-	if (GetKeyState(g_Options.invertaa) && g_Options.ragebot_antiaim_desync || g_Options.breaklby && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive()) {
-		Render::Get().RenderText("INVERTED", 10, 80, 18.f, g_Options.menucolor, false, true, g_VeloFont);
-	}
-	else {
-		Render::Get().RenderText(" ", 10, 80, 18.f, g_Options.menucolor, false, true, g_VeloFont);
-	}
+	const char* dt;
+		if (g_Options.aimbot.dt && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive())
+			dt = "DT Be On";
 
-	if (g_Options.enablebeta)
-		Render::Get().RenderText("USING TEST", 10, 35, 18.f, g_Options.menucolor, false, true, g_VeloFont);
+	if (GetKeyState(g_Options.aimbot.dthotkey) && g_Options.aimbot.dt && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive())
+		Render::Get().RenderText(XorStr(dt), 10, 40, 16.f, g_Options.menucolor, false, true, SHitted);
+	else
+		Render::Get().RenderText(XorStr(" "), 10, 40, 16.f, g_Options.menucolor, false, true, SHitted);
 
-	if (g_Options.backtix > 16)
-		Render::Get().RenderText("WARNING: This Backtrack Can Be Unstable!", 10, 65, 18.f, g_Options.menucolor, false, true, g_VeloFont);
-		
-	if (g_Options.drawfov && c > 0)
+	if (g_EngineClient->IsInGame() && g_LocalPlayer && g_LocalPlayer->IsAlive() && g_Options.drawfov && c > 0)
 		Render::Get().RenderCircle(960.f, 540.f, c, 48, g_Options.menucolor, 1.3f);
 
 	if (g_EngineClient->IsInGame() && g_LocalPlayer)
 		Visuals::Get().AddToDrawList();
 
-	if (g_Options.noscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped()) {
-		Render::Get().RenderLine(screenWidth / 2, 0, screenWidth / 2, screenHeight, Color(0, 0, 0, 255), g_CVar->FindVar("cl_crosshair_sniper_width")->GetFloat());
-		Render::Get().RenderLine(0, screenHeight / 2, screenWidth, screenHeight / 2, Color(0, 0, 0, 255), g_CVar->FindVar("cl_crosshair_sniper_width")->GetFloat());
+	if (g_Options.noscope && g_EngineClient->IsInGame() && g_LocalPlayer->m_bIsScoped() && g_LocalPlayer->m_hActiveWeapon().Get() && !g_LocalPlayer->m_hActiveWeapon()->IsBallistic()) {
+		Render::Get().RenderLine(screenWidth / 2, 0, screenWidth / 2, screenHeight, Color(0, 0, 0, 255), g_CVar->FindVar(XorStr("cl_crosshair_sniper_width"))->GetFloat());
+		Render::Get().RenderLine(0, screenHeight / 2, screenWidth, screenHeight / 2, Color(0, 0, 0, 255), g_CVar->FindVar(XorStr("cl_crosshair_sniper_width"))->GetFloat());
 	}
 
 	render_mutex.lock();
@@ -150,7 +190,6 @@ ImDrawList* Render::RenderScene() {
 
 	return draw_list_rendering;
 }
-
 
 float Render::RenderText(const std::string& text, ImVec2 pos, float size, Color color, bool center, bool outline, ImFont* pFont)
 {

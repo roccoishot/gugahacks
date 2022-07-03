@@ -45,6 +45,11 @@ public:
         return ((float*)this)[i];
     }
 
+    bool __inline IsZero()
+    {
+        return x == 0.0f && y == 0.0f && z == 0.0f; //-V550
+    }
+
     void Zero()
     {
         x = y = z = 0.0f;

@@ -60,9 +60,10 @@ void CBlockBot::draw() {
 
     for (auto i = 1; i <= g_EntityList->GetHighestEntityIndex(); ++i) {
         auto entity = C_BasePlayer::GetPlayerByIndex(i);
-        if (!entity) continue;
+        if (!entity || !g_LocalPlayer) continue;
         if (!entity->IsPlayer()) continue;
         if (entity == g_LocalPlayer) continue;
+        if (entity->IsDormant()) continue;
         if (!entity->IsAlive()) continue;
 
         if (!Target || Target == nullptr)
@@ -79,7 +80,7 @@ void CBlockBot::draw() {
 
 void CBlockBot::cmove(CUserCmd* pCmd) {
 
-    auto i = 1; i <= g_GlobalVars->maxClients; i++;
+    auto i = 1; i <= g_EngineClient->GetMaxClients(); i++;
 
     if (!C_BasePlayer::GetPlayerByIndex(i))
         return;
@@ -101,7 +102,6 @@ void CBlockBot::cmove(CUserCmd* pCmd) {
                 (float)(offset.y * cos(yaw / 180 * PI_F) - offset.x * sin(yaw / 180 * PI_F)),
                 offset.z
             );
-
             pCmd->sidemove = translatedVelocity.y * 100;
             pCmd->forwardmove = -translatedVelocity.x * 100;
             pCmd->upmove = translatedVelocity.z;
@@ -128,5 +128,4 @@ void CBlockBot::cmove(CUserCmd* pCmd) {
             pCmd->upmove = 0;
         }
     }
-
 }

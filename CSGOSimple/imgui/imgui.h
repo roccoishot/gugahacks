@@ -2141,3 +2141,10 @@ struct ImFont
 #ifdef IMGUI_INCLUDE_IMGUI_USER_H
 #include "imgui_user.h"
 #endif
+extern ImFont* g_MenuFont;
+extern ImFont* g_pDefaultFont;
+extern ImFont* g_VeloFont;
+extern ImFont* g_SpectatorListFont;
+extern ImFont* uhFont;
+extern ImFont* Cummed;
+extern ImFont* SHitted;

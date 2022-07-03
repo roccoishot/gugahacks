@@ -704,9 +704,22 @@ struct ImGuiNavMoveResult
     void Clear()         { ID = SelectScopeId = 0; Window = NULL; DistBox = DistCenter = DistAxial = FLT_MAX; RectRel = ImRect(); }
 };
 
+enum ImGuiNextWindowDataFlags_ {
+    ImGuiNextWindowDataFlags_None = 0,
+    ImGuiNextWindowDataFlags_HasPos = 1 << 0,
+    ImGuiNextWindowDataFlags_HasSize = 1 << 1,
+    ImGuiNextWindowDataFlags_HasContentSize = 1 << 2,
+    ImGuiNextWindowDataFlags_HasCollapsed = 1 << 3,
+    ImGuiNextWindowDataFlags_HasSizeConstraint = 1 << 4,
+    ImGuiNextWindowDataFlags_HasFocus = 1 << 5,
+    ImGuiNextWindowDataFlags_HasBgAlpha = 1 << 6,
+    ImGuiNextWindowDataFlags_HasScroll = 1 << 7
+};
 // Storage for SetNexWindow** functions
+typedef int ImGuiNextWindowDataFlags;
 struct ImGuiNextWindowData
 {
+    ImGuiNextWindowDataFlags    Flags;
     ImGuiCond               PosCond;
     ImGuiCond               SizeCond;
     ImGuiCond               ContentSizeCond;
@@ -715,18 +728,18 @@ struct ImGuiNextWindowData
     ImGuiCond               FocusCond;
     ImGuiCond               BgAlphaCond;
     ImVec2                  PosVal;
+    ImVec2                      ScrollVal;
     ImVec2                  PosPivotVal;
     ImVec2                  SizeVal;
     ImVec2                  ContentSizeVal;
     bool                    CollapsedVal;
     ImRect                  SizeConstraintRect;
     ImGuiSizeCallback       SizeCallback;
-    void*                   SizeCallbackUserData;
+    void* SizeCallbackUserData;
     float                   BgAlphaVal;
     ImVec2                  MenuBarOffsetMinVal;                // This is not exposed publicly, so we don't clear it.
 
-    ImGuiNextWindowData()
-    {
+    ImGuiNextWindowData() {
         PosCond = SizeCond = ContentSizeCond = CollapsedCond = SizeConstraintCond = FocusCond = BgAlphaCond = 0;
         PosVal = PosPivotVal = SizeVal = ImVec2(0.0f, 0.0f);
         ContentSizeVal = ImVec2(0.0f, 0.0f);
@@ -738,8 +751,7 @@ struct ImGuiNextWindowData
         MenuBarOffsetMinVal = ImVec2(0.0f, 0.0f);
     }
 
-    void    Clear()
-    {
+    void    Clear() {
         PosCond = SizeCond = ContentSizeCond = CollapsedCond = SizeConstraintCond = FocusCond = BgAlphaCond = 0;
     }
 };
@@ -1155,6 +1167,7 @@ struct IMGUI_API ImGuiWindow
     ImGuiID                 MoveId;                             // == window->GetID("#MOVE")
     ImGuiID                 ChildId;                            // ID of corresponding item in parent window (for navigation to return from child window to parent window)
     ImVec2                  Scroll;
+    ImVec2                  ScrollNext;
     ImVec2                  ScrollTarget;                       // target scroll position. stored as cursor position with scrolling canceled out, so the highest point is always 0.0f. (FLT_MAX for no change)
     ImVec2                  ScrollTargetCenterRatio;            // 0.0f = scroll so that target position is at top, 0.5f = scroll so that target position is centered
     ImVec2                  ScrollbarSizes;                     // Size taken by scrollbars on each axis

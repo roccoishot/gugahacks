@@ -1,4 +1,4 @@
-#include "hooks.hpp"
+﻿#include "hooks.hpp"
 #include <intrin.h>  
 
 #include "render.hpp"
@@ -9,26 +9,29 @@
 #include "features/bhop.hpp"
 #include "features/chams.hpp"
 #include "features/visuals.hpp"
-#include "features/skins.h"
 #include "features/Misc.hpp"
 #include "backtrack.h"
-#include "./xor.h"
 #include "BetaAA.h"
 #include "OldPrediction.h"
 #include "Globals.h"
-#include "Colormodulation.h"
 #include "movement.h"
-#include "crypt_str.h"
-#include "blockbot.hpp"
-#include "lagcompensation.h"
-#include "FixSkyboxes.h"
-#include "ragebot/ragebot.hpp"
+#include "xor.h"
+#include "./features/skins.h"
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
 #define XorStr
 #endif
 #pragma intrinsic(_ReturnAddress)  
+#include "blockbot.hpp"
+#include "resolver.h"
+#include "FixSkyboxes.h"
+#include "ColorMod.h"
+#include "DirectStrafe.hpp"
+#include "features/glow.hpp"
+#include "detours.h"
+#include "sexynutssexyfuckdickshitnigga.h"
+#include "Rollangles.h"
 
 namespace Hooks {
 
@@ -47,27 +50,46 @@ namespace Hooks {
 
 		ConVar* sv_cheats_con = g_CVar->FindVar("sv_cheats");
 		sv_cheats.setup(sv_cheats_con);
+		
+		static auto cl_move = (DWORD)(Utils::PatternScan(GetModuleHandleA(XorStr("engine.dll")), XorStr("55 8B EC 81 EC ? ? ? ? 53 56 8A F9")));
+		original_clmove = (DWORD)DetourFunction((PBYTE)cl_move, (PBYTE)hkClMove);
 
+		/*using Hooked_FindOrAddFileNamefn = void* (__thiscall*)(IFileSystem*, char const*);
+		FindOrAddFileName_hook.setup(g_FileSystem);*/
 
 		gameevents_hook.setup(g_GameEvents);
 		gameevents_hook.hook_index(index::FireEvent, hkFireEvent);
 		direct3d_hook.hook_index(index::EndScene, hkEndScene);
 		direct3d_hook.hook_index(index::Reset, hkReset);
 		hlclient_hook.hook_index(index::FrameStageNotify, hkFrameStageNotify);
-		//hlclient_hook.hook_index(index::CreateMove, hkCreateMove_Proxy); // uncomment when fixed lmao!
-		cm_hook->hook_function(reinterpret_cast<uintptr_t>(hkCreateMove), 24);
+		hlclient_hook.hook_index(index::CreateMove, hkCreateMove_Proxy); // uncomment when fixed lmao!
+		//cm_hook->hook_function(reinterpret_cast<uintptr_t>(hkCreateMove), 24);
 		vguipanel_hook.hook_index(index::PaintTraverse, hkPaintTraverse);
 		sound_hook.hook_index(index::EmitSound1, hkEmitSound1);
 		vguisurf_hook.hook_index(index::LockCursor, hkLockCursor);
 		mdlrender_hook.hook_index(index::DrawModelExecute, hkDrawModelExecute);
 		clientmode_hook.hook_index(index::DoPostScreenSpaceEffects, hkDoPostScreenEffects);
-		clientmode_hook.hook_index(index::OverrideView, hkOverrideView);
+		cm_hook->hook_function(reinterpret_cast<uintptr_t>(hkOverrideView), 18);
 		sv_cheats.hook_index(index::SvCheatsGetBool, hkSvCheatsGetBool);
 		stdrender_hook.hook_index(index::DrawModelExecute2, hkDrawModelExecute2);
 		viewrender_hook.hook_index(index::RenderSmokeOverlay, RenderSmokeOverlay);
+		//netgraphtext_hook.hook_index(index::NetGraph, hkNetGraph);
 
-		sequence_hook = new recv_prop_hook(C_BaseViewModel::m_nSequence(), RecvProxy);
+		/*auto g_pFileSystem = **reinterpret_cast<void***>(Utils::PatternScan(x("engine.dll"), x("8B 0D ? ? ? ? 8D 95 ? ? ? ? 6A 00 C6")) + 0x2);
+		if (g_pFileSystem)
+		{
+			filesystem_hook->set_base(g_pFileSystem);
+			filesystem_hook->hook_index(128, hkLooseFileAllowed);
+		}*/
+
+		/*bool __fastcall hkLooseFileAllowed(void* ecx, void* edx)
+		{
+			return true;
+		}*/
 	}
+
+	
+
 	//--------------------------------------------------------------------------------
 	void Shutdown()
 	{
@@ -82,6 +104,21 @@ namespace Hooks {
 
 		sequence_hook->~recv_prop_hook();
 
+		//Glow::Get().Shutdown();
+
+	}
+
+	bool __fastcall hkNetGraph(void* ecx, void* edx)
+	{
+		static auto ofunc = netgraphtext_hook.get_original<netgraphtextFn>(index::NetGraph);
+
+		void* returna = _ReturnAddress();
+		static auto v1 = (DWORD)Utils::PatternScan(GetModuleHandleA(XorStr("client.dll")), XorStr("85 C0 0F 84 ? ? ? ? A1 ? ? ? ? 0F 57 C0 F3 0F 10 48"));
+		static auto cnetgraph = **(uintptr_t**)(Utils::PatternScan(GetModuleHandleA(XorStr("client.dll")), XorStr("89 1D ? ? ? ? 8B C3 5B 8B E5 5D C2 04")) + 2);
+		if (reinterpret_cast<DWORD>(returna) == (v1))
+			*(float*)(cnetgraph + 0x131B8) = (0 / 1000.0f); //fps
+
+		return ofunc(ecx);
 	}
 
 	bool __fastcall send_net_msg(void* ecx, void* edx, INetMessage* msg, bool reliable, bool voice)
@@ -104,304 +141,323 @@ namespace Hooks {
 		if (!pEvent)
 			return oFireEvent(g_GameEvents, pEvent);
 
-		const char* szEventName = pEvent->GetName();
-
-
-		if (!strcmp(szEventName, "server_spawn"))
-		{
-
-			const auto net_channel = g_EngineClient->GetNetChannelInfo();
-
-			if (net_channel != nullptr)
-			{
-				const auto index = 40;
-				Hooks::hk_netchannel.setup(net_channel);
-				Hooks::hk_netchannel.hook_index(index, send_net_msg);
-			}
-		}
-
 		return oFireEvent(g_GameEvents, pEvent);
 	}
+
 	//--------------------------------------------------------------------------------
 	long __stdcall hkEndScene(IDirect3DDevice9* pDevice)
 	{
 		static auto oEndScene = direct3d_hook.get_original<decltype(&hkEndScene)>(index::EndScene);
 
-		static uintptr_t gameoverlay_return_address = 0;
+		if (g_Options.antiobs) {
+			static uintptr_t gameoverlay_return_address = 0;
 
-		if (!gameoverlay_return_address) {
-			MEMORY_BASIC_INFORMATION info;
-			VirtualQuery(_ReturnAddress(), &info, sizeof(MEMORY_BASIC_INFORMATION));
+			if (!gameoverlay_return_address) {
+				MEMORY_BASIC_INFORMATION info;
+				VirtualQuery(_ReturnAddress(), &info, sizeof(MEMORY_BASIC_INFORMATION));
 
-			char mod[MAX_PATH];
-			GetModuleFileNameA((HMODULE)info.AllocationBase, mod, MAX_PATH);
+				char mod[MAX_PATH];
+				GetModuleFileNameA((HMODULE)info.AllocationBase, mod, MAX_PATH);
 
-			if (strstr(mod, XorStr("gameoverlay")))
-				gameoverlay_return_address = (uintptr_t)(_ReturnAddress());
+				if (strstr(mod, XorStr("gameoverlay")))
+					gameoverlay_return_address = (uintptr_t)(_ReturnAddress());
+			}
+
+			if (gameoverlay_return_address != (uintptr_t)(_ReturnAddress()))
+				return oEndScene(pDevice);
 		}
 
-		if (gameoverlay_return_address != (uintptr_t)(_ReturnAddress()) && g_Options.antiobs)
-			return oEndScene(pDevice);
+		static auto setthemcheat = g_CVar->FindVar(XorStr("sv_cheats"));
+		if (setthemcheat->GetInt() != 1)
+		setthemcheat->SetValue(1);
 
-		//Viewmodel Sheeeesh 
-		//Viewmodel FOV
-		if (g_Options.enablechanger) {
-			static auto viewmodel_fov = g_CVar->FindVar("viewmodel_fov");
-			viewmodel_fov->m_fnChangeCallbacks.m_Size = 0;
-			viewmodel_fov->SetValue(g_Options.viewmodel_fov);
-			//Viewmodel X
-			static auto viewmodel_offset_x = g_CVar->FindVar("viewmodel_offset_x");
-			viewmodel_offset_x->m_fnChangeCallbacks.m_Size = 0;
-			viewmodel_offset_x->SetValue(g_Options.viewmodel_offset_x);
-			//Viewmodel Y
-			static auto viewmodel_offset_y = g_CVar->FindVar("viewmodel_offset_y");
-			viewmodel_offset_y->m_fnChangeCallbacks.m_Size = 0;
-			viewmodel_offset_y->SetValue(g_Options.viewmodel_offset_y);
-			//Viewmodel Z
-			static auto viewmodel_offset_z = g_CVar->FindVar("viewmodel_offset_z");
-			viewmodel_offset_z->m_fnChangeCallbacks.m_Size = 0;
-			viewmodel_offset_z->SetValue(g_Options.viewmodel_offset_z);
+		if (g_Options.viewmodel_fov)
+		{
+			auto viewFOV = (float)g_Options.viewmodel_fov + 68.0f;
+			static auto viewFOVcvar = g_CVar->FindVar(XorStr("viewmodel_fov"));
+
+			if (viewFOVcvar->GetFloat() != viewFOV) //-V550
+			{
+				*(float*)((DWORD)&viewFOVcvar->m_fnChangeCallbacks + 0xC) = 0.0f;
+				viewFOVcvar->SetValue(viewFOV);
+			}
 		}
 
-		//sv_cheats force
-		static auto cheatsforcer = g_CVar->FindVar("sv_cheats");
-		cheatsforcer->m_fnChangeCallbacks.m_Size = 0;
-		cheatsforcer->SetValue(1);
+		if (g_Options.viewmodel_offset_x)
+		{
+			auto viewX = (float)g_Options.viewmodel_offset_x / 2.5f;
+			static auto viewXcvar = g_CVar->FindVar(XorStr("viewmodel_offset_x")); //-V807
+
+			if (viewXcvar->GetFloat() != viewX) //-V550
+			{
+				*(float*)((DWORD)&viewXcvar->m_fnChangeCallbacks + 0xC) = 0.0f;
+				viewXcvar->SetValue(viewX);
+			}
+		}
+
+		if (g_Options.viewmodel_offset_y)
+		{
+			auto viewY = (float)g_Options.viewmodel_offset_y / 2.0f;
+			static auto viewYcvar = g_CVar->FindVar(XorStr("viewmodel_offset_y"));
+
+			if (viewYcvar->GetFloat() != viewY) //-V550
+			{
+				*(float*)((DWORD)&viewYcvar->m_fnChangeCallbacks + 0xC) = 0.0f;
+				viewYcvar->SetValue(viewY);
+			}
+		}
+
+		if (g_Options.viewmodel_offset_z)
+		{
+			auto viewZ = (float)g_Options.viewmodel_offset_z / 2.0f;
+			static auto viewZcvar = g_CVar->FindVar(XorStr("viewmodel_offset_z"));
+
+			if (viewZcvar->GetFloat() != viewZ) //-V550
+			{
+				*(float*)((DWORD)&viewZcvar->m_fnChangeCallbacks + 0xC) = 0.0f;
+				viewZcvar->SetValue(viewZ);
+			}
+		}
 
 		if (g_Options.fullbright == true) {
-			static auto fullbright = g_CVar->FindVar("mat_fullbright");
+			static auto fullbright = g_CVar->FindVar(XorStr("mat_fullbright"));
 			fullbright->m_fnChangeCallbacks.m_Size = 0;
-			fullbright->SetValue(1);
+			fullbright->SetValue(TRUE);
 		}
 		if (g_Options.fullbright == false) {
-			static auto fullbright = g_CVar->FindVar("mat_fullbright");
+			static auto fullbright = g_CVar->FindVar(XorStr("mat_fullbright"));
 			fullbright->m_fnChangeCallbacks.m_Size = 0;
-			fullbright->SetValue(0);
+			fullbright->SetValue(FALSE);
 		}
 
 		//Metallic Props
 		if (g_Options.metallica == true) {
-			static auto metallica = g_CVar->FindVar("r_showenvcubemap");
+			static auto metallica = g_CVar->FindVar(XorStr("r_showenvcubemap"));
 			metallica->m_fnChangeCallbacks.m_Size = 0;
-			metallica->SetValue(1);
+			metallica->SetValue(TRUE);
 		}
 		if (g_Options.metallica == false) {
-			static auto metallica = g_CVar->FindVar("r_showenvcubemap");
+			static auto metallica = g_CVar->FindVar(XorStr("r_showenvcubemap"));
 			metallica->m_fnChangeCallbacks.m_Size = 0;
-			metallica->SetValue(0);
+			metallica->SetValue(FALSE);
 		}
 
-		static auto r_modelAmbientMin = g_CVar->FindVar("r_modelAmbientMin");
+		static auto r_modelAmbientMin = g_CVar->FindVar(XorStr("r_modelAmbientMin"));
 		if (g_Options.amibence && r_modelAmbientMin->GetFloat() != g_Options.amibence * 0.05f) //-V550
 			r_modelAmbientMin->SetValue(g_Options.amibence * 0.05f);
 		else if ((g_Options.amibence < 2.f) && r_modelAmbientMin->GetFloat())
-			r_modelAmbientMin->SetValue(0.0f);
-
-
-		//Shot Info
-		if (g_Options.shotinfo == false) {
-			static auto shotinfo = g_CVar->FindVar("cl_weapon_debug_show_accuracy");
-			shotinfo->m_fnChangeCallbacks.m_Size = 0;
-			shotinfo->SetValue(0);
-		}
-		if (g_Options.shotinfo == true) {
-			static auto shotinfo = g_CVar->FindVar("cl_weapon_debug_show_accuracy");
-			shotinfo->m_fnChangeCallbacks.m_Size = 0;
-			shotinfo->SetValue(2);
-		}
+			r_modelAmbientMin->SetValue(XorStr("0"));
 
 		//Matrix Mode
 		if (g_Options.matrix == true) {
-			static auto matrix = g_CVar->FindVar("mat_luxels");
+			static auto matrix = g_CVar->FindVar(XorStr("mat_luxels"));
 			matrix->m_fnChangeCallbacks.m_Size = 0;
-			matrix->SetValue(1);
+			matrix->SetValue(TRUE);
 		}
 		if (g_Options.matrix == false) {
-			static auto matrix = g_CVar->FindVar("mat_luxels");
+			static auto matrix = g_CVar->FindVar(XorStr("mat_luxels"));
 			matrix->m_fnChangeCallbacks.m_Size = 0;
-			matrix->SetValue(0);
+			matrix->SetValue(FALSE);
 		}
 
 		//Disable Blur
-		static auto disableblur = g_CVar->FindVar("@panorama_disable_blur");
+		static auto disableblur = g_CVar->FindVar(XorStr("@panorama_disable_blur"));
 		disableblur->m_fnChangeCallbacks.m_Size = 0;
 		disableblur->SetValue(g_Options.removeblur);
 
 		//aspectratio
 		if (g_Options.aspectchange == true) {
-			static auto r_aspectratio = g_CVar->FindVar("r_aspectratio");
+			static auto r_aspectratio = g_CVar->FindVar(XorStr("r_aspectratio"));
 			r_aspectratio->m_fnChangeCallbacks.m_Size = 0;
 			r_aspectratio->SetValue(g_Options.aspectratio);
 		}
 		else if (g_Options.aspectchange == false) {
-			static auto r_aspectratio = g_CVar->FindVar("r_aspectratio");
+			static auto r_aspectratio = g_CVar->FindVar(XorStr("r_aspectratio"));
 			r_aspectratio->m_fnChangeCallbacks.m_Size = 0;
-			r_aspectratio->SetValue("0");
+			r_aspectratio->SetValue(XorStr("0"));
 		}
 
-		//Fake Ping Exploits
+		if (g_Options.faketicks >= 1)
+		{
+			static auto unlag = g_CVar->FindVar(XorStr("sv_maxunlag"));
+			unlag->m_fnChangeCallbacks.m_Size = 0;
+			unlag->SetValue(XorStr("1.000"));
+		}
+
+		//Fake Ping
 		if (g_Options.fakepingkey == 0) {
 			if (g_Options.fakeping == true && g_EngineClient->IsInGame()) {
-				static auto fakeping = g_CVar->FindVar("net_fakelag");
+				static auto fakeping = g_CVar->FindVar(XorStr("net_fakelag"));
 				fakeping->m_fnChangeCallbacks.m_Size = 0;
 				fakeping->SetValue(g_Options.fakepingzzz);
-				static auto unlag = g_CVar->FindVar("sv_maxunlag");
-				unlag->m_fnChangeCallbacks.m_Size = 0;
-				unlag->SetValue(g_Options.fakepingzzz);
 			}
 			if (g_Options.fakeping == false) {
-				static auto fakeping = g_CVar->FindVar("net_fakelag");
+				static auto fakeping = g_CVar->FindVar(XorStr("net_fakelag"));
 				fakeping->m_fnChangeCallbacks.m_Size = 0;
 				fakeping->SetValue(0);
-				static auto unlag = g_CVar->FindVar("sv_maxunlag");
-				unlag->m_fnChangeCallbacks.m_Size = 0;
-				unlag->SetValue("0.200");
 			}
 		}
-		if (!g_Options.fakepingkey == 0) {
+		if (g_Options.fakepingkey != 0) {
 			if (GetAsyncKeyState(g_Options.fakepingkey)) {
 				if (g_Options.fakeping && g_EngineClient->IsInGame()) {
-					static auto fakeping = g_CVar->FindVar("net_fakelag");
+					static auto fakeping = g_CVar->FindVar(XorStr("net_fakelag"));
 					fakeping->m_fnChangeCallbacks.m_Size = 0;
 					fakeping->SetValue(g_Options.fakepingzzz);
-					static auto unlag = g_CVar->FindVar("sv_maxunlag");
-					unlag->m_fnChangeCallbacks.m_Size = 0;
-					unlag->SetValue(g_Options.fakepingzzz);
 				}
 			}
 			else {
-				static auto fakeping = g_CVar->FindVar("net_fakelag");
+				static auto fakeping = g_CVar->FindVar(XorStr("net_fakelag"));
 				fakeping->m_fnChangeCallbacks.m_Size = 0;
 				fakeping->SetValue(0);
-				static auto unlag = g_CVar->FindVar("sv_maxunlag");
-				unlag->m_fnChangeCallbacks.m_Size = 0;
-				unlag->SetValue("0.200");
 			}
 		}
 
 		//Nade Prediction
-		static auto pnade = g_CVar->FindVar("cl_grenadepreview");
+		static auto pnade = g_CVar->FindVar(XorStr("cl_grenadepreview"));
+		if (pnade->GetInt() != g_Options.pnade)
 		pnade->SetValue(g_Options.pnade);
 
 		//Ragdoll Gravity
 		if (g_Options.ragfloat == true) {
-			static auto levito = g_CVar->FindVar("cl_ragdoll_gravity");
-			levito->SetValue("-1");
+			static auto levito = g_CVar->FindVar(XorStr("cl_ragdoll_gravity"));
+			levito->SetValue(XorStr("-1"));
 		}
 		if (g_Options.ragfloat == false) {
-			static auto levito = g_CVar->FindVar("cl_ragdoll_gravity");
-			levito->SetValue("600");
+			static auto levito = g_CVar->FindVar(XorStr("cl_ragdoll_gravity"));
+			levito->SetValue(XorStr("600"));
 		}
 
 		//Sky Changer
 		if (g_Options.sky_changer) {
 			if (g_Options.skyshitsssss == 0) {
-				static auto buttsex = g_CVar->FindVar("sv_skyname");
-				buttsex->SetValue("sky_csgo_night02");
+				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+				buttsex->SetValue(XorStr("sky_csgo_night02"));
 			}
 			if (g_Options.skyshitsssss == 1) {
-				static auto buttsex = g_CVar->FindVar("sv_skyname");
-				buttsex->SetValue("cs_baggage_skybox_");
+				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+				buttsex->SetValue(XorStr("cs_baggage_skybox_"));
 			}
 			if (g_Options.skyshitsssss == 2) {
-				static auto buttsex = g_CVar->FindVar("sv_skyname");
-				buttsex->SetValue("cs_tibet");
+				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+				buttsex->SetValue(XorStr("cs_tibet"));
 			}
 			if (g_Options.skyshitsssss == 3) {
-				static auto buttsex = g_CVar->FindVar("sv_skyname");
-				buttsex->SetValue("vietnam");
+				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+				buttsex->SetValue(XorStr("vietnam"));
 			}
 			if (g_Options.skyshitsssss == 4) {
-				static auto buttsex = g_CVar->FindVar("sv_skyname");
-				buttsex->SetValue("sky_lunacy");
+				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+				buttsex->SetValue(XorStr("sky_lunacy"));
 			}
 			if (g_Options.skyshitsssss == 5) {
-				static auto buttsex = g_CVar->FindVar("sv_skyname");
-				buttsex->SetValue("embassy");
+				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+				buttsex->SetValue(XorStr("embassy"));
 			}
 			if (g_Options.skyshitsssss == 6) {
-				static auto buttsex = g_CVar->FindVar("sv_skyname");
-				buttsex->SetValue("italy");
+				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+				buttsex->SetValue(XorStr("italy"));
 			}
 			if (g_Options.skyshitsssss == 7) {
-				static auto buttsex = g_CVar->FindVar("sv_skyname");
-				buttsex->SetValue("italy");
+				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+				buttsex->SetValue(XorStr("jungle"));
 			}
 			if (g_Options.skyshitsssss == 8) {
-				static auto buttsex = g_CVar->FindVar("sv_skyname");
-				buttsex->SetValue("office");
+				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+				buttsex->SetValue(XorStr("office"));
 			}
 			if (g_Options.skyshitsssss == 9) {
-				static auto buttsex = g_CVar->FindVar("sv_skyname");
-				buttsex->SetValue("sky_cs15_daylight02_hdr");
+				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+				buttsex->SetValue(XorStr("sky_cs15_daylight02_hdr"));
 			}
 			if (g_Options.skyshitsssss == 10) {
-				static auto buttsex = g_CVar->FindVar("sv_skyname");
-				buttsex->SetValue("sky_csgo_cloudy01");
+				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+				buttsex->SetValue(XorStr("sky_csgo_cloudy01"));
 			}
 			if (g_Options.skyshitsssss == 11) {
-				static auto buttsex = g_CVar->FindVar("sv_skyname");
-				buttsex->SetValue("sky_dust");
+				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+				buttsex->SetValue(XorStr("sky_dust"));
 			}
 		}
 
 		//Recoil Crosshair
 		if (g_Options.rcross == false) {
-			static auto recoilcrosshaii = g_CVar->FindVar("cl_crosshair_recoil");
-			recoilcrosshaii->SetValue(0);
+			static auto recoilcrosshaii = g_CVar->FindVar(XorStr("cl_crosshair_recoil"));
+			recoilcrosshaii->SetValue(FALSE);
 		}
 		else if (g_Options.rcross == true) {
-			static auto recoilcrosshaii = g_CVar->FindVar("cl_crosshair_recoil");
-			recoilcrosshaii->SetValue(1);
+			static auto recoilcrosshaii = g_CVar->FindVar(XorStr("cl_crosshair_recoil"));
+			recoilcrosshaii->SetValue(TRUE);
 		}
 
 		if (g_Options.disablepro == true) {
-			static auto GETITOUT = g_CVar->FindVar("mat_postprocess_enable");
-			GETITOUT->SetValue(0);
+			static auto GETITOUT = g_CVar->FindVar(XorStr("mat_postprocess_enable"));
+			GETITOUT->SetValue(FALSE);
 		}
 		if (g_Options.disablepro == false) {
-			static auto GETITOUT = g_CVar->FindVar("mat_postprocess_enable");
-			GETITOUT->SetValue(1);
+			static auto GETITOUT = g_CVar->FindVar(XorStr("mat_postprocess_enable"));
+			GETITOUT->SetValue(TRUE);
 		}
 
 		//Far Esp
-		static auto faresp = g_CVar->FindVar("r_drawallrenderables");
+		static auto faresp = g_CVar->FindVar(XorStr("r_drawallrenderables"));
+		if (faresp->GetInt() != g_Options.faresp)
 		faresp->SetValue(g_Options.faresp);
 
 		//Fog
-		static auto fog_override = g_CVar->FindVar(crypt_str("fog_override")); //-V807
-		if (!g_Options.fogchanga)
+		static auto fog_override = g_CVar->FindVar(XorStr("fog_override")); //-V807
+		if (!g_Options.fogoverride)
 		{
 			if (fog_override->GetBool())
 				fog_override->SetValue(FALSE);
 		}
 		if (!fog_override->GetBool())
 			fog_override->SetValue(TRUE);
-		static auto fog_start = g_CVar->FindVar(crypt_str("fog_start"));
+		static auto fog_start = g_CVar->FindVar(XorStr("fog_start"));
 		if (fog_start->GetInt())
 			fog_start->SetValue(0);
-		static auto fog_end = g_CVar->FindVar(crypt_str("fog_end"));
+		static auto fog_end = g_CVar->FindVar(XorStr("fog_end"));
 		if (fog_end->GetInt() != g_Options.fogfardamn)
 			fog_end->SetValue(g_Options.fogfardamn);
-		static auto fog_maxdensity = g_CVar->FindVar(crypt_str("fog_maxdensity"));
+		static auto fog_maxdensity = g_CVar->FindVar(XorStr("fog_maxdensity"));
 		if (fog_maxdensity->GetFloat() != (float)g_Options.fogdens * 0.01f) //-V550
 			fog_maxdensity->SetValue((float)g_Options.fogdens * 0.01f);
 		char buffer_color[12];
 		sprintf_s(buffer_color, 12, "%i %i %i", g_Options.fogcoluh.r(), g_Options.fogcoluh.g(), g_Options.fogcoluh.b());
-		static auto fog_color = g_CVar->FindVar(crypt_str("fog_color"));
+		static auto fog_color = g_CVar->FindVar(XorStr("fog_color"));
 		if (strcmp(fog_color->GetString(), buffer_color)) //-V526
 			fog_color->SetValue(buffer_color);
 		//World Glow
-		static auto mat_ambient_light_r = g_CVar->FindVar("mat_ambient_light_r");
-		static auto mat_ambient_light_g = g_CVar->FindVar("mat_ambient_light_g");
-		static auto mat_ambient_light_b = g_CVar->FindVar("mat_ambient_light_b");
-		mat_ambient_light_r->SetValue(g_Options.worldglowr);
-		mat_ambient_light_g->SetValue(g_Options.worldglowg);
-		mat_ambient_light_b->SetValue(g_Options.worldglowb);
+		static auto mat_ambient_light_r = g_CVar->FindVar(XorStr("mat_ambient_light_r"));
+		static auto mat_ambient_light_g = g_CVar->FindVar(XorStr("mat_ambient_light_g"));
+		static auto mat_ambient_light_b = g_CVar->FindVar(XorStr("mat_ambient_light_b"));
+
+		if (mat_ambient_light_r->GetFloat() != g_Options.color_worldglow.r() / 255.f)
+		mat_ambient_light_r->SetValue(g_Options.color_worldglow.r() / 255.f);
+		if (mat_ambient_light_g->GetFloat() != g_Options.color_worldglow.g() / 255.f)
+		mat_ambient_light_g->SetValue(g_Options.color_worldglow.g() / 255.f);
+		if (mat_ambient_light_b->GetFloat() != g_Options.color_worldglow.b() / 255.f)
+		mat_ambient_light_b->SetValue(g_Options.color_worldglow.b() / 255.f);
+
 		DWORD colorwrite, srgbwrite;
 		IDirect3DVertexDeclaration9* vert_dec = nullptr;
 		IDirect3DVertexShader9* vert_shader = nullptr;
 		DWORD dwOld_D3DRS_COLORWRITEENABLE = NULL;
+		pDevice->GetRenderState(D3DRS_COLORWRITEENABLE, &colorwrite);
+		pDevice->GetRenderState(D3DRS_SRGBWRITEENABLE, &srgbwrite);
+
+		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0xffffffff);
+		//removes the source engine color correction
+		pDevice->SetRenderState(D3DRS_SRGBWRITEENABLE, false);
+
+		pDevice->GetRenderState(D3DRS_COLORWRITEENABLE, &dwOld_D3DRS_COLORWRITEENABLE);
+		pDevice->GetVertexDeclaration(&vert_dec);
+		pDevice->GetVertexShader(&vert_shader);
+		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0xffffffff);
+		pDevice->SetRenderState(D3DRS_SRGBWRITEENABLE, false);
+		pDevice->SetSamplerState(NULL, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+		pDevice->SetSamplerState(NULL, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+		pDevice->SetSamplerState(NULL, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
+		pDevice->SetSamplerState(NULL, D3DSAMP_SRGBTEXTURE, NULL);
 
 
 		ImGui_ImplDX9_NewFrame();
@@ -411,54 +467,22 @@ namespace Hooks {
 
 		auto esp_drawlist = Render::Get().RenderScene();
 
-		Menu::Get().Render();
 		Menu::Get().SpecList();
+		Menu::Get().Render();
 
 
 		ImGui::Render(esp_drawlist);
 
 		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 
+		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, colorwrite);
+		pDevice->SetRenderState(D3DRS_SRGBWRITEENABLE, srgbwrite);
+		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, dwOld_D3DRS_COLORWRITEENABLE);
+		pDevice->SetRenderState(D3DRS_SRGBWRITEENABLE, true);
+		pDevice->SetVertexDeclaration(vert_dec);
+		pDevice->SetVertexShader(vert_shader);
+
 		return oEndScene(pDevice);
-		IDirect3DStateBlock9* pixel_state = NULL; IDirect3DVertexDeclaration9* vertDec; IDirect3DVertexShader9* vertShader;
-
-
-		void SaveState(IDirect3DDevice9 * device);
-		{
-			D3DVIEWPORT9 d3d_viewport;
-			pDevice->GetViewport(&d3d_viewport);
-
-			pDevice->CreateStateBlock(D3DSBT_ALL, &pixel_state);
-			pixel_state->Capture();
-
-			pDevice->SetVertexShader(nullptr);
-			pDevice->SetPixelShader(nullptr);
-			pDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
-
-			pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-			pDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
-			pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-			pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-
-			pDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);
-			pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
-			pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-			pDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
-
-			pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
-			pDevice->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, TRUE);
-
-			pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-			pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE);
-			pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			pDevice->SetRenderState(D3DRS_SRCBLENDALPHA, D3DBLEND_INVDESTALPHA);
-			pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-			pDevice->SetRenderState(D3DRS_DESTBLENDALPHA, D3DBLEND_ONE);
-
-			pDevice->SetRenderState(D3DRS_SRGBWRITEENABLE, FALSE);
-			pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
-		}
 	}
 	//--------------------------------------------------------------------------------
 	long __stdcall hkReset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters)
@@ -475,173 +499,62 @@ namespace Hooks {
 		return hr;
 	}
 	//--------------------------------------------------------------------------------
-	using CreateMove_t = bool(__thiscall*)(IClientMode*, float, CUserCmd*);
-	void __stdcall hkCreateMove(float smt, CUserCmd* cmd)
+	DWORD original_clmove;
+
+	typedef void(__vectorcall* cl_move_t)(float, bool);
+	void __vectorcall hkClMove(float accumulated_extra_samples, bool bFinalTick)
 	{
-		//cm_hook->get_func_address< CreateMove_t >(24); // TODO: use this and rewrite this
-		static auto oCreateMove = cm_hook->get_func_address< CreateMove_t >(24);
+		if (g_Options.fdkey != 0) {
+			if (g_Options.fakeduck && GetAsyncKeyState(g_Options.fdkey))
+			{
+				Globals::tochargeamount = g_Options.aimbot.dtticks + 2;
+				return (cl_move_t(original_clmove)(accumulated_extra_samples, bFinalTick));
+			}
+		}
 
-		oCreateMove(g_ClientMode, smt, cmd);
-
-		//auto cmd = g_Input->GetUserCmd(sequence_number);
-		//auto verified = g_Input->GetVerifiedCmd(sequence_number);
-
-
-		if (!cmd || !cmd->command_number)
+		if (g_ClientState->iChokedCommands > 1)
+		{
+			Globals::tochargeamount = g_Options.aimbot.dtticks + 2;
+			return (cl_move_t(original_clmove)(accumulated_extra_samples, bFinalTick));
+		}
+		
+		if (Globals::startcharge && Globals::tocharge < Globals::tochargeamount)
+		{
+			Globals::tocharge++;
+			Globals::ticks_allowed = Globals::tocharge;
+			g_GlobalVars->interpolation_amount = 0.f;
 			return;
-
-		uintptr_t* fp;
-		__asm mov fp, ebp;
-		bool* bSendPacket = (bool*)(*fp - 0x1C);
-
-		QAngle oldAngle = cmd->viewangles;
-
-		IGameEvent* event;
-
-		static auto fov_cs_debug = g_CVar->FindVar("fov_cs_debug");
-
-		if (g_Options.fovscope) {
-			if (g_LocalPlayer)
-				fov_cs_debug->SetValue(g_Options.fovchangaaa);
-			if (g_Options.fovchangaaa == 0)
-				fov_cs_debug->SetValue("90");
-		}
-		if (!g_Options.fovscope) {
-			if (g_LocalPlayer)
-				fov_cs_debug->SetValue(g_Options.fovchangaaa);
-			if (g_LocalPlayer && g_LocalPlayer->m_bIsScoped())
-				fov_cs_debug->SetValue(0);
 		}
 
-			if (g_LocalPlayer && !g_LocalPlayer->m_bIsScoped() && g_Options.noscope) {
-				static auto noscopa = g_CVar->FindVar("cl_drawhud");
-				noscopa->SetValue(1);
-			}
-			if (g_LocalPlayer && g_LocalPlayer->m_bIsScoped() && g_Options.noscope) {
-				static auto noscopa = g_CVar->FindVar("cl_drawhud");
-				noscopa->SetValue(0);
-			}
-		if (!g_Options.noscope) {
-			static auto noscopa = g_CVar->FindVar("cl_drawhud");
-			noscopa->SetValue(1);
-		}
+		(cl_move_t(original_clmove)(accumulated_extra_samples, bFinalTick));
 
-		Globals::m_cmd = cmd;
 
-		if (g_Options.misc_backtrack) {
-			TimeWarp().Get().CreateMove(cmd);
-		}
-
-		if (g_Options.misc_chatspam) {
-			Misc::Get().ChatSpama(cmd);
-		}
-
-		if (g_Options.slidewalk)
-			Misc::Get().SilentWalk(cmd);
-
-		QAngle LastAngle = QAngle(0, 0, 0);
-		Math::Normalize3(cmd->viewangles);
-		Math::ClampAngles(cmd->viewangles);
-		LastAngle = cmd->viewangles;
-		float oldForward;
-		float oldSideMove;
-		g_EngineClient->GetViewAngles(&oldAngle);
-		oldForward = cmd->forwardmove;
-		oldSideMove = cmd->sidemove;
-		if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
-			Misc::Get().MovementFix(oldAngle, cmd, oldForward, oldSideMove);
-		Math::Normalize3(LastAngle);
-		if (g_Options.nocool)
-			cmd->buttons |= IN_BULLRUSH;
-		Math::CorrectMovement(cmd, oldAngle, cmd->viewangles);
-		//verified->m_cmd = *cmd;
-		//verified->m_crc = cmd->GetChecksum();
-
-		if (Menu::Get().IsVisible())
-			cmd->buttons &= ~IN_ATTACK;
-
-		if (g_Options.misc_bhop)
-			BunnyHop::OnCreateMove(cmd);
-		if (GetAsyncKeyState(g_Options.AutoStafe_key))
-			BunnyHop::AutoStafe(cmd);
-
-		movement::edgebug(cmd);
-
-		if (g_EngineClient->IsInGame())
-			Visuals::Get().ThirdPerson();
-
-		CRageBot::Get().PrecacheShit();
-
-		CPredictionSystem::Get().Start(cmd, g_LocalPlayer);
+		while (Globals::shift_ticks)
 		{
-			Misc::Get().UpdateLBY(cmd, *bSendPacket);
-			CRageBot::Get().CreateMove(cmd, *bSendPacket);
-			movement::jumpbug(cmd);
-			Misc::Get().SlowWalk(cmd);
-			CAntiAim::Get().CreateMove(cmd, *bSendPacket);
+			Globals::is_shifting = true;
+			Globals::shift_ticks--;
+			Globals::tocharge--;
+			(cl_move_t(original_clmove)(accumulated_extra_samples, bFinalTick));
 		}
-		CPredictionSystem::Get().End(g_LocalPlayer);
-		Misc::Get().ClanTag();
-		Misc::Get().Sexdick(cmd, *bSendPacket);
-		Math::Normalize3(cmd->viewangles);
-		Math::ClampAngles(cmd->viewangles);
-		LastAngle = cmd->viewangles;
-		g_EngineClient->GetViewAngles(&oldAngle);
-		oldForward = cmd->forwardmove;
-		oldSideMove = cmd->sidemove;
-		if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
-			Misc::Get().MovementFix(oldAngle, cmd, oldForward, oldSideMove);
-
-		static auto prediction = new PredictionSystem();
-		auto flags = g_LocalPlayer->m_fFlags();
-		float eb = floor(g_LocalPlayer->m_vecVelocity().z);
-		prediction->StartPrediction(cmd);
-		g_Legitbot->Run(cmd);
-		Visuals::Get().ebdetection(eb, flags);
-		prediction->EndPrediction();
-		if (g_Options.edgejump.enabled && GetAsyncKeyState(g_Options.edgejump.hotkey))
-		{
-			if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && (flags & FL_ONGROUND))
-				cmd->buttons |= IN_JUMP;
-
-		}
-
-		if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_Options.ducknair && !(cmd->buttons |= IN_DUCK))
-			cmd->buttons |= IN_DUCK;
-
-		// faggot code sopmk e
-		if (int(Globals::real_angle * 1000))
-		{
-			if (!bSendPacket)
-				Globals::real_angle = cmd->viewangles.yaw;
-			else
-				Globals::fake_angle = cmd->viewangles.yaw;
-		}
-		else // reset. fuck rocco (consent)
-			Globals::real_angle = cmd->viewangles.yaw;
-
-		// https://github.com/spirthack/CSGOSimple/issues/69
-		if (g_Options.sniper_xhair && !g_LocalPlayer->m_bIsScoped())
-			g_CVar->FindVar("weapon_debug_spread_show")->SetValue(3);
-		if (g_Options.sniper_xhair && g_LocalPlayer->m_bIsScoped())
-			g_CVar->FindVar("weapon_debug_spread_show")->SetValue(0);
-		if (!g_Options.sniper_xhair)
-			g_CVar->FindVar("weapon_debug_spread_show")->SetValue(0);
-
-		if (g_Options.blockbot && GetAsyncKeyState(g_Options.bbkey)) {
-			g_BlockBot->cmove(cmd);
-			g_BlockBot->draw();
-		}
+		Globals::is_shifting = false;
 	}
+
+	CInput* m_input() {
+		if (!g_Input)
+			g_Input = *reinterpret_cast<CInput**>(Utils::PatternScan2(XorStr("client.dll"), "B9 ? ? ? ? F3 0F 11 04 24 FF 50 10") + 0x1);
+
+		return g_Input;
+	}
+
 	//--------------------------------------------------------------------------------
-	__declspec(naked) void __fastcall hkCreateMove_Proxy(void* _this, int, int sequence_number, float input_sample_frametime, bool active)
-	{
+	__declspec(naked) void __stdcall hkCreateMove_Proxy(int sequence_number, float input_sample_frametime, bool active) {
 		__asm
 		{
 			push ebp
 			mov  ebp, esp
-			push ebx; not sure if we need this
-			push esp
+			push ebx
+			lea  ecx, [esp]
+			push ecx
 			push dword ptr[active]
 			push dword ptr[input_sample_frametime]
 			push dword ptr[sequence_number]
@@ -651,17 +564,226 @@ namespace Hooks {
 			retn 0Ch
 		}
 	}
+	using CreateMove_t = bool(__thiscall*)(IClientMode*, float, CUserCmd*);
+	using CreateMove = void(__thiscall*)(IBaseClientDLL*, int, float, bool);
+	void __stdcall hkCreateMove(int sequence_number, float input_sample_frametime, bool active, bool& bSendPacket)
+	{
+		auto oCreateMove = hlclient_hook.get_original<CreateMove>(index::CreateMove);
+		oCreateMove(g_CHLClient, sequence_number, input_sample_frametime, active);
+
+		if (Globals::is_shifting)
+			return;
+
+		auto cmd = m_input()->GetUserCmd(sequence_number);
+		auto verified = m_input()->GetVerifiedUserCmd(sequence_number);
+
+		// i fucking hate u rocco its so messy
+		if (!cmd || !cmd->command_number)
+			return;
+
+		QAngle oldAngle = cmd->viewangles;
+
+		IGameEvent* event;
+
+		Globals::m_cmd = cmd;
+		Globals::bSendPacket = bSendPacket;
+
+		if (g_Options.misc_chatspam) {
+			Misc::Get().ChatSpama(cmd);
+		}
+
+		Misc::Get().cl_move_dt(cmd);
+		Misc::Get().SilentWalk(cmd);
+		Misc::Get().Fakelag(cmd, bSendPacket);
+		if (g_Options.aimbot.backtrack) {
+			TimeWarp().Get().CreateMove(cmd);
+		}
+
+		if (Menu::Get().IsVisible())
+			cmd->buttons &= ~IN_ATTACK;
+
+		if (g_Options.misc_bhop)
+			BunnyHop::OnCreateMove(cmd);
+		if (g_Options.AutoStafe_key != 0)
+		{
+			if (GetAsyncKeyState(g_Options.AutoStafe_key)) {
+				BunnyHop::AutoStafe(cmd);
+				airstrafe::Get().create_move(cmd);
+			}
+		}
+		if (g_Options.AutoStafe_key == 0)
+		{
+			BunnyHop::AutoStafe(cmd);
+			airstrafe::Get().create_move(cmd);
+		}
+
+
+		if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
+		{
+			movement::jumpbug(cmd);
+			movement::edgebug(cmd);
+		}
+
+		Misc::Get().SlowWalk(cmd);
+		CAntiAim::Get().CreateMove(cmd, bSendPacket);
+
+		if (g_Options.fakeduck)
+			Misc::Get().FakeDuck(cmd, bSendPacket);
+
+		Misc::Get().ClanTag();
+		Misc::Get().Sexdick(cmd, bSendPacket);
+		Misc::Get().UpdateLBY(cmd, bSendPacket);
+
+		static auto prediction = new PredictionSystem();
+		auto flags = g_LocalPlayer->m_fFlags();
+		prediction->StartPrediction(cmd);
+		g_Legitbot->Run(cmd);
+		prediction->EndPrediction();
+		QAngle LastAngle = QAngle(0, 0, 0);
+		Math::Normalize3(cmd->viewangles);
+		Math::ClampAngles(cmd->viewangles);
+		LastAngle = cmd->viewangles;
+		float oldForward;
+		float oldSideMove;
+		g_EngineClient->GetViewAngles(&oldAngle);
+		oldForward = cmd->forwardmove;
+		oldSideMove = cmd->sidemove;
+		Math::Normalize3(LastAngle);
+		if (g_LocalPlayer->IsAlive() && g_Options.nocool && !Globals::valve && !Globals::stepping)
+			cmd->buttons |= IN_BULLRUSH;
+
+		//RollAngles::Get().Roll(cmd, bSendPacket);
+		//Misc::Get().NoSpread(cmd);
+		if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
+		{
+			Misc::Get().MovementFix(oldAngle, cmd, oldForward, oldSideMove);
+		}
+
+		Misc::Get().fuck(cmd);
+
+		static bool wasinair = false;
+
+		if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER)
+		{
+			if (g_Options.edgejump.enabled)
+			{
+				if (g_Options.edgejump.hotkey == 0) {
+					if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && (flags & FL_ONGROUND))
+						cmd->buttons |= IN_JUMP;
+				}
+				else {
+					if (GetAsyncKeyState(g_Options.edgejump.hotkey) && g_Options.edgejump.hotkey != 0)
+					{
+						if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && (flags & FL_ONGROUND))
+							cmd->buttons |= IN_JUMP;
+					}
+				}
+
+			}
+
+			if (g_Options.longjump)
+			{
+				bool dothatshitcuh = false;
+				bool uno = false;
+				bool two = false;
+
+				if (GetAsyncKeyState(g_Options.ljkey) && g_Options.ljkey != 0)
+				{
+					dothatshitcuh = true;
+				}
+				if (dothatshitcuh)
+				{
+
+					if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && (flags & FL_ONGROUND))
+					{
+						cmd->buttons |= IN_DUCK;
+						cmd->buttons |= IN_JUMP;
+						uno = true;
+					}
+
+					if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && (!(flags & FL_ONGROUND)))
+					{
+						if (cmd->buttons & IN_DUCK)
+							cmd->buttons |= ~IN_DUCK;
+
+						if (cmd->buttons & IN_FORWARD)
+							cmd->buttons |= ~IN_FORWARD;
+
+						if (cmd->buttons & IN_BACK)
+							cmd->buttons |= ~IN_BACK;
+
+						two = true;
+					}
+
+					if (uno && two)
+						dothatshitcuh = false;
+				}
+				else
+				{
+					uno = false;
+					two = false;
+				}
+			}
+		}
+
+		if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER) {
+			if (g_Options.diarkey == 0) {
+				if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_Options.ducknair && !(cmd->buttons |= IN_DUCK))
+					cmd->buttons |= IN_DUCK;
+			}
+			else {
+				if (GetAsyncKeyState(g_Options.diarkey) && g_Options.diarkey != 0) {
+					if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_Options.ducknair && !(cmd->buttons |= IN_DUCK))
+						cmd->buttons |= IN_DUCK;
+				}
+			}
+		}
+
+		if (g_Options.rankreveal && cmd->buttons & IN_SCORE)
+			g_CHLClient->DispatchUserMessage(CS_UM_ServerRankRevealAll, 0, 0, nullptr);
+
+		// https://github.com/spirthack/CSGOSimple/issues/69
+		if (g_Options.sniper_xhair && !g_LocalPlayer->m_bIsScoped())
+			g_CVar->FindVar(XorStr("weapon_debug_spread_show"))->SetValue(3);
+		if (g_Options.sniper_xhair && g_LocalPlayer->m_bIsScoped())
+			g_CVar->FindVar(XorStr("weapon_debug_spread_show"))->SetValue(0);
+		if (!g_Options.sniper_xhair)
+			g_CVar->FindVar(XorStr("weapon_debug_spread_show"))->SetValue(0);
+
+		if (g_Options.bbkey != 0) {
+			if (g_Options.blockbot && GetAsyncKeyState(g_Options.bbkey)) {
+				g_BlockBot->cmove(cmd);
+				g_BlockBot->draw();
+			}
+		}
+
+		movement_recorder::Get().run(cmd);
+
+		Misc::Get().local_animfix(g_LocalPlayer, cmd, bSendPacket);
+
+		Misc::Get().desyncchams(cmd, bSendPacket);
+
+		Globals::bSendPacket = bSendPacket;
+
+		verified->m_cmd = *cmd;
+		verified->m_crc = cmd->GetChecksum();
+	}
+	//--------------------------------------------------------------------------------
+
 	//--------------------------------------------------------------------------------
 	void __fastcall hkPaintTraverse(void* _this, int edx, vgui::VPANEL panel, bool forceRepaint, bool allowForce)
 	{
 		static auto panelId = vgui::VPANEL{ 0 };
 		static auto oPaintTraverse = vguipanel_hook.get_original<decltype(&hkPaintTraverse)>(index::PaintTraverse);
 
+		if (g_Options.noscope)
+			if (!strcmp("HudZoom", g_VGuiPanel->GetName(panel))) return;
+
 		oPaintTraverse(g_VGuiPanel, edx, panel, forceRepaint, allowForce);
 
 		if (!panelId) {
 			const auto panelName = g_VGuiPanel->GetName(panel);
-			if (!strcmp(panelName, "FocusOverlayPanel")) {
+			if (!strcmp(panelName, XorStr("FocusOverlayPanel"))) {
 				panelId = panel;
 			}
 		}
@@ -682,8 +804,8 @@ namespace Hooks {
 		static auto ofunc = sound_hook.get_original<decltype(&hkEmitSound1)>(index::EmitSound1);
 
 
-		if (g_Options.autoaccept && !strcmp(pSoundEntry, "UIPanorama.popup_accept_match_beep")) {
-			static auto fnAccept = reinterpret_cast<bool(__stdcall*)(const char*)>(Utils::PatternScan(GetModuleHandleA("client.dll"), "55 8B EC 83 E4 F8 8B 4D 08 BA ? ? ? ? E8 ? ? ? ? 85 C0 75 12"));
+		if (g_Options.autoaccept && !strcmp(pSoundEntry, XorStr("UIPanorama.popup_accept_match_beep"))) {
+			static auto fnAccept = reinterpret_cast<bool(__stdcall*)(const char*)>(Utils::PatternScan(GetModuleHandleA(XorStr("client.dll")), XorStr("55 8B EC 83 E4 F8 8B 4D 08 BA ? ? ? ? E8 ? ? ? ? 85 C0 75 12")));
 
 			if (fnAccept) {
 
@@ -701,13 +823,18 @@ namespace Hooks {
 			}
 		}
 
-		ofunc(g_EngineSound, edx, filter, iEntIndex, iChannel, pSoundEntry, nSoundEntryHash, pSample, flVolume, nSeed, flAttenuation, iFlags, iPitch, pOrigin, pDirection, pUtlVecOrigins, bUpdatePositions, soundtime, speakerentity, unk);
+		if (!Globals::inprediction)
+			ofunc(g_EngineSound, edx, filter, iEntIndex, iChannel, pSoundEntry, nSoundEntryHash, pSample, flVolume, nSeed, flAttenuation, iFlags, iPitch, pOrigin, pDirection, pUtlVecOrigins, bUpdatePositions, soundtime, speakerentity, unk);
 
 	}
 	//--------------------------------------------------------------------------------
 	int __fastcall hkDoPostScreenEffects(void* _this, int edx, int a1)
 	{
 		static auto oDoPostScreenEffects = clientmode_hook.get_original<decltype(&hkDoPostScreenEffects)>(index::DoPostScreenSpaceEffects);
+
+		//if (g_LocalPlayer && g_Options.glow_enabled)
+		//if (g_LocalPlayer && g_LocalPlayer->IsAlive())
+		//Glow::Get().Run();
 
 		return oDoPostScreenEffects(g_ClientMode, edx, a1);
 	}
@@ -716,17 +843,27 @@ namespace Hooks {
 	{
 		static auto ofunc = hlclient_hook.get_original<decltype(&hkFrameStageNotify)>(index::FrameStageNotify);
 
-		if (g_EngineClient->IsInGame()) {
-			nightmode::Get().clear_stored_materials();
-			//Fix Thirdperson Angles
-			if (Globals::m_cmd)
-				Misc::Get().SetThirdpersonAngles(stage, Globals::m_cmd);
+		QAngle* aim_punch = nullptr;
+		QAngle* view_punch = nullptr;
+		if (stage == ClientFrameStage_t::FRAME_RENDER_START)
+		{
 
-			QAngle* aim_punch = nullptr;
-			QAngle* view_punch = nullptr;
-			if (g_Options.fatassmf && stage == ClientFrameStage_t::FRAME_RENDER_START)
+			if (g_Options.aimbot.rageresolver && Globals::m_cmd)
+				resolver::Get().Resolve(Globals::m_cmd);
+
+			if (g_Options.edge_bug && (!g_EngineClient->IsInGame() || !g_LocalPlayer || !g_LocalPlayer->IsAlive()))
+				g_InputSystem->ResetInputState();
+
+			if (Globals::m_cmd)
 			{
-				if (g_LocalPlayer && g_LocalPlayer->IsAlive())
+				Misc::Get().SetThirdpersonAngles(stage, Globals::m_cmd, Globals::bSendPacket);
+				//Misc::Get().local_animfix(g_LocalPlayer, Globals::m_cmd, Globals::bSendPacket);
+			}
+
+			if (g_LocalPlayer && g_LocalPlayer->IsAlive() && g_EngineClient->IsInGame())
+			{
+
+				if (g_Options.fatassmf)
 				{
 					aim_punch = &g_LocalPlayer->m_aimPunchAngle();
 					view_punch = &g_LocalPlayer->m_viewPunchAngle();
@@ -738,24 +875,25 @@ namespace Hooks {
 					*view_punch = QAngle(0, 0, 0);
 				}
 			}
+		}
 
-			//if (stage != ClientFrameStage_t::FRAME_RENDER_START && stage != ClientFrameStage_t::FRAME_RENDER_END)
-			//	return;
-			if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
-				skins::on_frame_stage_notify(false);
-			else if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_END)
-				skins::on_frame_stage_notify(true);
+		//if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
+			//skins::on_frame_stage_notify(false);
+		//else if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_END)
+			//skins::on_frame_stage_notify(true);
 
-			static int originalIdx = 0;
+		static int originalIdx = 0;
 
-			if (!g_LocalPlayer) {
-				originalIdx = 0;
-				return;
-			}
+		if (!g_LocalPlayer) {
+			originalIdx = 0;
+			return;
+		}
 
-			constexpr auto getModel = [](int team) constexpr noexcept -> const char* {
-				constexpr std::array models{
-				"models/player/custom_player/legacy/ctm_diver_varianta.mdl", // Cmdr. Davida 'Goggles' Fernandez | SEAL Frogman
+		Chams::Get().RemovePlayerPatches();
+
+		constexpr auto getModel = [](int team) constexpr noexcept -> const char* {
+			constexpr std::array models{
+			"models/player/custom_player/legacy/ctm_diver_varianta.mdl", // Cmdr. Davida 'Goggles' Fernandez | SEAL Frogman
 "models/player/custom_player/legacy/ctm_diver_variantb.mdl", // Cmdr. Frank 'Wet Sox' Baroud | SEAL Frogman
 "models/player/custom_player/legacy/ctm_diver_variantc.mdl", // Lieutenant Rex Krikey | SEAL Frogman
 "models/player/custom_player/legacy/ctm_fbi_varianth.mdl", // Michael Syfers | FBI Sniper
@@ -817,20 +955,20 @@ namespace Hooks {
 "models/player/custom_player/legacy/tm_balkan_variantk.mdl", // Rezan the Redshirt | Sabre
 "models/player/custom_player/legacy/tm_balkan_variantl.mdl", // Dragomir | Sabre Footsoldier
 
-				};
-
-				switch (team) {
-				case 2: return static_cast<std::size_t>(g_Options.playerModelT - 1) < models.size() ? models[g_Options.playerModelT - 1] : nullptr;
-				case 3: return static_cast<std::size_t>(g_Options.playerModelCT - 1) < models.size() ? models[g_Options.playerModelCT - 1] : nullptr;
-				default: return nullptr;
-				}
 			};
+
+			switch (team) {
+			case 2: return static_cast<std::size_t>(g_Options.playerModelT - 1) < models.size() ? models[g_Options.playerModelT - 1] : nullptr;
+			case 3: return static_cast<std::size_t>(g_Options.playerModelCT - 1) < models.size() ? models[g_Options.playerModelCT - 1] : nullptr;
+			default: return nullptr;
+			}
+		};
 
 			if (const auto model = getModel(g_LocalPlayer->m_iTeamNum())) {
 				if (stage == FRAME_RENDER_START)
 					originalIdx = g_LocalPlayer->m_nModelIndex();
 
-				const auto idx = stage == FRAME_RENDER_END && originalIdx ? originalIdx : g_MdlInfo->GetModelIndex(model);
+				const auto idx = stage == ClientFrameStage_t::FRAME_RENDER_END && originalIdx ? originalIdx : g_MdlInfo->GetModelIndex(model);
 
 				g_LocalPlayer->setModelIndex(idx);
 
@@ -838,37 +976,145 @@ namespace Hooks {
 					ragdoll->setModelIndex(idx);
 			}
 
-			if (stage == FRAME_RENDER_END)
+		if (stage == ClientFrameStage_t::FRAME_RENDER_END)
+		{
+			Fixed::Get().PerformNightmode();
+			if (g_Options.colormodulate)
+				CNightmode::Get().PerformNightmode();
+			else
+				CNightmode::Get().GtfoNight();
+		}
+
+		static DWORD* death_notice = nullptr;
+
+		if (g_LocalPlayer->IsAlive() && Globals::stepping)
+		{
+			if (!death_notice)
+				death_notice = FindHudElement <DWORD>(XorStr("CCSGO_HudDeathNotice"));
+
+			if (death_notice)
 			{
-				Fixed::Get().PerformNightmode();
-				if (g_Options.colormodulation) {
+				auto local_death_notice = (float*)((uintptr_t)death_notice + 0x50);
 
-					g_Options.changemats = true;
+				if (local_death_notice)
+					*local_death_notice = g_Options.drugs ? FLT_MAX : 1.5f;;
 
-				static auto r_drawspecificstaticprop = g_CVar->FindVar(crypt_str("r_drawspecificstaticprop")); //-V807
-					if (g_Options.changemats)
-					{
-						if (r_drawspecificstaticprop->GetBool())
-							r_drawspecificstaticprop->SetValue(g_Options.changemats);
+				if (Globals::clear)
+				{
+					Globals::clear = false;
 
-						if (g_Options.colormodulate)
-							nightmode::Get().apply();
-						else
-							nightmode::Get().remove();
+					using Fn = void(__thiscall*)(uintptr_t);
+					static auto clear_notices = (Fn)Utils::PatternScan2(XorStr("client.dll"), XorStr("55 8B EC 83 EC 0C 53 56 8B 71 58"));
 
-						g_Options.changemats = false;
-					}
+					clear_notices((uintptr_t)death_notice - 0x14);
 				}
 			}
 		}
+		else
+			death_notice = 0;
+
 		ofunc(g_CHLClient, edx, stage);
 	}
-	//--------------------------------------------------------------------------------
-	void __fastcall hkOverrideView(void* _this, int edx, CViewSetup* vsView)
-	{
-		static auto ofunc = clientmode_hook.get_original<decltype(&hkOverrideView)>(index::OverrideView);
 
-		ofunc(g_ClientMode, edx, vsView);
+	using OverrideView_t = void(__stdcall*)(CViewSetup*);
+
+	//--------------------------------------------------------------------------------
+	void __stdcall hkOverrideView(CViewSetup* vsView)
+	{
+		static auto ofunc = cm_hook->get_func_address <OverrideView_t>(18);
+
+		auto local = ((C_BasePlayer*)g_EntityList->GetClientEntity(g_EngineClient->GetLocalPlayer()), true);
+
+		if (!vsView)
+			return ofunc(vsView);
+
+		auto weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+
+		if (local)
+		{
+			Visuals::Get().ThirdPerson();
+
+			static auto fov_cs_debug = g_CVar->FindVar(XorStr("fov_cs_debug"));
+			float newfov = 90 + g_Options.fovchangaaa;
+
+			if (!g_Options.viewmodelinscope) {
+
+				if (g_Options.fovscope) {
+					if (g_LocalPlayer)
+						fov_cs_debug->SetValue(newfov);
+					if (g_Options.fovchangaaa == 0)
+						fov_cs_debug->SetValue(XorStr("90.01"));
+				}
+				if (!g_Options.fovscope) {
+					if (g_LocalPlayer)
+						fov_cs_debug->SetValue(newfov);
+					if (g_LocalPlayer && g_LocalPlayer->m_bIsScoped())
+						fov_cs_debug->SetValue(XorStr("0"));
+				}
+			}
+
+			if (g_Options.viewmodelinscope) {
+				if (g_Options.fovscope) {
+					if (g_LocalPlayer)
+					{
+						vsView->fov += g_Options.fovchangaaa;
+						fov_cs_debug->SetValue(XorStr("90"));
+					}
+				}
+				if (!g_Options.fovscope) {
+					fov_cs_debug->SetValue(XorStr("0"));
+					if (g_LocalPlayer)
+						vsView->fov += g_Options.fovchangaaa;
+					if (g_LocalPlayer && g_LocalPlayer->m_bIsScoped())
+						vsView->fov += 0;
+				}
+			}
+
+			if (g_LocalPlayer && g_LocalPlayer->IsAlive()) {
+
+				if (weapon && !weapon->IsBallistic())
+				{
+					auto viewmodel = (C_BaseEntity*)g_EntityList->GetClientEntityFromHandle(g_LocalPlayer->m_hViewModel());
+
+					if (viewmodel)
+					{
+						auto eyeAng = vsView->angles;
+						eyeAng.z -= (float)g_Options.viewmodel_offset_roll;
+
+						viewmodel->set_abs_angles(eyeAng);
+					}
+				}
+
+				if (weapon && weapon->IsBallistic())
+				{
+					if (!g_LocalPlayer->m_bIsScoped() && !g_Input->m_fCameraInThirdPerson) {
+						auto viewmodel = (C_BaseEntity*)g_EntityList->GetClientEntityFromHandle(g_LocalPlayer->m_hViewModel());
+
+						if (viewmodel)
+						{
+							auto eyeAng = vsView->angles;
+							eyeAng.z -= (float)g_Options.viewmodel_offset_roll;
+
+							viewmodel->set_abs_angles(eyeAng);
+						}
+					}
+				}
+
+				if (g_Options.fakeduck && GetAsyncKeyState(g_Options.fdkey) && g_LocalPlayer && g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
+					vsView->origin.z = g_LocalPlayer->abs_origin().z + 64.f;
+
+			}
+			else
+			{
+				fov_cs_debug->SetValue(XorStr("0"));
+			}
+
+		}
+		else
+			return ofunc(vsView);
+
+		ofunc(vsView);
+
 	}
 	//--------------------------------------------------------------------------------
 	void __fastcall hkLockCursor(void* _this)
@@ -888,21 +1134,171 @@ namespace Hooks {
 	{
 		static auto ofunc = mdlrender_hook.get_original<decltype(&hkDrawModelExecute)>(index::DrawModelExecute);
 
-		if (g_MdlRender->IsForcedMaterialOverride() &&
-			!strstr(pInfo.pModel->szName, "arms") &&
-			!strstr(pInfo.pModel->szName, "weapons/v_")) {
+		static IMaterial* Half = g_MatSystem->FindMaterial(XorStr("materials/models/inventory_items/dogtags/dogtags_lightray"), nullptr); //Like half and half but for shit
+		static IMaterial* pulse = g_MatSystem->FindMaterial(XorStr("models/inventory_items/dogtags/dogtags_outline"), nullptr); //Pulse Shit
+		static IMaterial* shine = g_MatSystem->FindMaterial(XorStr("models/inventory_items/cologne_prediction/cologne_prediction_glass"), nullptr); // P SHINE
+		static IMaterial* othershine = g_MatSystem->FindMaterial(XorStr("models/inventory_items/trophy_majors/gloss"), nullptr); //Light Shine
+		static IMaterial* velvet = g_MatSystem->FindMaterial(XorStr("models/inventory_items/trophy_majors/velvet"), nullptr); //Interium Glow
+		static IMaterial* shit = (Chams::Get().CreateMaterial(true, R"#("VertexLitGeneric"
+		    {
+	"$additive" "1"
+	"$envmap" "models/effects/cube_white"
+	"$envmaptint" "[1 1 1]"
+	"$envmapfresnel" "1"
+	"$envmapfresnelminmaxexp" "[0 1 2]"
+	"$alpha" "1.0"
+		    }
+		)#")); //The actual glow shit
+		static IMaterial* intellect = (Chams::Get().CreateMaterial(true, R"#("VertexLitGeneric"
+		    {
+	"$basetexture" "models/inventory_items/dreamhack_trophies/dreamhack_star_blur"
+    "$wireframe" "1"
+    "$alpha" "0.6"
+    "$additive" "1"
+    "proxies"
+     {
+        "texturescroll"
+        {
+            "texturescrollvar" "$basetexturetransform"
+            "texturescrollrate" "0.2"
+            "texturescrollangle" "90"
+        }
+    }
+		    }
+		)#")); //intellect wireframe
+		static IMaterial* dubble = g_MatSystem->FindMaterial(XorStr("dev/glow_armsrace"), nullptr); //Double material like an outline
+		static IMaterial* animated2 = (Chams::Get().CreateMaterial(true, R"#("VertexLitGeneric"
+{
+    "$basetexture" "blade_mideffect_mask"
+    "$texture2" "blade_mideffect"
+     "$model" 1
+    "$nocull" "1"
+    "$additive" "1"
+    "$color2" "[1 1 1]"
 
+
+    "Proxies"
+    {
+        "TextureScroll"
+        {
+            "texturescrollvar" "$baseTextureTransform"
+            "texturescrollrate" 4
+            "texturescrollangle" 5
+        }
+        "Sine"
+        {
+            "resultVar" "$alpha"
+            "sineperiod" 1
+            "sinemin" 0.2
+            "sinemax" 1.0
+        }
+        "Sine"
+        {
+            "resultVar" "$color[0]"
+            "sineperiod" 1.3
+            "sinemin" 0.8
+            "sinemax" 1.4
+        }
+    }
+
+}
+		)#")); //this is the advancedaim lightning shit
+		static IMaterial* regular = g_MatSystem->FindMaterial(XorStr("debug/debugambientcube"), nullptr); //Textured :weary:
+		static IMaterial* flat = g_MatSystem->FindMaterial(XorStr("debug/debugdrawflat"), nullptr); //Flat like my girl chest :sob:
+		static IMaterial* pocoglow = g_MatSystem->FindMaterial(XorStr("sprites/light_glow04"), nullptr); //Its like a glow but lighter and in bulbs
+
+		C_BasePlayer* e = (C_BasePlayer*)g_EntityList->GetClientEntity(pInfo.entity_index);
+		if (e == g_LocalPlayer && g_Options.chams_fake_enabled && CAntiAim::Get().CanDesync(Globals::m_cmd)) {
+			if (Misc::Get().m_got_fake_matrix) {
+
+				for (auto& i : Misc::Get().m_fake_matrix) {
+					i[0][3] += pInfo.origin.x;
+					i[1][3] += pInfo.origin.y;
+					i[2][3] += pInfo.origin.z;
+				}
+
+				static IMaterial* player_enemies_type = nullptr;
+				if (g_Options.player_material == 0)
+					player_enemies_type = regular;
+				if (g_Options.player_material == 1)
+					player_enemies_type = flat;
+				if (g_Options.player_material > 1)
+					player_enemies_type = regular;
+				if (g_Options.chams_fake_enabled)
+				{
+					player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
+					Chams::Get().modulate(g_Options.color_chams_fake, player_enemies_type);
+					ofunc(_this, edx, ctx, state, pInfo, Misc::Get().m_fake_matrix);
+					g_MdlRender->ForcedMaterialOverride(player_enemies_type);
+
+					if (g_Options.player_material == 2)
+					{
+						shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
+						bool bFound = false;
+						auto pVar = shine->FindVar(XorStr("$envmaptint"), &bFound);
+						if (bFound)
+						{
+							(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
+						}
+						g_MdlRender->ForcedMaterialOverride(shine);
+					}
+
+					if (g_Options.player_material == 3)
+					{
+						velvet->AlphaModulate(g_Options.color_chams_fake[3] / 255.f);
+						bool bFound = false;
+						auto pVar = velvet->FindVar(XorStr("$envmaptint"), &bFound);
+						if (bFound)
+						{
+							(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_fake[0] / 255.f, g_Options.color_chams_fake[1] / 255.f, g_Options.color_chams_fake[2] / 255.f);
+						}
+						g_MdlRender->ForcedMaterialOverride(velvet);
+					}
+
+					if (g_Options.player_material == 4)
+					{
+						shit->AlphaModulate(g_Options.color_chams_fake[3] / 255.f);
+						bool bFound = false;
+						auto pVar = shit->FindVar(XorStr("$envmaptint"), &bFound);
+						if (bFound)
+						{
+							(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_fake[0] / 255.f, g_Options.color_chams_fake[1] / 255.f, g_Options.color_chams_fake[2] / 255.f);
+						}
+						g_MdlRender->ForcedMaterialOverride(shit);
+					}
+
+					if (g_Options.player_material == 5)
+					{
+						dubble->AlphaModulate(g_Options.color_chams_fake[3] / 255.f);
+						bool bFound = false;
+						auto pVar = dubble->FindVar(XorStr("$envmaptint"), &bFound);
+						if (bFound)
+						{
+							(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_fake[0] / 255.f, g_Options.color_chams_fake[1] / 255.f, g_Options.color_chams_fake[2] / 255.f);
+						}
+						g_MdlRender->ForcedMaterialOverride(dubble);
+					}
+
+					for (auto& i : Misc::Get().m_fake_matrix) {
+						i[0][3] -= pInfo.origin.x;
+						i[1][3] -= pInfo.origin.y;
+						i[2][3] -= pInfo.origin.z;
+					}
+
+				}
+
+			}
 		}
-
 
 		ofunc(_this, edx, ctx, state, pInfo, pCustomBoneToWorld);
 
 		g_MdlRender->ForcedMaterialOverride(nullptr);
+
 	}
 
 	bool __fastcall hkSvCheatsGetBool(PVOID pConVar, void* edx)
 	{
-		static auto dwCAM_Think = Utils::PatternScan(GetModuleHandleW(L"client.dll"), "85 C0 75 30 38 86");
+		static auto dwCAM_Think = Utils::PatternScan(GetModuleHandleW(L"client.dll"), XorStr("85 C0 75 30 38 86"));
 		static auto ofunc = sv_cheats.get_original<bool(__thiscall*)(PVOID)>(13);
 		if (!ofunc)
 			return false;
@@ -912,47 +1308,12 @@ namespace Hooks {
 		return ofunc(pConVar);
 	}
 
-	void RecvProxy(const CRecvProxyData* pData, void* entity, void* output)
-	{
-		static auto ofunc = sequence_hook->get_original_function();
-
-		if (g_LocalPlayer && g_LocalPlayer->IsAlive()) {
-			const auto proxy_data = const_cast<CRecvProxyData*>(pData);
-			const auto view_model = static_cast<C_BaseViewModel*>(entity);
-
-			if (view_model && view_model->m_hOwner() && view_model->m_hOwner().IsValid()) {
-				const auto owner = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntityFromHandle(view_model->m_hOwner()));
-				if (owner == g_EntityList->GetClientEntity(g_EngineClient->GetLocalPlayer())) {
-					const auto view_model_weapon_handle = view_model->m_hWeapon();
-					if (view_model_weapon_handle.IsValid()) {
-						const auto view_model_weapon = static_cast<C_BaseAttributableItem*>(g_EntityList->GetClientEntityFromHandle(view_model_weapon_handle));
-						if (view_model_weapon) {
-							if (k_weapon_info.count(view_model_weapon->m_Item().m_iItemDefinitionIndex())) {
-								auto original_sequence = proxy_data->m_Value.m_Int;
-								const auto override_model = k_weapon_info.at(view_model_weapon->m_Item().m_iItemDefinitionIndex()).model;
-								proxy_data->m_Value.m_Int = skins::GetNewAnimation(override_model, proxy_data->m_Value.m_Int);
-							}
-						}
-					}
-				}
-			}
-
-		}
-
-		ofunc(pData, entity, output);
-	}
-
 	void __fastcall hkDrawModelExecute2(void* _this, int, void* pResults, DrawModelInfo_t* pInfo, matrix3x4_t* pBoneToWorld, float* flpFlexWeights, float* flpFlexDelayedWeights, Vector& vrModelOrigin, int32_t iFlags)
 	{
 		static auto ofunc = stdrender_hook.get_original<decltype(&hkDrawModelExecute2)>(index::DrawModelExecute2);
 
-
-
-		if (g_StudioRender->IsForcedMaterialOverride())
-			return ofunc(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
-
-		static auto flash = g_MatSystem->FindMaterial("effects/flashbang", TEXTURE_GROUP_CLIENT_EFFECTS);
-		static auto flash_white = g_MatSystem->FindMaterial("effects/flashbang_white", TEXTURE_GROUP_CLIENT_EFFECTS);
+		static auto flash = g_MatSystem->FindMaterial(XorStr("effects/flashbang"), TEXTURE_GROUP_CLIENT_EFFECTS);
+		static auto flash_white = g_MatSystem->FindMaterial(XorStr("effects/flashbang_white"), TEXTURE_GROUP_CLIENT_EFFECTS);
 		flash->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.no_flash);
 		flash_white->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, g_Options.no_flash);
 		std::vector<const char*> vistasmoke_mats =
@@ -992,7 +1353,7 @@ namespace Hooks {
 		}
 
 		Chams::Get().OnDrawModelExecute(pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
-
+		//CNightmode::Get().OnDME(pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 		ofunc(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 
 		g_StudioRender->ForcedMaterialOverride(nullptr);

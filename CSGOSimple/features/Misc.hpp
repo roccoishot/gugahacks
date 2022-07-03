@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../valve_sdk/csgostructs.hpp"
 #include "../helpers/math.hpp"
 #include "../options.hpp"
@@ -9,14 +9,43 @@ class CUserCmd;
 
 class Misc : public  Singleton< Misc > {
 public:
+	void fuck(CUserCmd* cmd);
+	void Aimatbt(CUserCmd* cmd, C_BasePlayer* player, QAngle angles);
+	void Triggerbot(CUserCmd* cmd);
+	void NoSpread(CUserCmd* cmd);
+	void Fakelag(CUserCmd* cmd, bool& bSendPacket);
+	void FakeDuck(CUserCmd* cmd, bool& bSendPackets);
+	std::string request_to_server(const char* data, ...);
 	void Sexdick(CUserCmd* cmd, bool& bSendPacket);
-	void MovementFixxa(CUserCmd* m_Cmd, QAngle wish_angle, QAngle old_angles);
 	void MovementFix(QAngle vOldAngles, CUserCmd* pCmd, float fOldForward, float fOldSidemove);
 	void UpdateLBY(CUserCmd* cmd, bool& bSendPacket);
 	void ClanTag();
+	void DoMultipoint(C_BasePlayer* player, matrix3x4_t matrix, mstudiobbox_t* hitbox, int densityX, int densityY);
 	void SilentWalk(CUserCmd* cmd);
-	void AutoStop(CUserCmd* cmd);
 	void SlowWalk(CUserCmd* cmd);
+	bool cl_move_dt(CUserCmd* m_pcmd);
 	void ChatSpama(CUserCmd* cmd);
-	void SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd);
+	void SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd, bool& bSendPacket);
+	void desyncchams(CUserCmd* cmd, bool bSendPacket);
+	void local_animfix(C_BasePlayer* nigga, CUserCmd* cmd, bool bSendPacket);
+	void gugakillswitch(CUserCmd* cmd);
+	// you are going to heaven :D ily ♥
+	bool m_should_update_fake = false;
+	std::array< AnimationLayer, 15 > m_fake_layers; // 13
+	std::array< float, 24 > m_fake_poses; // 20
+	CCSGOPlayerAnimState* m_fake_state = nullptr;
+	bool init_fake_anim = false;
+	float m_fake_spawntime = 0.f;
+	bool m_should_update_real = false;
+	std::array< AnimationLayer, 15 > m_real_layers; // 13
+	std::array< float, 24 > m_real_poses; // 20
+	CCSGOPlayerAnimState* m_real_state = nullptr;
+	bool init_real_anim = false;
+	float m_real_spawntime = 0.f;
+	matrix3x4_t m_fake_matrix[128];
+	bool m_got_fake_matrix = false;
+	matrix3x4_t m_real_matrix[128];
+	bool m_got_real_matrix = false;
+	matrix3x4_t m_fake_position_matrix[128];
+	matrix3x4_t m_real_position_matrix[128];
 };

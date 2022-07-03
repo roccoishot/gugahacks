@@ -140,9 +140,6 @@
     <ClCompile Include="features\parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="features\skins.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="backtrack.cpp">
       <Filter>Source Files\Header Files\features</Filter>
     </ClCompile>
@@ -161,9 +158,6 @@
     <ClCompile Include="OldPrediction.cpp">
       <Filter>Source Files\Header Files\features</Filter>
     </ClCompile>
-    <ClCompile Include="Colormodulation.cpp">
-      <Filter>Source Files\features</Filter>
-    </ClCompile>
     <ClCompile Include="movement.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
@@ -173,16 +167,28 @@
     <ClCompile Include="FixSkyboxes.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
-    <ClCompile Include="lagcompensation.cpp">
-      <Filter>Source Files\features</Filter>
-    </ClCompile>
     <ClCompile Include="resolver.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
-    <ClCompile Include="ragebot\ragebot.cpp">
+    <ClCompile Include="ColorMod.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
-    <ClCompile Include="rageawall.cpp">
+    <ClCompile Include="DirectStrafe.cpp">
+      <Filter>Source Files\features</Filter>
+    </ClCompile>
+    <ClCompile Include="features\skins.cpp">
+      <Filter>Source Files\features</Filter>
+    </ClCompile>
+    <ClCompile Include="Rollangles.cpp">
+      <Filter>Source Files\features</Filter>
+    </ClCompile>
+    <ClCompile Include="glow.cpp">
+      <Filter>Source Files\features</Filter>
+    </ClCompile>
+    <ClCompile Include="GoogaKillah.cpp">
+      <Filter>Source Files\features</Filter>
+    </ClCompile>
+    <ClCompile Include="bdussy.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
   </ItemGroup>
@@ -454,9 +460,6 @@
     <ClInclude Include="features\parser.h">
       <Filter>Source Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="features\skins.h">
-      <Filter>Source Files\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="valve_sdk\interfaces\IStudioRender.hpp">
       <Filter>Source Files\Header Files</Filter>
     </ClInclude>
@@ -487,9 +490,6 @@
     <ClInclude Include="OldPrediction.h">
       <Filter>Source Files\Header Files\features</Filter>
     </ClInclude>
-    <ClInclude Include="Colormodulation.h">
-      <Filter>Source Files\features</Filter>
-    </ClInclude>
     <ClInclude Include="movement.h">
       <Filter>Source Files\features</Filter>
     </ClInclude>
@@ -502,17 +502,176 @@
     <ClInclude Include="FixSkyboxes.h">
       <Filter>Source Files\features</Filter>
     </ClInclude>
-    <ClInclude Include="lagcompensation.h">
+    <ClInclude Include="resolver.h">
       <Filter>Source Files\features</Filter>
     </ClInclude>
-    <ClInclude Include="ragebot\ragebot.hpp">
+    <ClInclude Include="ColorMod.h">
       <Filter>Source Files\features</Filter>
     </ClInclude>
-    <ClInclude Include="rageawall.h">
+    <ClInclude Include="DirectStrafe.hpp">
       <Filter>Source Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="detours.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyvalues.hpp">
+      <Filter>Source Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="resource1.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="features\skins.h">
+      <Filter>Source Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamapplist.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamapps.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamappticket.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamclient.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamcontroller.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamfriends.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamgamecoordinator.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamgameserver.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamgameserverstats.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamhtmlsurface.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamhttp.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteaminventory.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteammasterserverupdater.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteammatchmaking.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteammusic.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteammusicremote.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamnetworking.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamparentalsettings.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamps3overlayrenderer.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamremotestorage.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamscreenshots.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamugc.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamuser.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamuserstats.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamutils.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\isteamvideo.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\matchmakingtypes.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\steam_api.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\steam_api_flat.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\steam_api_internal.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\steam_gameserver.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\steamclientpublic.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\steamencryptedappticket.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\steamhttpenums.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\steamps3params.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\steamtypes.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\steam_sdk\steamuniverse.h">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="Rollangles.h">
+      <Filter>Source Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="image.hpp">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fonts.hpp">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ilocalise.hpp">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="glow.hpp">
+      <Filter>Source Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="GoogaKillah.h">
+      <Filter>Source Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="sexynutssexyfuckdickshitnigga.h">
+      <Filter>Source Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="SexySexyDickShit.hpp">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="wininet.h">
+      <Filter>Source Files\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+    <None Include="valve_sdk\interfaces\steam_sdk\steam_api.json">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </None>
+    <None Include="valve_sdk\interfaces\steam_sdk\steam_api_interop.cs">
+      <Filter>Source Files\Header Files\SDK</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="detours.lib" />
   </ItemGroup>
 </Project>

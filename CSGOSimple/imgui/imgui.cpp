@@ -939,6 +939,8 @@ CODE
 #include <stdint.h>     // intptr_t
 #endif
 
+#include "../options.hpp"
+
 // Debug options
 #define IMGUI_DEBUG_NAV_SCORING     0   // Display navigation scoring preview when hovering items. Display last moving direction matches when holding CTRL
 #define IMGUI_DEBUG_NAV_RECTS       0   // Display the reference navigation rectangle for each window
@@ -990,6 +992,8 @@ static const float WINDOWS_RESIZE_FROM_EDGES_FEEDBACK_TIMER = 0.04f;    // Reduc
 //-------------------------------------------------------------------------
 // [SECTION] FORWARD DECLARATIONS
 //-------------------------------------------------------------------------
+
+#include "../menu.hpp"
 
 static void             SetCurrentWindow(ImGuiWindow* window);
 static void             FindHoveredWindow();
@@ -3256,43 +3260,30 @@ void ImGui::UpdateMouseWheel()
     ImGuiContext& g = *GImGui;
     if (!g.HoveredWindow || g.HoveredWindow->Collapsed)
         return;
+
+    ImGuiWindow* window = g.HoveredWindow;
+    while ((window->Flags & ImGuiWindowFlags_ChildWindow) && (window->Flags & ImGuiWindowFlags_NoScrollWithMouse) && !(window->Flags & ImGuiWindowFlags_NoScrollbar) && !(window->Flags & ImGuiWindowFlags_NoMouseInputs) && window->ParentWindow)
+        window = window->ParentWindow;
+
+    const float scroll_speed = ImFloor(window->CalcFontSize() * 50 * g.IO.DeltaTime + 0.5f);
+
+    if (window->ScrollNext.y > window->Scroll.y) {
+        const float next_scroll = window->Scroll.y + scroll_speed;
+        SetWindowScrollY(window, (next_scroll <= window->ScrollNext.y) ? next_scroll : window->ScrollNext.y);
+    } else if (window->ScrollNext.y < window->Scroll.y) {
+        const float next_scroll = window->Scroll.y - scroll_speed;
+        SetWindowScrollY(window, (next_scroll >= window->ScrollNext.y) ? next_scroll : window->ScrollNext.y);
+    }
+
     if (g.IO.MouseWheel == 0.0f && g.IO.MouseWheelH == 0.0f)
         return;
 
-    // If a child window has the ImGuiWindowFlags_NoScrollWithMouse flag, we give a chance to scroll its parent (unless either ImGuiWindowFlags_NoInputs or ImGuiWindowFlags_NoScrollbar are also set).
-    ImGuiWindow* window = g.HoveredWindow;
-    ImGuiWindow* scroll_window = window;
-    while ((scroll_window->Flags & ImGuiWindowFlags_ChildWindow) && (scroll_window->Flags & ImGuiWindowFlags_NoScrollWithMouse) && !(scroll_window->Flags & ImGuiWindowFlags_NoScrollbar) && !(scroll_window->Flags & ImGuiWindowFlags_NoMouseInputs) && scroll_window->ParentWindow)
-        scroll_window = scroll_window->ParentWindow;
-    const bool scroll_allowed = !(scroll_window->Flags & ImGuiWindowFlags_NoScrollWithMouse) && !(scroll_window->Flags & ImGuiWindowFlags_NoMouseInputs);
-
-    if (g.IO.MouseWheel != 0.0f)
-    {
-        if (g.IO.KeyCtrl && g.IO.FontAllowUserScaling)
-        {
-            // Zoom / Scale window
-            const float new_font_scale = ImClamp(window->FontWindowScale + g.IO.MouseWheel * 0.10f, 0.50f, 2.50f);
-            const float scale = new_font_scale / window->FontWindowScale;
-            window->FontWindowScale = new_font_scale;
-
-            const ImVec2 offset = window->Size * (1.0f - scale) * (g.IO.MousePos - window->Pos) / window->Size;
-            window->Pos += offset;
-            window->Size *= scale;
-            window->SizeFull *= scale;
-        }
-        else if (!g.IO.KeyCtrl && scroll_allowed)
-        {
-            // Mouse wheel vertical scrolling
-            float scroll_amount = 5 * scroll_window->CalcFontSize();
-            scroll_amount = (float)(int)ImMin(scroll_amount, (scroll_window->ContentsRegionRect.GetHeight() + scroll_window->WindowPadding.y * 2.0f) * 0.67f);
-            SetWindowScrollY(scroll_window, scroll_window->Scroll.y - g.IO.MouseWheel * scroll_amount);
-        }
-    }
-    if (g.IO.MouseWheelH != 0.0f && scroll_allowed && !g.IO.KeyCtrl)
-    {
-        // Mouse wheel horizontal scrolling (for hardware that supports it)
-        float scroll_amount = scroll_window->CalcFontSize();
-        SetWindowScrollX(scroll_window, scroll_window->Scroll.x - g.IO.MouseWheelH * scroll_amount);
+    // Vertical Mouse Wheel Scrolling (hold Shift to scroll horizontally)
+    if (g.IO.MouseWheel != 0.0f && !g.IO.KeyShift) {
+        ImVec2 max_step = ImVec2(100.f, 100.f);
+        float scroll_step = ImFloor(ImMin(8 * window->CalcFontSize(), max_step.y));
+        window->ScrollNext.y = window->Scroll.y - g.IO.MouseWheel * scroll_step;
+        //SetWindowScrollY(window, window->Scroll.y - g.IO.MouseWheel * scroll_step);
     }
 }
 
@@ -4343,7 +4334,7 @@ static bool ImGui::BeginChildEx(const char* name, ImGuiID id, const ImVec2& size
         size.y = ImMax(content_avail.y + size.y, 4.0f);
     SetNextWindowSize(size);
 
-    // Build up name. If you need to append to a same child from multiple location in the ID stack, use BeginChild(ImGuiID id) with a stable value.
+    // BImGuild up name. If you need to append to a same child from multiple location in the ID stack, use BeginChild(ImGuiID id) with a stable value.
     char title[256];
     if (name)
         ImFormatString(title, IM_ARRAYSIZE(title), "%s/%s_%08X", parent_window->Name, name, id);
@@ -4366,17 +4357,37 @@ static bool ImGui::BeginChildEx(const char* name, ImGuiID id, const ImVec2& size
         parent_window->DC.CursorPos = child_window->Pos;
 
     // Process navigation-in immediately so NavInit can run on first frame
-    if (g.NavActivateId == id && !(flags & ImGuiWindowFlags_NavFlattened) && (child_window->DC.NavLayerActiveMask != 0 || child_window->DC.NavHasScroll))
-    {
+    if (g.NavActivateId == id && !(flags & ImGuiWindowFlags_NavFlattened) && (child_window->DC.NavLayerActiveMask != 0 || child_window->DC.NavHasScroll)) {
         FocusWindow(child_window);
         NavInitWindow(child_window, false);
         SetActiveID(id + 1, child_window); // Steal ActiveId with a dummy id so that key-press won't activate child item
         g.ActiveIdSource = ImGuiInputSource_Nav;
     }
+    const ImVec2 value_bufsize = ImGui::CalcTextSize(name);
 
-    parent_window->DrawList->AddRectFilled(ImGui::GetWindowPos(), ImGui::GetWindowPos() + size_arg, ImColor(16, 16, 16));
-    parent_window->DrawList->AddRect(ImGui::GetWindowPos(), ImGui::GetWindowPos() + size_arg, ImColor(30, 30, 30));
-    parent_window->DrawList->AddRect(ImGui::GetWindowPos() + ImVec2(1, 1), ImGui::GetWindowPos() + size_arg - ImVec2(1, 1), ImColor(0, 0, 0));
+    ImVec2 WinPos = ImGui::GetWindowPos();
+    ImVec2 child_bb(parent_window->DC.CursorPos.x, parent_window->DC.CursorPos.y);
+
+    ImColor col(0.f, 0.60f, 0.f, 1.00f);
+
+    ImColor white(255.f, 255.f, 255.f, Menu::Get().alpha);
+    ImColor grey(122.f / 255.f, 122.f / 255.f, 122.f / 255.f, Menu::Get().alpha);
+    ImColor square(9.f / 255.f, 9.f / 255.f, 9.f / 255.f, Menu::Get().alpha);
+
+    //ImDrawList* dl = parent_window->DrawList;
+    int lol = 23;
+
+    parent_window->DrawList->AddRectFilledMultiColor(ImVec2(child_bb.x, child_bb.y - lol), ImVec2(child_bb.x + size_arg.x, child_bb.y + size_arg.y), square, square, square, square);
+    parent_window->DrawList->AddLine(ImVec2(child_bb.x, child_bb.y - lol), ImVec2(child_bb.x + size_arg.x, child_bb.y - lol), grey);
+
+    parent_window->DrawList->AddText(uhFont, 18.f, ImVec2(child_bb.x + 4, child_bb.y - lol + 4), white, name);
+    //parent_window->DrawList->AddText(ImVec2(child_bb.x + 4, child_bb.y - lol + 4), white, name);
+
+
+    parent_window->DrawList->AddLine(ImVec2(child_bb.x, child_bb.y - lol), ImVec2(child_bb.x, child_bb.y + size_arg.y), grey);
+    parent_window->DrawList->AddLine(ImVec2(child_bb.x + size_arg.x, child_bb.y - lol), ImVec2(child_bb.x + size_arg.x, child_bb.y + size_arg.y), grey);
+    parent_window->DrawList->AddLine(ImVec2(child_bb.x, child_bb.y + size_arg.y), ImVec2(child_bb.x + size_arg.x, child_bb.y + size_arg.y), grey);
+    parent_window->DrawList->AddLine(ImVec2(child_bb.x, child_bb.y - 1), ImVec2(child_bb.x + size_arg.x, child_bb.y - 1), grey);
 
     return ret;
 }

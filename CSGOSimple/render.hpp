@@ -15,14 +15,16 @@
 
 #include "valve_sdk/misc/Color.hpp"
 
-extern ImFont* g_MenuFont;
-extern ImFont* g_pDefaultFont;
-extern ImFont* g_VeloFont;
-extern ImFont* g_SpectatorListFont;
-extern ImFont* Cummed;
+
 
 
 class Vector;
+
+enum GradientType
+{
+	GRADIENT_HORIZONTAL,
+	GRADIENT_VERTICAL
+};
 
 class Render
 	: public Singleton<Render>
@@ -111,6 +113,7 @@ public:
 	inline float RenderText(const std::string& text, T x, T y, float size, Color clr, bool center = false, bool outline = true, ImFont* pFont = g_pDefaultFont) {
 		return RenderText(text, ImVec2(x, y), size, clr, center, outline, pFont);
 	}
+
 	template <class T>
 	inline void RenderCircle(T x, T y, float radius, int points, Color color, float thickness = 1.f) {
 		draw_list->AddCircle(ImVec2(x, y), radius, GetU32(color), points, thickness);

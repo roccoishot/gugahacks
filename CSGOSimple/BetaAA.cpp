@@ -5,6 +5,46 @@
 #include "features/aimbot.hpp"
 #include "features/autowall.hpp"
 #include "Globals.h"
+#include "features/Misc.hpp"
+
+bool CAntiAim::CanDesync(CUserCmd* cmd)
+{
+
+	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
+	{
+		return false;
+	}
+
+	if (Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || !g_Options.ragebot_antiaim_desync || g_Options.fakepreset == 0)
+		return false;
+
+	int movetype = g_LocalPlayer->m_nMoveType();
+
+	if (g_Options.aimbot.fastaimbot && g_Options.aimbot.enabled) {
+		if (movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || cmd->buttons & IN_USE || cmd->buttons & IN_GRENADE1 || cmd->buttons & IN_GRENADE2)
+			return false;
+	}
+	else {
+		if (movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || cmd->buttons & IN_ATTACK || cmd->buttons & IN_USE || cmd->buttons & IN_GRENADE1 || cmd->buttons & IN_GRENADE2)
+			return false;
+	}
+
+	C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+
+	if (!weapon)
+		return false;
+
+	if (movetype == MOVETYPE_LADDER)
+		return false;
+
+	if (!weapon->IsGun() && !weapon->IsZeus())
+		return false;
+
+	if (weapon->IsGrenade())
+		return false;
+
+	return true;
+}
 
 void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 {
@@ -14,64 +54,33 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		return;
 	}
 
+	if (Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN)
+		return;
+
 	int movetype = g_LocalPlayer->m_nMoveType();
 
-	if (
-		movetype == MOVETYPE_FLY
-		|| movetype == MOVETYPE_NOCLIP
-		|| cmd->buttons & IN_USE
-		|| cmd->buttons & IN_GRENADE1
-		|| cmd->buttons & IN_GRENADE2
-		)
-	{
-		return;
+	if (g_Options.aimbot.fastaimbot && g_Options.aimbot.enabled) {
+		if (movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || cmd->buttons & IN_USE || cmd->buttons & IN_GRENADE1 || cmd->buttons & IN_GRENADE2)
+			return;
+	}
+	else {
+		if (movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || cmd->buttons & IN_ATTACK || cmd->buttons & IN_USE || cmd->buttons & IN_GRENADE1 || cmd->buttons & IN_GRENADE2)
+			return;
 	}
 
 	C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon().Get();
 
 	if (!weapon)
-	{
 		return;
-	}
-
-	if (g_Options.aimbot.fastaimbot) {
-		if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
-			if (weapon->m_flNextSecondaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 2))
-			{
-				return;
-			}
-		}
-		if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
-			if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 1))
-			{
-				return;
-			}
-		}
-	}
-	if (!g_Options.aimbot.fastaimbot) {
-		if (g_Options.aimbot.autorevolver2 && g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
-			if (weapon->m_flNextSecondaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 2) || cmd->buttons & IN_ATTACK2)
-			{
-				return;
-			}
-		}
-		if (!g_Options.aimbot.autorevolver2 && !(g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)) {
-			if (weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && (g_LocalPlayer->m_iShotsFired() >= 1) || cmd->buttons & IN_ATTACK)
-			{
-				return;
-			}
-		}
-	}
 
 	if (movetype == MOVETYPE_LADDER)
-	{
 		return;
-	}
+
+	if (!weapon->IsGun() && !weapon->IsZeus())
+		return;
 
 	if (weapon->IsGrenade())
-	{
 		return;
-	}
 
 	DoAntiAim(cmd, bSendPacket);
 }
@@ -102,332 +111,6 @@ float WallThickness(Vector from, Vector to, C_BasePlayer* skip, C_BasePlayer* sk
 	return endpos1.DistTo(endpos2);
 }
 
-void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
-{
-	//Proper Sendpacket idk but not desyncing when using
-
-	Yaw(cmd, false);
-	Pitch(cmd);
-
-	float best_rotation = 0.f;
-	auto local_eyeposition = g_LocalPlayer->GetEyePos();
-	auto head_position = g_LocalPlayer->GetHitboxPos(HITBOX_HEAD);
-	float thickest = -1.f;
-
-	int i = 1; i < g_EngineClient->GetMaxClients(); i++;
-	auto pEntity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
-
-	float step = (DirectX::XM_2PI) / 8.f;
-
-	float radius = fabs(Vector(head_position - g_LocalPlayer->m_vecOrigin()).Length2D());
-
-	for (float rotation = 0; rotation < (DirectX::XM_2PI); rotation += step)
-	{
-		if (!pEntity || !g_LocalPlayer) continue;
-		if (!pEntity->IsPlayer()) continue;
-		if (pEntity == g_LocalPlayer) continue;
-		if (pEntity->IsDormant()) continue;
-		if (!pEntity->IsAlive()) continue;
-		if (g_LocalPlayer->m_iTeamNum() == pEntity->m_iTeamNum()) continue;
-
-		if (!g_LocalPlayer->IsAlive())
-			return;
-
-		Vector newhead(radius * cos(rotation) + local_eyeposition.x, radius * sin(rotation) + local_eyeposition.y, local_eyeposition.z);
-
-		float thickness = WallThickness(pEntity->GetEyePos(), newhead, pEntity, g_LocalPlayer);
-
-		if (thickness > thickest)
-		{
-			thickest = thickness;
-			best_rotation = rotation;
-		}
-	}
-
-	if (g_Options.ragebot_antiaim_yaw == 4)
-		cmd->viewangles.yaw = RAD2DEG(best_rotation);
-
-	if (g_Options.ragebot_antiaim_desync)
-	{
-		if (!g_Options.ragebot_antiaim_desync)
-			return;
-
-		if (cmd->buttons & IN_ATTACK)
-			return;
-
-		auto old_viewangles = cmd->viewangles;
-		auto old_forwardmove = cmd->forwardmove;
-		auto old_sidemove = cmd->sidemove;
-
-		auto lby = g_EngineClient->GetNetChannel();
-
-		if (!lby)
-			return;
-
-		bool balls = false;
-
-		if (GetKeyState(g_Options.invertaa))
-			balls = true;
-		else if (!(GetKeyState(g_Options.invertaa)))
-			balls = false;
-
-		float randomfake = rand() % 122 + -122;
-
-		if (lby->m_nChokedPackets != true)
-		{
-			bSendPacket = cmd->command_number % 2 ? true : false;
-		}
-
-		if (g_Options.sexdick.randomizefake) {
-			if (!bSendPacket)
-			{
-				cmd->viewangles.yaw += balls ? randomfake : -randomfake;
-			}
-			else if (bSendPacket)
-			{
-				cmd->viewangles.yaw += 0.f;
-			}
-		}
-		if (!g_Options.sexdick.randomizefake) {
-			if (!bSendPacket)
-			{
-				cmd->viewangles.yaw += balls ? 58.f : -58.f;
-			}
-			else if (bSendPacket)
-			{
-				cmd->viewangles.yaw += 0.f;
-			}
-		}
-
-		//Proper Desync
-		//Animstate Crashes
-				/*float m_flGoalFeetYaw = g_LocalPlayer->GetPlayerAnimState()->m_flGoalFeetYaw;
-		float m_flEyeYaw = g_LocalPlayer->m_angEyeAngles().yaw;
-		float DesyncAngle = 0.f;
-		float SentYaw = 0.f;
-
-		if (bSendPacket) {
-			m_flGoalFeetYaw = std::clamp(m_flGoalFeetYaw, -360.0f, 360.0f);
-
-			float eye_feet_delta = m_flEyeYaw - m_flGoalFeetYaw;
-
-			if (eye_feet_delta <= 58.f)
-			{
-				if (-58.f > eye_feet_delta)
-					cmd->viewangles.yaw = SentYaw + 180;
-			}
-			else
-			{
-				cmd->viewangles.yaw = SentYaw - 58.f;
-			}
-			DesyncAngle = cmd->viewangles.yaw;
-		}
-		else if (!bSendPacket) {
-			cmd->viewangles.yaw += 180.f;
-			SentYaw = cmd->viewangles.yaw;
-		}
-	}*/
-
-	}
-
-}
-
-void CAntiAim::Pitch(CUserCmd* cmd)
-{
-	static bool bFlip = false;
-	bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
-	bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
-	bool Standing = !Moving && !InAir;
-	PitchAntiAims mode = (PitchAntiAims)g_Options.ragebot_antiaim_pitch;
-
-	float CustomPitch = 0.f;
-
-	switch (mode)
-	{
-	case PitchAntiAims::EMOTION:
-		cmd->viewangles.pitch = 55.f;
-		break;
-
-	case PitchAntiAims::DOWN:
-		cmd->viewangles.pitch = 89.f;
-		break;
-
-	case PitchAntiAims::UP:
-		cmd->viewangles.pitch = -89.f;
-		break;
-
-	case PitchAntiAims::ZERO:
-		cmd->viewangles.pitch = 0.f;
-		break;
-	}
-}
-
-void CAntiAim::Yaw(CUserCmd* cmd, bool fake)
-{
-	fake = g_Options.ragebot_antiaim_desync;
-	bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
-	bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
-	bool Standing = !Moving && !InAir;
-	YawAntiAims mode = (YawAntiAims)g_Options.ragebot_antiaim_yaw;
-
-	float CustomYaw = 0.f;
-
-	switch (mode)
-	{
-	case YawAntiAims::BACKWARDS:
-		cmd->viewangles.yaw -= 180.f;
-		break;
-
-	case YawAntiAims::SPINBOT:
-		cmd->viewangles.yaw = fmodf(g_GlobalVars->tickcount * 10.f, 360.f) * g_Options.spinspeed;
-		break;
-
-	case YawAntiAims::LOWER_BODY:
-		cmd->viewangles.yaw = g_LocalPlayer->m_flLowerBodyYawTarget();
-		break;
-	}
-}
-
-bool CAntiAim::Freestanding(C_BasePlayer* player, float& ang)
-{
-	if (!g_LocalPlayer || !player || !player->IsAlive() || !g_LocalPlayer->IsAlive())
-	{
-		return false;
-	}
-
-	C_BasePlayer* local = g_LocalPlayer;
-
-	bool no_active = true;
-	float bestrotation = 0.f;
-	float highestthickness = 0.f;
-	static float hold = 0.f;
-	Vector besthead;
-
-	auto leyepos = local->m_vecOrigin() + local->m_vecViewOffset();
-	auto headpos = local->GetHitboxPos(0); //GetHitboxPosition(local_player, 0);
-	auto origin = local->m_vecOrigin();
-
-	auto checkWallThickness = [&](C_BasePlayer* pPlayer, Vector newhead) -> float
-	{
-
-		Vector endpos1, endpos2;
-
-		Vector eyepos = pPlayer->m_vecOrigin() + pPlayer->m_vecViewOffset();
-		Ray_t ray;
-		ray.Init(newhead, eyepos);
-		CTraceFilterSkipTwoEntities filter(pPlayer, local);
-
-		trace_t trace1, trace2;
-		g_EngineTrace->TraceRay(ray, MASK_SHOT_BRUSHONLY | MASK_OPAQUE_AND_NPCS, &filter, &trace1);
-
-		if (trace1.DidHit())
-		{
-			endpos1 = trace1.endpos;
-		}
-		else
-		{
-			return 0.f;
-		}
-
-		ray.Init(eyepos, newhead);
-		g_EngineTrace->TraceRay(ray, MASK_SHOT_BRUSHONLY | MASK_OPAQUE_AND_NPCS, &filter, &trace2);
-
-		if (trace2.DidHit())
-		{
-			endpos2 = trace2.endpos;
-		}
-
-		float add = newhead.DistTo(eyepos) - leyepos.DistTo(eyepos) + 3.f;
-		return endpos1.DistTo(endpos2) + add / 3;
-
-	};
-
-	int index = GetNearestPlayerToCrosshair();
-	static C_BasePlayer* entity;
-
-	if (!local->IsAlive())
-	{
-		hold = 0.f;
-	}
-
-	if (index != -1)
-	{
-		entity = (C_BasePlayer*)g_EntityList->GetClientEntity(index); // maybe?
-	}
-
-	if (!entity || entity == nullptr)
-	{
-		return false;
-	}
-
-	float radius = Vector(headpos - origin).Length2D();
-
-	if (index == -1)
-	{
-		no_active = true;
-	}
-	else
-	{
-		float step = (M_PI * 2) / 90;
-
-		for (float besthead = 0; besthead < (M_PI * 2); besthead += step)
-		{
-			Vector newhead(radius * cos(besthead) + leyepos.x, radius * sin(besthead) + leyepos.y, leyepos.z);
-			float totalthickness = 0.f;
-			no_active = false;
-			totalthickness += checkWallThickness(entity, newhead);
-
-			if (totalthickness > highestthickness)
-			{
-				highestthickness = totalthickness;
-
-				bestrotation = besthead;
-			}
-		}
-	}
-
-	if (no_active)
-	{
-		return false;
-	}
-	else
-	{
-		ang = RAD2DEG(bestrotation);
-		return true;
-	}
-
-	return false;
-}
-
-int CAntiAim::GetNearestPlayerToCrosshair()
-{
-	float BestFov = FLT_MAX;
-	int BestEnt = -1;
-	QAngle MyAng;
-	g_EngineClient->GetViewAngles(&MyAng);
-
-	for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
-	{
-		auto entity = static_cast<C_BasePlayer*> (g_EntityList->GetClientEntity(i));
-
-		if (!entity || !g_LocalPlayer || !entity->IsPlayer() || entity == g_LocalPlayer || entity->IsDormant()
-			|| !entity->IsAlive() || entity->m_iTeamNum())
-		{
-			continue;
-		}
-
-		float CFov = fov_player(g_LocalPlayer->m_vecOrigin(), MyAng, entity); //Math::GetFOV(MyAng, Math::CalcAngle(g_LocalPlayer->GetEyePos(), entity->GetEyePos()));
-
-		if (CFov < BestFov)
-		{
-			BestFov = CFov;
-			BestEnt = i;
-		}
-	}
-
-	return BestEnt;
-}
-
 void NormalizeNum(Vector& vIn, Vector& vOut)
 {
 	float flLen = vIn.Length();
@@ -442,7 +125,7 @@ void NormalizeNum(Vector& vIn, Vector& vOut)
 	vOut.Init(vIn.x * flLen, vIn.y * flLen, vIn.z * flLen);
 }
 
-float CAntiAim::fov_player(Vector ViewOffSet, QAngle View, C_BasePlayer* entity)
+float fov_player(Vector ViewOffSet, QAngle View, C_BasePlayer* entity)
 {
 	// Anything past 180 degrees is just going to wrap around
 	CONST FLOAT MaxDegrees = 180.0f;
@@ -475,4 +158,274 @@ float CAntiAim::fov_player(Vector ViewOffSet, QAngle View, C_BasePlayer* entity)
 
 	// Time to calculate the field of view
 	return (acos(DotProduct) * (MaxDegrees / M_PI));
+}
+
+int GetNearestPlayerToCrosshair()
+{
+	float BestFov = FLT_MAX;
+	int BestEnt = -1;
+	QAngle MyAng;
+	g_EngineClient->GetViewAngles(&MyAng);
+
+	for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
+	{
+		auto entity = static_cast<C_BasePlayer*> (g_EntityList->GetClientEntity(i));
+
+		if (!entity || !g_LocalPlayer || !entity->valid(true, true))
+		{
+			continue;
+		}
+
+		float CFov = fov_player(g_LocalPlayer->m_vecOrigin(), MyAng, entity); //Math::GetFOV(MyAng, Math::CalcAngle(g_LocalPlayer->GetEyePos(), entity->GetEyePos()));
+
+		if (CFov < BestFov)
+		{
+			BestFov = CFov;
+			BestEnt = i;
+		}
+	}
+
+	return BestEnt;
+}
+
+void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
+{
+
+	if (Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN)
+		return;
+
+	if (!Globals::freezetime && !g_LocalPlayer->m_bGunGameImmunity() && g_LocalPlayer->m_fFlags() != FL_FROZEN)
+	{
+		Yaw(cmd, false);
+		Pitch(cmd, bSendPacket);
+	}
+
+	float fakepreset = 0.f;
+
+	bool balls = false;
+
+	if (GetKeyState(g_Options.invertaa))
+		balls = true;
+	else if (!(GetKeyState(g_Options.invertaa)))
+		balls = false;
+
+	if (!g_EngineClient->IsInGame() && !g_LocalPlayer->IsAlive())
+		balls = false;
+
+	if (g_Options.fakepreset == 0)
+		fakepreset = 0.f;
+	if (g_Options.fakepreset == 1)
+		fakepreset = balls ? 29.f : -29.f;
+	if (g_Options.fakepreset == 2)
+		fakepreset = balls ? 58.f : -58.f;
+	if (g_Options.fakepreset == 3)
+		fakepreset = balls ? g_Options.fakedegree : -g_Options.fakedegree;
+	if (g_Options.fakepreset == 4)
+		fakepreset = balls ? (fmodf(cmd->tick_count * 6.f, 360.f) * g_Options.fakespinsp) : -(fmodf(cmd->tick_count * 6.f, 360.f) * g_Options.fakespinsp);
+	if (g_Options.randomizefake)
+		fakepreset = (Math::random_float(-360.f, 360.f));
+	sexyboodyballs = fakepreset;
+	inverted = balls;
+
+	float best_rotation = 0.f;
+	auto local_eyeposition = g_LocalPlayer->GetEyePos();
+	auto head_position = g_LocalPlayer->GetHitboxPos(HITBOX_HEAD);
+	float thickest = -1.f;
+
+	auto pEntity = C_BasePlayer::GetPlayerByIndex(GetNearestPlayerToCrosshair());
+
+	float step = (DirectX::XM_2PI) / 8.f;
+
+	float radius = fabs(Vector(head_position - g_LocalPlayer->m_vecOrigin()).Length2D());
+
+	for (float rotation = 0; rotation < (DirectX::XM_2PI); rotation += step)
+	{
+		if (!pEntity || !g_LocalPlayer) continue;
+		if (!pEntity->IsPlayer()) continue;
+		if (pEntity == g_LocalPlayer) continue;
+		if (pEntity->IsDormant()) continue;
+		if (!pEntity->IsAlive()) continue;
+		if (g_LocalPlayer->m_iTeamNum() == pEntity->m_iTeamNum()) continue;
+
+		Vector newhead(radius * cos(rotation) + local_eyeposition.x, radius * sin(rotation) + local_eyeposition.y, local_eyeposition.z);
+
+		float thickness = WallThickness(pEntity->GetEyePos(), newhead, pEntity, g_LocalPlayer);
+
+		if (thickness > thickest)
+		{
+			thickest = thickness;
+			best_rotation = rotation;
+		}
+	}
+
+	if (!Globals::freezetime && !g_LocalPlayer->m_bGunGameImmunity() && g_LocalPlayer->m_fFlags() != FL_FROZEN)
+	{
+		if (g_Options.ragebot_antiaim_yaw == 4 && best_rotation)
+			cmd->viewangles.yaw = RAD2DEG(best_rotation);
+		else if (g_Options.ragebot_antiaim_yaw == 4 && !best_rotation)
+			cmd->viewangles.yaw -= 180.f;
+
+		if (g_Options.ragebot_antiaim_desync)
+		{
+			auto lby = g_EngineClient->GetNetChannel();
+
+			if (!lby)
+				return;
+
+			if (g_Options.fakelag == false || g_Options.faketicks <= 0) {
+				if (lby->m_nChokedPackets != true)
+				{
+					bSendPacket = cmd->command_number % 2 ? true : false;
+				}
+			}
+
+			float fake = (fakepreset / 3) * 2;
+			float real = (fakepreset / 3);
+
+			if (g_Options.ragebot_antiaim_yaw != 5) {
+				if (g_Options.fakepreset != 4) {
+					if (bSendPacket)
+					{
+						cmd->viewangles.yaw += fake;
+					}
+
+					if (!bSendPacket)
+					{
+						cmd->viewangles.yaw -= real;
+					}
+				}
+				if (g_Options.fakepreset == 4) {
+					if (bSendPacket)
+					{
+						cmd->viewangles.yaw += fakepreset;
+					}
+
+					if (!bSendPacket)
+					{
+						cmd->viewangles.yaw -= 0.f;
+					}
+				}
+			}
+			if (g_Options.ragebot_antiaim_yaw == 5) {
+				if (g_Options.fakepreset != 4) {
+					if (bSendPacket)
+					{
+						cmd->viewangles.yaw += fake;
+					}
+					else if (!bSendPacket)
+					{
+						cmd->viewangles.yaw -= g_Options.customreal;
+					}
+				}
+				if (g_Options.fakepreset == 4) {
+					if (bSendPacket)
+					{
+						cmd->viewangles.yaw += fakepreset;
+					}
+					else if (!bSendPacket)
+					{
+						cmd->viewangles.yaw -= g_Options.customreal;
+					}
+				}
+			}
+		}
+	}
+
+}
+
+void CAntiAim::Pitch(CUserCmd* cmd, bool fake)
+{
+
+	if (Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN)
+		return;
+
+	static bool bFlip = false;
+	bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
+	bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
+	bool Standing = !Moving && !InAir;
+	PitchAntiAims mode = (PitchAntiAims)g_Options.ragebot_antiaim_pitch;
+
+	if (Globals::valve)
+	{
+		fake = false;
+	}
+	else
+	{
+		fake = fake;
+	}
+
+	float CustomPitch = 0.f;
+
+	switch (mode)
+	{
+	case PitchAntiAims::EMOTION:
+		cmd->viewangles.pitch = 58.f;
+		break;
+
+	case PitchAntiAims::DOWN:
+		cmd->viewangles.pitch = 89.f;
+		break;
+
+	case PitchAntiAims::UP:
+		cmd->viewangles.pitch = -89.f;
+		break;
+
+	case PitchAntiAims::ZERO:
+		cmd->viewangles.pitch = 0.f;
+		break;
+	case PitchAntiAims::FUP:
+		cmd->viewangles.pitch = fake ? 89.f : -89.f;
+		break;
+	case PitchAntiAims::FDOWN:
+		cmd->viewangles.pitch = fake ? -89.f : 89.f;
+		break;
+	case PitchAntiAims::FZERO:
+		cmd->viewangles.pitch = fake ? 89.f : 0.f;
+		break;
+	}
+
+}
+
+void CAntiAim::Yaw(CUserCmd* cmd, bool fake)
+{
+	if (Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN)
+		return;
+
+	fake = g_Options.ragebot_antiaim_desync;
+	bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
+	bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
+	bool Standing = !Moving && !InAir;
+	YawAntiAims mode = (YawAntiAims)g_Options.ragebot_antiaim_yaw;
+
+	bool balls = false;
+
+	if (GetKeyState(g_Options.invertaa))
+		balls = true;
+	else if (!(GetKeyState(g_Options.invertaa)))
+		balls = false;
+
+	if (!g_EngineClient->IsInGame() && !g_LocalPlayer->IsAlive())
+		balls = false;
+
+	switch (mode)
+	{
+	case YawAntiAims::BACKWARDS:
+		cmd->viewangles.yaw -= 180.f;
+		break;
+
+	case YawAntiAims::SPINBOT:
+		cmd->viewangles.yaw += balls ? (fmodf(cmd->tick_count * 6.f, 360.f) * g_Options.spinspeed) : -(fmodf(cmd->tick_count * 6.f, 360.f) * g_Options.spinspeed);
+		break;
+
+	case YawAntiAims::LOWER_BODY:
+		cmd->viewangles.yaw = g_LocalPlayer->m_flLowerBodyYawTarget();
+		break;
+
+	case YawAntiAims::CUSTOM:
+		cmd->viewangles.yaw += g_Options.customreal;
+			break; 
+	case YawAntiAims::JITTER:
+		cmd->viewangles.yaw += cmd->command_number % 2 ? -180 - g_Options.jitterdegree : 180 + g_Options.jitterdegree;
+		break;
+	}
 }

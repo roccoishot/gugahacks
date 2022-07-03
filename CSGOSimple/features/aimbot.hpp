@@ -17,6 +17,7 @@ public:
 		shot_delay = kill_delay = false;
 	}
 
+	bool ran = false;
 	void Run(CUserCmd* cmd);
 	bool IsEnabled(CUserCmd* cmd);
 	float GetFovToPlayer(QAngle viewAngle, QAngle aimAngle);

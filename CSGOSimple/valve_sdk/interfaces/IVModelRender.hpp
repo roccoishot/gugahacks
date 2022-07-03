@@ -21,7 +21,6 @@ enum MaterialVarFlags_t
     MATERIAL_VAR_SELFILLUM = (1 << 6),
     MATERIAL_VAR_ADDITIVE = (1 << 7),
     MATERIAL_VAR_ALPHATEST = (1 << 8),
-    //MATERIAL_VAR_UNUSED = (1 << 9),
     MATERIAL_VAR_ZNEARER = (1 << 10),
     MATERIAL_VAR_MODEL = (1 << 11),
     MATERIAL_VAR_FLAT = (1 << 12),
@@ -44,7 +43,6 @@ enum MaterialVarFlags_t
     MATERIAL_VAR_ALLOWALPHATOCOVERAGE = (1 << 29),
     MATERIAL_VAR_ALPHA_MODIFIED_BY_PROXY = (1 << 30),
     MATERIAL_VAR_VERTEXFOG = (1 << 31),
-    MATERIAL_VAR_VELVET = (1 << 32),
 };
 
 typedef unsigned short ModelInstanceHandle_t;
@@ -61,7 +59,194 @@ class CStudioHdr;
 class IMatRenderContext;
 class DataCacheHandle_t;
 class ITexture;
-class IMaterialVar;
+enum MaterialVarType_t {
+    MATERIAL_VAR_TYPE_FLOAT = 0,
+    MATERIAL_VAR_TYPE_STRING,
+    MATERIAL_VAR_TYPE_VECTOR,
+    MATERIAL_VAR_TYPE_TEXTURE,
+    MATERIAL_VAR_TYPE_INT,
+    MATERIAL_VAR_TYPE_FOURCC,
+    MATERIAL_VAR_TYPE_UNDEFINED,
+    MATERIAL_VAR_TYPE_MATRIX,
+    MATERIAL_VAR_TYPE_MATERIAL,
+};
+typedef unsigned short MaterialVarSym_t;
+class IMaterialVar {
+public:
+    typedef unsigned long FourCC;
+
+protected:
+    // base data and accessors
+    char* m_pStringVal;
+    int m_intVal;
+    Vector4D m_VecVal;
+
+    // member data. total = 4 bytes
+    unsigned char m_Type : 4;
+    unsigned char m_nNumVectorComps : 3;
+    unsigned char m_bFakeMaterialVar : 1;
+    unsigned char m_nTempIndex;
+    void* m_Name;
+
+public:
+    // class factory methods
+    static IMaterialVar* Create(IMaterial* pMaterial, char const* pKey, VMatrix const& matrix);
+    static IMaterialVar* Create(IMaterial* pMaterial, char const* pKey, char const* pVal);
+    static IMaterialVar* Create(IMaterial* pMaterial, char const* pKey, float* pVal, int numcomps);
+    static IMaterialVar* Create(IMaterial* pMaterial, char const* pKey, float val);
+    static IMaterialVar* Create(IMaterial* pMaterial, char const* pKey, int val);
+    static IMaterialVar* Create(IMaterial* pMaterial, char const* pKey);
+    static void Destroy(IMaterialVar* pVar);
+    void SetVector(const Vector vector);
+    static MaterialVarSym_t	GetSymbol(char const* pName);
+    static MaterialVarSym_t	FindSymbol(char const* pName);
+    static bool SymbolMatches(char const* pName, MaterialVarSym_t symbol);
+    static void DeleteUnreferencedTextures(bool enable);
+
+    virtual ITexture* GetTextureValue(void) = 0;
+
+    virtual char const* GetName(void) const = 0;
+    virtual MaterialVarSym_t	GetNameAsSymbol() const = 0;
+
+    virtual void			SetFloatValue(float val) = 0;
+
+    virtual void			SetIntValue(int val) = 0;
+
+    virtual void			SetStringValue(char const* val) = 0;
+    virtual char const* GetStringValue(void) const = 0;
+
+    // Use FourCC values to pass app-defined data structures between
+    // the proxy and the shader. The shader should ignore the data if
+    // its FourCC type not correct.	
+    virtual void			SetFourCCValue(FourCC type, void* pData) = 0;
+    virtual void			GetFourCCValue(FourCC* type, void** ppData) = 0;
+
+    // Vec (dim 2-4)
+    virtual void unk() = 0;
+    virtual void			SetVecValue(float const* val, int numcomps) = 0;
+    virtual void			SetVecValue(float x, float y) = 0;
+    virtual void			SetVecValue(float x, float y, float z) = 0;
+    virtual void			SetVecValue(float x, float y, float z, float w) = 0;
+    virtual void			GetLinearVecValue(float* val, int numcomps) const = 0;
+
+    // revisit: is this a good interface for textures?
+    virtual void			SetTextureValue(ITexture*) = 0;
+
+    virtual IMaterial* GetMaterialValue(void) = 0;
+    virtual void			SetMaterialValue(IMaterial*) = 0;
+
+    virtual bool			IsDefined() const = 0;
+    virtual void			SetUndefined() = 0;
+
+    // Matrix
+    virtual void			SetMatrixValue(VMatrix const& matrix) = 0;
+    virtual const VMatrix& GetMatrixValue() = 0;
+    virtual bool			MatrixIsIdentity() const = 0;
+
+    // Copy....
+    virtual void			CopyFrom(IMaterialVar* pMaterialVar) = 0;
+
+    virtual void			SetValueAutodetectType(char const* val) = 0;
+
+    virtual IMaterial* GetOwningMaterial() = 0;
+
+    //set just 1 component
+    virtual void			SetVecComponentValue(float fVal, int nComponent) = 0;
+
+protected:
+    virtual int				GetIntValueInternal(void) const = 0;
+    virtual float			GetFloatValueInternal(void) const = 0;
+    virtual float const* GetVecValueInternal() const = 0;
+    virtual void			GetVecValueInternal(float* val, int numcomps) const = 0;
+    virtual int				VectorSizeInternal() const = 0;
+
+public:
+    __forceinline MaterialVarType_t GetType(void) const {
+        return (MaterialVarType_t)m_Type;
+    }
+
+    __forceinline bool IsTexture() const {
+        return m_Type == MATERIAL_VAR_TYPE_TEXTURE;
+    }
+
+    __forceinline operator ITexture* () {
+        return GetTextureValue();
+    }
+
+    // NOTE: Fast methods should only be called in thread-safe situations
+    __forceinline int GetIntValueFast(void) const {
+        // Set methods for float and vector update this
+        return m_intVal;
+    }
+
+    __forceinline float GetFloatValueFast(void) const {
+        return m_VecVal[0];
+    }
+
+    __forceinline float const* GetVecValueFast() const {
+        return m_VecVal.Base();
+    }
+
+    __forceinline void GetVecValueFast(float* val, int numcomps) const {
+        //assert((numcomps > 0) && (numcomps <= 4));
+        for (int i = 0; i < numcomps; i++) {
+            val[i] = m_VecVal[i];
+        }
+    }
+
+    __forceinline int VectorSizeFast() const {
+        return m_nNumVectorComps;
+    }
+
+#ifdef FAST_MATERIALVAR_ACCESS
+    __forceinline int GetIntValue(void) const {
+        return GetIntValueFast();
+    }
+
+    __forceinline float GetFloatValue(void) const {
+        return GetFloatValueFast();
+    }
+
+    __forceinline float const* GetVecValue() const {
+        return GetVecValueFast();
+    }
+
+    __forceinline void GetVecValue(float* val, int numcomps) const {
+        GetVecValueFast(val, numcomps);
+    }
+
+    __forceinline int VectorSize() const {
+        return VectorSizeFast();
+    }
+#else // !FAST_MATERIALVAR_ACCESS
+    __forceinline int GetIntValue(void) const {
+        return GetIntValueInternal();
+    }
+
+    __forceinline float GetFloatValue(void) const {
+        return GetFloatValueInternal();
+    }
+
+    __forceinline float const* GetVecValue() const {
+        return GetVecValueInternal();
+    }
+
+    __forceinline void GetVecValue(float* val, int numcomps) const {
+        return GetVecValueInternal(val, numcomps);
+    }
+
+    __forceinline int VectorSize() const {
+        return VectorSizeInternal();
+    }
+#endif
+
+private:
+    __forceinline void SetTempIndex(int nIndex) {
+        m_nTempIndex = nIndex;
+    }
+
+    friend void EnableThreadedMaterialVarAccess(bool bEnable, IMaterialVar** ppParams, int nVarCount);
+};
 struct model_t;
 struct mstudioanimdesc_t;
 struct mstudioseqdesc_t;
@@ -170,24 +355,24 @@ public:
 class IMaterial
 {
 public:
-    virtual const char*             GetName() const = 0;
-    virtual const char*             GetTextureGroupName() const = 0;
-    virtual PreviewImageRetVal_t    GetPreviewImageProperties(int *width, int *height, ImageFormat *imageFormat, bool* isTranslucent) const = 0;
-    virtual PreviewImageRetVal_t    GetPreviewImage(unsigned char *data, int width, int height, ImageFormat imageFormat) const = 0;
+    virtual const char* GetName() const = 0;
+    virtual const char* GetTextureGroupName() const = 0;
+    virtual PreviewImageRetVal_t    GetPreviewImageProperties(int* width, int* height, ImageFormat* imageFormat, bool* isTranslucent) const = 0;
+    virtual PreviewImageRetVal_t    GetPreviewImage(unsigned char* data, int width, int height, ImageFormat imageFormat) const = 0;
     virtual int                     GetMappingWidth() = 0;
     virtual int                     GetMappingHeight() = 0;
     virtual int                     GetNumAnimationFrames() = 0;
     virtual bool                    InMaterialPage(void) = 0;
-    virtual    void                 GetMaterialOffset(float *pOffset) = 0;
-    virtual void                    GetMaterialScale(float *pScale) = 0;
-    virtual IMaterial*              GetMaterialPage(void) = 0;
-    virtual IMaterialVar*           FindVar(const char *varName, bool *found, bool complain = true) = 0;
+    virtual    void                 GetMaterialOffset(float* pOffset) = 0;
+    virtual void                    GetMaterialScale(float* pScale) = 0;
+    virtual IMaterial* GetMaterialPage(void) = 0;
+    virtual IMaterialVar* FindVar(const char* varName, bool* found, bool complain = true) = 0;
     virtual void                    IncrementReferenceCount(void) = 0;
     virtual void                    DecrementReferenceCount(void) = 0;
     inline void                     AddRef() { IncrementReferenceCount(); }
     inline void                     Release() { DecrementReferenceCount(); }
     virtual int                     GetEnumerationID(void) const = 0;
-    virtual void                    GetLowResColorSample(float s, float t, float *color) const = 0;
+    virtual void                    GetLowResColorSample(float s, float t, float* color) const = 0;
     virtual void                    RecomputeStateSnapshots() = 0;
     virtual bool                    IsTranslucent() = 0;
     virtual bool                    IsAlphaTested() = 0;
@@ -206,31 +391,31 @@ public:
     virtual void                    GetReflectivity(Vector& reflect) = 0;
     virtual bool                    GetPropertyFlag(MaterialPropertyTypes_t type) = 0;
     virtual bool                    IsTwoSided() = 0;
-    virtual void                    SetShader(const char *pShaderName) = 0;
+    virtual void                    SetShader(const char* pShaderName) = 0;
     virtual int                     GetNumPasses(void) = 0;
     virtual int                     GetTextureMemoryBytes(void) = 0;
     virtual void                    Refresh() = 0;
     virtual bool                    NeedsLightmapBlendAlpha(void) = 0;
     virtual bool                    NeedsSoftwareLighting(void) = 0;
     virtual int                     ShaderParamCount() const = 0;
-    virtual IMaterialVar**          GetShaderParams(void) = 0;
+    virtual IMaterialVar** GetShaderParams(void) = 0;
     virtual bool                    IsErrorMaterial() const = 0;
     virtual void                    Unused() = 0;
     virtual float                   GetAlphaModulation() = 0;
-    virtual void                    GetColorModulation(float *r, float *g, float *b) = 0;
+    virtual void                    GetColorModulation(float* r, float* g, float* b) = 0;
     virtual bool                    IsTranslucentUnderModulation(float fAlphaModulation = 1.0f) const = 0;
-    virtual IMaterialVar*           FindVarFast(char const *pVarName, unsigned int *pToken) = 0;
-    virtual void                    SetShaderAndParams(KeyValues *pKeyValues) = 0;
-    virtual const char*             GetShaderName() const = 0;
+    virtual IMaterialVar* FindVarFast(char const* pVarName, unsigned int* pToken) = 0;
+    virtual void                    SetShaderAndParams(KeyValues* pKeyValues) = 0;
+    virtual const char* GetShaderName() const = 0;
     virtual void                    DeleteIfUnreferenced() = 0;
     virtual bool                    IsSpriteCard() = 0;
-    virtual void                    CallBindProxy(void *proxyData) = 0;
+    virtual void                    CallBindProxy(void* proxyData) = 0;
     virtual void                    RefreshPreservingMaterialVars() = 0;
     virtual bool                    WasReloadedFromWhitelist() = 0;
     virtual bool                    SetTempExcluded(bool bSet, int nExcludedDimensionLimit) = 0;
-    virtual bool			        IsPrecached() const = 0;
     virtual int                     GetReferenceCount() const = 0;
-    vfunc(11, find_var_internal(const char* name, bool* found), c_material_var* (__thiscall*)(IMaterial*, const char*, bool*, bool))(name, found, false)
+
+        vfunc(11, find_var_internal(const char* name, bool* found), c_material_var* (__thiscall*)(IMaterial*, const char*, bool*, bool))(name, found, false)
         vfunc(12, incrementreferencecount(), void(__thiscall*)(IMaterial*))();
     vfunc(0, get_name(), const char* (__thiscall*)(IMaterial*))()
         vfunc(29, set_material_var_flag(const MaterialVarFlags_t flag, const bool on), void(__thiscall*)(IMaterial*, MaterialVarFlags_t, bool))(flag, on)
@@ -251,36 +436,36 @@ public:
 class IVModelRender
 {
 public:
-    virtual int                     DrawModel(int flags, IClientRenderable *pRenderable, ModelInstanceHandle_t instance, int entity_index, const model_t *model, Vector const& origin, QAngle const& angles, int skin, int body, int hitboxset, const matrix3x4_t *modelToWorld = NULL, const matrix3x4_t *pLightingOffset = NULL) = 0;
-    virtual void                    ForcedMaterialOverride(IMaterial *newMaterial, OverrideType_t nOverrideType = 0, int nOverrides = 0) = 0;
+    virtual int                     DrawModel(int flags, IClientRenderable* pRenderable, ModelInstanceHandle_t instance, int entity_index, const model_t* model, Vector const& origin, Vector const& angles, int skin, int body, int hitboxset, const matrix3x4_t* modelToWorld = NULL, const matrix3x4_t* pLightingOffset = NULL) = 0;
+    virtual void                    ForcedMaterialOverride(IMaterial* newMaterial, OverrideType_t nOverrideType = 0, int nOverrides = 0) = 0;
     virtual bool                    IsForcedMaterialOverride(void) = 0;
-    virtual void                    SetViewTarget(const CStudioHdr *pStudioHdr, int nBodyIndex, const Vector& target) = 0;
-    virtual ModelInstanceHandle_t   CreateInstance(IClientRenderable *pRenderable, LightCacheHandle_t *pCache = NULL) = 0;
+    virtual void                    SetViewTarget(const CStudioHdr* pStudioHdr, int nBodyIndex, const Vector& target) = 0;
+    virtual ModelInstanceHandle_t   CreateInstance(IClientRenderable* pRenderable, LightCacheHandle_t* pCache = NULL) = 0;
     virtual void                    DestroyInstance(ModelInstanceHandle_t handle) = 0;
     virtual void                    SetStaticLighting(ModelInstanceHandle_t handle, LightCacheHandle_t* pHandle) = 0;
     virtual LightCacheHandle_t      GetStaticLighting(ModelInstanceHandle_t handle) = 0;
-    virtual bool                    ChangeInstance(ModelInstanceHandle_t handle, IClientRenderable *pRenderable) = 0;
+    virtual bool                    ChangeInstance(ModelInstanceHandle_t handle, IClientRenderable* pRenderable) = 0;
     virtual void                    AddDecal(ModelInstanceHandle_t handle, Ray_t const& ray, Vector const& decalUp, int decalIndex, int body, bool noPokeThru, int maxLODToDecal) = 0;
     virtual void                    RemoveAllDecals(ModelInstanceHandle_t handle) = 0;
     virtual bool                    ModelHasDecals(ModelInstanceHandle_t handle) = 0;
     virtual void                    RemoveAllDecalsFromAllModels() = 0;
-    virtual matrix3x4_t*            DrawModelShadowSetup(IClientRenderable *pRenderable, int body, int skin, DrawModelInfo_t *pInfo, matrix3x4_t *pCustomBoneToWorld = NULL) = 0;
-    virtual void                    DrawModelShadow(IClientRenderable *pRenderable, const DrawModelInfo_t &info, matrix3x4_t *pCustomBoneToWorld = NULL) = 0;
+    virtual matrix3x4_t* DrawModelShadowSetup(IClientRenderable* pRenderable, int body, int skin, DrawModelInfo_t* pInfo, matrix3x4_t* pCustomBoneToWorld = NULL) = 0;
+    virtual void                    DrawModelShadow(IClientRenderable* pRenderable, const DrawModelInfo_t& info, matrix3x4_t* pCustomBoneToWorld = NULL) = 0;
     virtual bool                    RecomputeStaticLighting(ModelInstanceHandle_t handle) = 0;
     virtual void                    ReleaseAllStaticPropColorData(void) = 0;
     virtual void                    RestoreAllStaticPropColorData(void) = 0;
-    virtual int                     DrawModelEx(ModelRenderInfo_t &pInfo) = 0;
-    virtual int                     DrawModelExStaticProp(ModelRenderInfo_t &pInfo) = 0;
-    virtual bool                    DrawModelSetup(ModelRenderInfo_t &pInfo, DrawModelState_t *pState, matrix3x4_t **ppBoneToWorldOut) = 0;
+    virtual int                     DrawModelEx(ModelRenderInfo_t& pInfo) = 0;
+    virtual int                     DrawModelExStaticProp(ModelRenderInfo_t& pInfo) = 0;
+    virtual bool                    DrawModelSetup(ModelRenderInfo_t& pInfo, DrawModelState_t* pState, matrix3x4_t** ppBoneToWorldOut) = 0;
     virtual void                    DrawModelExecute(IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld = NULL) = 0;
-    virtual void                    SetupLighting(const Vector &vecCenter) = 0;
-    virtual int                     DrawStaticPropArrayFast(StaticPropRenderInfo_t *pProps, int count, bool bShadowDepth) = 0;
+    virtual void                    SetupLighting(const Vector& vecCenter) = 0;
+    virtual int                     DrawStaticPropArrayFast(StaticPropRenderInfo_t* pProps, int count, bool bShadowDepth) = 0;
     virtual void                    SuppressEngineLighting(bool bSuppress) = 0;
     virtual void                    SetupColorMeshes(int nTotalVerts) = 0;
-    virtual void                    SetupLightingEx(const Vector &vecCenter, ModelInstanceHandle_t handle) = 0;
-    virtual bool                    GetBrightestShadowingLightSource(const Vector &vecCenter, Vector& lightPos, Vector& lightBrightness, bool bAllowNonTaggedLights) = 0;
-    virtual void                    ComputeLightingState(int nCount, const LightingQuery_t *pQuery, MaterialLightingState_t *pState, ITexture **ppEnvCubemapTexture) = 0;
-    virtual void                    GetModelDecalHandles(StudioDecalHandle_t *pDecals, int nDecalStride, int nCount, const ModelInstanceHandle_t *pHandles) = 0;
-    virtual void                    ComputeStaticLightingState(int nCount, const StaticLightingQuery_t *pQuery, MaterialLightingState_t *pState, MaterialLightingState_t *pDecalState, ColorMeshInfo_t **ppStaticLighting, ITexture **ppEnvCubemapTexture, DataCacheHandle_t *pColorMeshHandles) = 0;
-    virtual void                    CleanupStaticLightingState(int nCount, DataCacheHandle_t *pColorMeshHandles) = 0;
+    virtual void                    SetupLightingEx(const Vector& vecCenter, ModelInstanceHandle_t handle) = 0;
+    virtual bool                    GetBrightestShadowingLightSource(const Vector& vecCenter, Vector& lightPos, Vector& lightBrightness, bool bAllowNonTaggedLights) = 0;
+    virtual void                    ComputeLightingState(int nCount, const LightingQuery_t* pQuery, MaterialLightingState_t* pState, ITexture** ppEnvCubemapTexture) = 0;
+    virtual void                    GetModelDecalHandles(StudioDecalHandle_t* pDecals, int nDecalStride, int nCount, const ModelInstanceHandle_t* pHandles) = 0;
+    virtual void                    ComputeStaticLightingState(int nCount, const StaticLightingQuery_t* pQuery, MaterialLightingState_t* pState, MaterialLightingState_t* pDecalState, ColorMeshInfo_t** ppStaticLighting, ITexture** ppEnvCubemapTexture, DataCacheHandle_t* pColorMeshHandles) = 0;
+    virtual void                    CleanupStaticLightingState(int nCount, DataCacheHandle_t* pColorMeshHandles) = 0;
 };

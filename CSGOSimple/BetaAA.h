@@ -6,16 +6,11 @@ enum class YawAntiAims : int
 	NONE,
 	BACKWARDS,
 	SPINBOT,
-	LOWER_BODY
-};
-
-enum class YawAddAntiAims : int
-{
-	NONE,
+	LOWER_BODY,
+	FREESTAND,
+	CUSTOM,
 	JITTER,
-	SWITCH,
-	SPIN,
-	RANDOM
+	AFRICANAMERICANS
 };
 
 enum class PitchAntiAims : int
@@ -24,7 +19,10 @@ enum class PitchAntiAims : int
 	EMOTION,
 	DOWN,
 	UP,
-	ZERO
+	ZERO,
+	FUP,
+	FDOWN,
+	FZERO
 
 };
 
@@ -32,36 +30,12 @@ class CAntiAim : public Singleton<CAntiAim>
 {
 public:
 	void CreateMove(CUserCmd* cmd, bool& bSendPacket);
-	void LbyBreakerPrediction(CUserCmd* cmd, bool& bSendPacket);
-	void ResetLbyPrediction();
+	bool CanDesync(CUserCmd* cmd);
+	bool inverted;
+	float sexyboodyballs;
 
-	void Fakewalk(CUserCmd* cmd, bool& bSendPackets);
-
-	bool GetEdgeDetectAngle(C_BasePlayer* entity, float& yaw);
-
-	void SlideWalk(CUserCmd* cmd);
 private:
 	void DoAntiAim(CUserCmd* cmd, bool& bSendPacket);
-	void Pitch(CUserCmd* cmd);
+	void Pitch(CUserCmd* cmd, bool fake);
 	void Yaw(CUserCmd* cmd, bool fake);
-	void YawAdd(CUserCmd* cmd, bool fake);
-	int GetFPS();
-
-	//freestanding
-	int BestEnt = -1;
-	float fov_player(Vector ViewOffSet, QAngle View, C_BasePlayer* entity);
-	int GetNearestPlayerToCrosshair();
-	bool Freestanding(C_BasePlayer* player, float& ang);
-	bool FreestandingLbyBreak(float& ang);
-
-	bool InLbyUpdate = false;
-	bool NextTickInLbyUpdate = false;
-	float NextLbyUpdate = 0.f;
-
-	CBaseHandle* m_ulEntHandle = nullptr;
-	CCSGOPlayerAnimState* m_serverAnimState = nullptr;
-
-	bool allocate = false, change = false, reset = false;
-
-	float GetMaxDesyncYaw();
 };

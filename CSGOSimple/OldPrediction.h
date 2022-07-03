@@ -9,6 +9,7 @@ public:
 
 	void StartPrediction(CUserCmd* cmd);
 	void EndPrediction();
+	bool inpred;
 
 private:
 	float m_flOldCurtime;

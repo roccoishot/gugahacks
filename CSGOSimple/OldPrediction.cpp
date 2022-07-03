@@ -1,8 +1,9 @@
 #include "OldPrediction.h"
+#include "Globals.h"
 
 PredictionSystem::PredictionSystem()
 {
-	m_pPredictionRandomSeed = *reinterpret_cast<int**>(Utils::PatternScan(GetModuleHandleA("client.dll"), "8B 0D ? ? ? ? BA ? ? ? ? E8 ? ? ? ? 83 C4 04") + 0x2);
+	m_pPredictionRandomSeed = *reinterpret_cast<int**>(Utils::PatternScan(GetModuleHandleA(XorStr("client.dll")), XorStr("8B 0D ? ? ? ? BA ? ? ? ? E8 ? ? ? ? 83 C4 04")) + 0x2);
 
 	m_flOldCurtime = NULL;
 	m_flOldFrametime = NULL;
@@ -11,6 +12,8 @@ PredictionSystem::PredictionSystem()
 void PredictionSystem::StartPrediction(CUserCmd* cmd)
 {
 	*m_pPredictionRandomSeed = MD5_PseudoRandom(cmd->command_number) & 0x7FFFFFFF;
+
+	Globals::inprediction = true;
 
 	m_flOldCurtime = g_GlobalVars->curtime;
 	m_flOldFrametime = g_GlobalVars->frametime;
@@ -37,4 +40,6 @@ void PredictionSystem::EndPrediction()
 
 	g_GlobalVars->curtime = m_flOldCurtime;
 	g_GlobalVars->frametime = m_flOldFrametime;
+
+	Globals::inprediction = false;
 }

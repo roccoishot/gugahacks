@@ -1,67 +1,252 @@
 ﻿#include "./features/Misc.hpp"
 #include <algorithm>
 #include "BetaAA.h"
-#include "crypt_str.h"
+#include "xor.h"
+#ifdef ENABLE_XOR
+#define XorStr _xor_ 
+#else
+#define XorStr
+#endif
+#pragma intrinsic(_ReturnAddress)  
 #include <iostream>
 #include <cstdio>
 #include <ctime>
+#include "menu.hpp"
+#include "Globals.h"
+#include "features/aimbot.hpp"
+#include "backtrack.h"
+#include "BetaAA.h"
+
+#include<iostream>
+#include<conio.h>
+#include<stdio.h>
+#include<string>
+#include<cstring>
+#include<wininet.h> 
+#pragma comment(lib, "wininet.lib")
+
+#define CURL_STATICLIB
+
+#include "curl/curl.h"
+
+#pragma comment(lib, "curl/libcurl_a.lib")
+
+#include <stdio.h>
+
+using namespace std;
+
+#include <iostream>
+#include <string>
+
+/*std::vector<char> LoadFromUrl(const char* url)
+{
+    struct Content
+    {
+        std::vector<char> data;
+        static size_t Write(char* data, size_t size, size_t nmemb, void* p)
+        {
+            return static_cast<Content*>(p)->WriteImpl(data, size, nmemb);
+        }
+
+        size_t WriteImpl(char* ptr, size_t size, size_t nmemb)
+        {
+            data.insert(end(data), ptr, ptr + size * nmemb);
+            return size * nmemb;
+        }
+    };
+
+    Content content;
+
+    CURL* curl = curl_easy_init();
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &content);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &Content::Write);
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_perform(curl);
+
+    content.data.push_back('\0');
+
+    return content.data;
+}
+
+std::string Misc::readwebdata()
+{
+    auto content = LoadFromUrl("https://pastebin.com/raw/T6AmHc0t");
+    char sex = content.front();
+
+    return std::to_string(sex);
+}
+*/
+
+void Misc::gugakillswitch(CUserCmd* cmd)
+{
+
+}
 
 void Misc::Sexdick(CUserCmd* cmd, bool& bSendPacket) {
-    if (!g_Options.sexdick.enabled)
+    if (!g_EngineClient->IsInGame())
         return;
 
-    if (g_Options.sexdick.fuckthepitch) {
-            if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) //&& g_LocalPlayer->GetPlayerAnimState()->m_bInHitGroundAnimation && g_LocalPlayer->GetPlayerAnimState()->m_flHeadHeightOrOffsetFromHittingGroundAnimation)
-                g_Options.ragebot_antiaim_pitch = 4;
-            else
-                g_Options.ragebot_antiaim_pitch = 2;
-    }
+    if (!g_LocalPlayer)
+        return;
+
+    if (!g_LocalPlayer->IsAlive())
+        return;
 
     C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon().Get();
 
-    if (g_Options.sexdick.nopacketonshot) {
+    if (g_Options.nopacketonshot) {
         if (!weapon)
         {
             return;
         }
         if (g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() != WEAPON_REVOLVER) {
             if (bSendPacket) {
-                if (cmd->buttons & IN_ATTACK || g_LocalPlayer->m_iShotsFired() >= 1) {
-                    bSendPacket = false;
-                }
-            }
-            if (!bSendPacket) {
-                if (cmd->buttons & IN_ATTACK2) {
-                    return;
-                }
-                else {
+                if (g_LocalPlayer->m_iShotsFired() >= 1) {
                     bSendPacket = false;
                 }
             }
         }
         if (g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER) {
             if (bSendPacket) {
-                if (cmd->buttons & IN_ATTACK2 || g_LocalPlayer->m_iShotsFired() >= 2) {
-                    bSendPacket = false;
-                }
-            }
-            else if (!bSendPacket) {
-                if (cmd->buttons & IN_ATTACK2) {
-                    return;
-                }
-                else {
+                if (g_LocalPlayer->m_iShotsFired() >= 2) {
                     bSendPacket = false;
                 }
             }
         }
     }
 
-    if (g_Options.sexdick.urrstuck) {
-        if (GetAsyncKeyState(g_Options.sexdick.urrstuckkey)) {
-            cmd->tick_count = 0x7F7FFFFF;
-            cmd->command_number = 0x00000;
+    if (g_EngineClient->IsInGame() && g_LocalPlayer && g_LocalPlayer->IsAlive() && !Globals::valve) {
+        if (g_Options.urrstuck) {
+            if (GetAsyncKeyState(g_Options.urrstuckkey)) {
+                cmd->tick_count = 0x7F7FFFFF;
+                cmd->command_number = 0x00000;
+            }
         }
     }
+
+}
+
+bool fding = false;
+
+void Misc::FakeDuck(CUserCmd* cmd, bool& bSendPackets)
+{
+    static int fakeduckChokeAmount = 0;
+    if (g_Options.fakeduck && GetAsyncKeyState(g_Options.fdkey) && !Globals::valve && !Globals::stepping)
+    {
+        if (fakeduckChokeAmount > 14)
+        {
+            fakeduckChokeAmount = 0;
+            bSendPackets = true;
+        }
+        else {
+            bSendPackets = false;
+        }
+        fakeduckChokeAmount++;
+        auto choke = g_EngineClient->GetNetChannel()->m_nChokedPackets;
+        if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
+        {
+            fding = true;
+            if (choke >= 7) {
+                cmd->buttons |= IN_DUCK;
+            }
+            else {
+                cmd->buttons &= ~IN_DUCK;
+            }
+        }
+    }
+    else {
+        fding = false;
+        fakeduckChokeAmount = 0;
+    }
+}
+
+void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
+
+    if (!g_Options.fakelag)
+        return;
+
+    bool bedting = false;
+
+    if (GetKeyState(g_Options.aimbot.dthotkey) && g_Options.aimbot.dt && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive())
+        bedting = true;
+    else
+        bedting = false;
+
+    Globals::dting = bedting;
+
+    if (!g_EngineClient->IsInGame())
+        return;
+
+    if (!g_LocalPlayer)
+        return;
+
+    if (!g_LocalPlayer->IsAlive())
+        return;
+
+    auto nc = g_EngineClient->GetNetChannel();
+
+    if (!nc)
+        return;
+
+    int movetype = g_LocalPlayer->m_nMoveType();
+
+    const int choked_ticks = nc->m_nChokedPackets;
+    int tochoke;
+
+    if (fding)
+        tochoke = 14;
+    else
+    {
+        if (g_EngineClient->IsVoiceRecording() || Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || movetype == MOVETYPE_LADDER || movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || bedting)
+        {
+            tochoke = 1;
+            Globals::flcur = false;
+        }
+        else
+        {
+            tochoke = g_Options.faketicks - 1;
+            Globals::flcur = true;
+        }
+    }
+
+    if ((g_Options.faketicks - 1) > 5 && Globals::valve)
+    {
+
+        if (g_EngineClient->IsVoiceRecording() || Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || bedting)
+        {
+            tochoke = 1;
+            Globals::flcur = false;
+        }
+        else
+        {
+            tochoke = 5;
+            Globals::flcur = true;
+        }
+    }
+    else
+    {
+        if (g_EngineClient->IsVoiceRecording() || Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || bedting)
+        {
+            tochoke = 1;
+            Globals::flcur = false;
+        }
+        else
+        {
+            tochoke = g_Options.faketicks - 1;
+            Globals::flcur = true;
+        }
+    }
+
+    if (choked_ticks > tochoke)
+        bSendPacket = true;
+    else
+    {
+        bSendPacket = false;
+        nc->m_nChokedPackets = 0;
+        nc->m_nOutSequenceNr;
+        nc->m_nChokedPackets = choked_ticks;
+    }
+
 }
 
 void Misc::ClanTag()
@@ -71,7 +256,7 @@ void Misc::ClanTag()
     if (!g_Options.clantag && !removed)
     {
         removed = true;
-        Utils::SetClantag(crypt_str(""));
+        Utils::SetClantag(XorStr(""));
         return;
     }
 
@@ -91,235 +276,161 @@ void Misc::ClanTag()
 
         if (main_time != time)
         {
-            auto tag = crypt_str("");
+            auto tag = XorStr("");
 
-                if (g_Options.clantagtype == 0) {
-                    switch (main_time)
-                    {
-                    case 0:
-                        tag = crypt_str("GUGAHACKS.SU "); //-V1037
-                        break;
-                    case 1:
-                        tag = crypt_str("UGAHACKS.SU ");
-                        break;
-                    case 2:
-                        tag = crypt_str("GAHACKS.SU ");
-                        break;
-                    case 3:
-                        tag = crypt_str("AHACKS.SU ");
-                        break;
-                    case 4:
-                        tag = crypt_str("HACKS.SU ");
-                        break;
-                    case 5:
-                        tag = crypt_str("ACKS.SU ");
-                        break;
-                    case 6:
-                        tag = crypt_str("CKS.SU ");
-                        break;
-                    case 7:
-                        tag = crypt_str("KS.SU ");
-                        break;
-                    case 8:
-                        tag = crypt_str("S.SU ");
-                        break;
-                    case 9:
-                        tag = crypt_str(".SU ");
-                        break;
-                    case 10:
-                        tag = crypt_str("SU");
-                        break;
-                    case 11:
-                        tag = crypt_str("U");
-                        break;
-                    case 13:
-                        tag = crypt_str("SU");
-                        break;
-                    case 14:
-                        tag = crypt_str(".SU");
-                        break;
-                    case 15:
-                        tag = crypt_str("S.SU");
-                        break;
-                    case 16:
-                        tag = crypt_str("KS.SU");
-                        break;
-                    case 17:
-                        tag = crypt_str("CKS.SU");
-                        break;
-                    case 18:
-                        tag = crypt_str("ACKS.SU");
-                        break;
-                    case 19:
-                        tag = crypt_str("HACKS.SU");
-                        break;
-                    case 20:
-                        tag = crypt_str("AHACKS.SU");
-                        break;
-                    case 21:
-                        tag = crypt_str("GAHACKS.SU");
-                        break;
-                    case 22:
-                        tag = crypt_str("UGAHACKS.SU");
-                        break;
-                    case 23:
-                        tag = crypt_str("GUGAHACKS.SU ");
-                        break;
-                    }
-
-                    Utils::SetClantag(tag);
-                    time = main_time;
+            if (g_Options.clantagtype == 0) {
+                switch (main_time)
+                {
+                case 0:
+                    tag = XorStr("GUGAHACKS"); //-V1037
+                    break;
+                case 1:
+                    tag = XorStr("UGAHACKS");
+                    break;
+                case 2:
+                    tag = XorStr("GAHACKS");
+                    break;
+                case 3:
+                    tag = XorStr("AHACKS");
+                    break;
+                case 4:
+                    tag = XorStr("HACKS");
+                    break;
+                case 5:
+                    tag = XorStr("ACKS");
+                    break;
+                case 6:
+                    tag = XorStr("CKS");
+                    break;
+                case 7:
+                    tag = XorStr("KS");
+                    break;
+                case 8:
+                    tag = XorStr("S");
+                    break;
+                case 9:
+                    tag = XorStr(" ");
+                    break;
+                case 10:
+                    tag = XorStr("S");
+                    break;
+                case 11:
+                    tag = XorStr("KS");
+                    break;
+                case 13:
+                    tag = XorStr("CKS");
+                    break;
+                case 14:
+                    tag = XorStr("ACKS");
+                    break;
+                case 15:
+                    tag = XorStr("HACKS");
+                    break;
+                case 16:
+                    tag = XorStr("AHACKS");
+                    break;
+                case 17:
+                    tag = XorStr("GAHACKS");
+                    break;
+                case 18:
+                    tag = XorStr("UGAHACKS");
+                    break;
                 }
+            }
 
-                if (g_Options.clantagtype == 1) {
-                    Utils::SetClantag("dc.gg/URvWEkvYc5");
-                    time = main_time;
+            if (g_Options.clantagtype == 1) {
+                tag = (XorStr("dc.gg/gugahacks"));
+            }
+
+            if (g_Options.clantagtype == 2) {
+                tag = (XorStr("GUGAHACKS"));
+            }
+
+            if (g_Options.clantagtype == 3) {
+                switch (main_time)
+                {
+                case 0:
+                    tag = XorStr("SKCAHAGUG"); //-V1037
+                    break;
+                case 1:
+                    tag = XorStr("KCAHAGUG");
+                    break;
+                case 2:
+                    tag = XorStr("CAHAGUG");
+                    break;
+                case 3:
+                    tag = XorStr("AHAGUG");
+                    break;
+                case 4:
+                    tag = XorStr("HAGUG");
+                    break;
+                case 5:
+                    tag = XorStr("AGUG");
+                    break;
+                case 6:
+                    tag = XorStr("GUG");
+                    break;
+                case 7:
+                    tag = XorStr("UG");
+                    break;
+                case 8:
+                    tag = XorStr("G");
+                    break;
+                case 9:
+                    tag = XorStr(" ");
+                    break;
+                case 10:
+                    tag = XorStr("G");
+                    break;
+                case 11:
+                    tag = XorStr("UG");
+                    break;
+                case 13:
+                    tag = XorStr("GUG");
+                    break;
+                case 14:
+                    tag = XorStr("AGUG");
+                    break;
+                case 15:
+                    tag = XorStr("HAGUG");
+                    break;
+                case 16:
+                    tag = XorStr("AHAGUG");
+                    break;
+                case 17:
+                    tag = XorStr("CAHAGUG");
+                    break;
+                case 18:
+                    tag = XorStr("KCAHAGUG");
+                    break;
                 }
+            }
 
-                if (g_Options.clantagtype == 2) {
-                    Utils::SetClantag("GUGAHACKS");
-                    time = main_time;
-                }
+            if (g_Options.clantagtype == 4) {
+                tag = (XorStr("\xE2\x80\xAE"));
+            }
 
-                if (g_Options.clantagtype == 3) {
-                    switch (main_time)
-                    {
-                    case 0:
-                        tag = crypt_str("US.SKCAHAGUG "); //-V1037
-                        break;
-                    case 1:
-                        tag = crypt_str("S.SKCAHAGUG ");
-                        break;
-                    case 2:
-                        tag = crypt_str(".SKCAHAGUG ");
-                        break;
-                    case 3:
-                        tag = crypt_str("SKCAHAGUG ");
-                        break;
-                    case 4:
-                        tag = crypt_str("KCAHAGUG ");
-                        break;
-                    case 5:
-                        tag = crypt_str("CAHAGUG ");
-                        break;
-                    case 6:
-                        tag = crypt_str("AHAGUG ");
-                        break;
-                    case 7:
-                        tag = crypt_str("HAGUG ");
-                        break;
-                    case 8:
-                        tag = crypt_str("AGUG ");
-                        break;
-                    case 9:
-                        tag = crypt_str("GUG ");
-                        break;
-                    case 10:
-                        tag = crypt_str("UG");
-                        break;
-                    case 11:
-                        tag = crypt_str("G");
-                        break;
-                    case 13:
-                        tag = crypt_str("UG");
-                        break;
-                    case 14:
-                        tag = crypt_str("GUG");
-                        break;
-                    case 15:
-                        tag = crypt_str("AGUG");
-                        break;
-                    case 16:
-                        tag = crypt_str("HAGUG");
-                        break;
-                    case 17:
-                        tag = crypt_str("AHAGUG");
-                        break;
-                    case 18:
-                        tag = crypt_str("CAHAGUG");
-                        break;
-                    case 19:
-                        tag = crypt_str("KCAHAGUG");
-                        break;
-                    case 20:
-                        tag = crypt_str("SKCAHAGUG");
-                        break;
-                    case 21:
-                        tag = crypt_str(".SKCAHAGUG");
-                        break;
-                    case 22:
-                        tag = crypt_str("S.SKCAHAGUG");
-                        break;
-                    case 23:
-                        tag = crypt_str("US.SKCAHAGUG ");
-                        break;
-                    }
+            if (g_Options.clantagtype == 5) {
+                tag = (XorStr("\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9\xE2\x80\xA9"));
+            }
 
-                    Utils::SetClantag(tag);
-                    time = main_time;
-                }
+            if (g_Options.clantagtype == 6) {
+                tag = (XorStr("EMAIL ME!"));
+            }
 
+            Utils::SetClantag(tag);
+            time = main_time;
 
             removed = false;
         }
     }
 }
-
 bool break_lby = false;
 float next_update = 0;
 void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {
 
-    int movetype = g_LocalPlayer->m_nMoveType();
-
-    if (
-        movetype == MOVETYPE_FLY
-        || movetype == MOVETYPE_NOCLIP
-        || cmd->buttons & IN_USE
-        || cmd->buttons & IN_GRENADE1
-        || cmd->buttons & IN_GRENADE2
-        )
-    {
-        return;
-    }
-
-    C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon().Get();
-
-    if (!weapon)
-    {
-        return;
-    }
-
-    if (movetype == MOVETYPE_LADDER)
-    {
-        return;
-    }
-
-    if (weapon->IsGrenade())
-    {
-        return;
-    }
-
-    if (!g_Options.breaklby)
-        return;
-
-    if (g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() != WEAPON_REVOLVER)
-    if (cmd->buttons & IN_ATTACK)
-        return;
-
-    if (g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)
-    if (cmd->buttons & IN_ATTACK2)
-        return;
-
-
     float server_time = g_GlobalVars->interval_per_tick * g_LocalPlayer->m_nTickBase();
     float speed = g_LocalPlayer->m_vecVelocity().LengthSqr();
-
-    bool balls = false;
-
-    if (GetKeyState(g_Options.invertaa))
-        balls = true;
-    else if (!(GetKeyState(g_Options.invertaa)))
-        balls = false;
 
     if (speed > 0.1)
         next_update = server_time + 0.22;
@@ -334,118 +445,252 @@ void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {
     if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND))
         break_lby = false;
 
-    if (break_lby)
+    if (!g_Options.breaklby)
+        return;
+
+    if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
     {
-        bSendPacket = false;
-        cmd->viewangles.yaw += balls ? 120.f : -120.f;
+        return;
+    }
+
+    if (Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN)
+        return;
+
+    int movetype = g_LocalPlayer->m_nMoveType();
+
+        if (movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || cmd->buttons & IN_ATTACK || cmd->buttons & IN_USE || cmd->buttons & IN_GRENADE1 || cmd->buttons & IN_GRENADE2)
+            return;
+
+    C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+
+    if (!weapon)
+        return;
+
+    if (movetype == MOVETYPE_LADDER)
+        return;
+
+    if (!weapon->IsGun() && !weapon->IsZeus())
+        return;
+
+    if (weapon->IsGrenade())
+        return;
+
+        float fakepreset = 0.f;
+
+        bool balls = false;
+
+        if (GetKeyState(g_Options.invertaa))
+            balls = true;
+        else if (!(GetKeyState(g_Options.invertaa)))
+            balls = false;
+
+        if (!g_EngineClient->IsInGame() && !g_LocalPlayer->IsAlive())
+            balls = false;
+
+        if (break_lby)
+        {
+            if (g_Options.breakertp == 0) {
+                if (!g_Options.ragebot_antiaim_desync) {
+                    bSendPacket = false;
+                    cmd->viewangles.yaw += balls ? 120.f : -120.f;
+                }
+                if (g_Options.ragebot_antiaim_desync) {
+                    bSendPacket = false;
+                    cmd->viewangles.yaw += balls ? -120.f : 120.f;
+                }
+            }
+            if (g_Options.breakertp == 1) {
+                if (!g_Options.ragebot_antiaim_desync) {
+                    bSendPacket = false;
+                    cmd->viewangles.yaw += balls ? -120.f : 120.f;
+                }
+                if (g_Options.ragebot_antiaim_desync) {
+                    bSendPacket = false;
+                    cmd->viewangles.yaw += balls ? 120.f : -120.f;
+                }
+            }
+            if (g_Options.breakertp == 2) {
+                bSendPacket = false;
+                cmd->viewangles.yaw += g_LocalPlayer->m_flLowerBodyYawTarget();
+            }
+            if (g_Options.breakertp == 3) {
+                cmd->sidemove = cmd->tick_count % 2 ? 1.10 : -1.10;
+            }
+        }
+}
+
+void Misc::Aimatbt(CUserCmd* cmd, C_BasePlayer* player, QAngle angles)
+{
+    if (player && player->valid(true, true)) {
+        if (g_Options.aimbot.backtrack && g_Options.aimbot.backtix > 0)
+        {
+            Vector btposv = TimeWarp::Get().TimeWarpData[player->EntIndex()][g_Options.aimbot.backtix].hitboxPos;
+            Vector currentheadposv;
+            player->GetHitboxPos(HITBOX_HEAD, currentheadposv);
+
+            QAngle btpos;
+            QAngle currentheadpos;
+
+            if (!btposv.IsZero())
+                Math::VectorAngles(btposv, btpos);
+
+            if (!currentheadposv.IsZero())
+                Math::VectorAngles(currentheadposv, currentheadpos);
+
+            float sexyaw = currentheadpos.yaw - btpos.yaw;
+            float dickyaw = btpos.yaw - currentheadpos.yaw;
+            float sexpitch = currentheadpos.pitch - btpos.pitch;
+            float dickpitch = btpos.pitch - currentheadpos.pitch;
+
+            if (!angles.IsZero() && !btpos.IsZero() && !currentheadpos.IsZero()) {
+                if (currentheadpos.pitch > btpos.pitch)
+                {
+                    angles.pitch -= sexpitch;
+                }
+                if (currentheadpos.pitch < btpos.pitch)
+                {
+                    angles.pitch += dickpitch;
+                }
+
+                if (currentheadpos.yaw > btpos.yaw)
+                {
+                    angles.yaw -= sexyaw;
+                }
+
+                if (currentheadpos.yaw < btpos.yaw)
+                {
+                    angles.yaw += dickyaw;
+                }
+            }
+            else
+            {
+                angles.yaw += 0.f;
+                angles.pitch += 0.f;
+            }
+        }
     }
 }
 
-void Misc::AutoStop(CUserCmd* cmd) {
-    /*Vector velocity = g_LocalPlayer->m_vecVelocity();
-    QAngle direction;
+void Misc::Triggerbot(CUserCmd* cmd) {
+    if (!g_LocalPlayer->IsAlive())
+        return;
 
-    Math::VectorAngles(velocity, direction);
+    auto pWeapon = g_LocalPlayer->m_hActiveWeapon();
 
-    float speed = velocity.Length2D();
+    if (!pWeapon)
+        return;
 
-    direction.yaw = cmd->viewangles.yaw - direction.yaw;
+    static bool enable = false;
 
-    Vector forward;
+    if (&CLegitbot::IsEnabled)
+        enable = true;
 
-    Math::AngleVectors(direction, forward);
+    Vector src, dst, forward;
+    trace_t tr;
+    Ray_t ray;
+    CTraceFilter filter;
 
-    Vector source = forward * -speed;
+    QAngle viewangle = cmd->viewangles;
 
-    if (!(cmd->buttons & IN_MOVERIGHT)) {
-        cmd->sidemove = source.y;
+    viewangle += g_LocalPlayer->m_aimPunchAngle() * 2.f;
+
+    Math::AngleVectors(viewangle, forward);
+
+    forward *= g_LocalPlayer->m_hActiveWeapon()->GetCSWeaponData()->flRangeModifier;
+    filter.pSkip = g_LocalPlayer;
+    src = g_LocalPlayer->GetEyePos();
+    dst = src + forward;
+    ray.Init(src, dst);
+
+    g_EngineTrace->TraceRay(ray, 0x46004003, &filter, &tr);
+    if (!tr.hit_entity)
+        return;
+
+    int hitgroup = tr.hitgroup;
+    bool didHit = false;
+    if (tr.hitgroup == 1 || tr.hitgroup == 2 || tr.hitgroup == 3 || tr.hitgroup == 4 || tr.hitgroup == 5 || tr.hitgroup == 6 || tr.hitgroup == 7 || tr.hitgroup == 8 || tr.hitgroup == 9 || tr.hitgroup == 10 || tr.hitgroup == 11 || tr.hitgroup == 12 || tr.hitgroup == 13 || tr.hitgroup == 14 || tr.hitgroup == 15 || tr.hitgroup == 16 || tr.hitgroup == 17 || tr.hitgroup == 18)
+    {
+        didHit = true;
     }
-    if (!(cmd->buttons & IN_MOVELEFT)) {
-        cmd->sidemove = source.y;
+
+    auto can_hit = [&]() {
+        auto chance_to_hit = (100.0f - 40) * 0.65f * 0.01125f;
+        return !(pWeapon->GetInaccuracy() >= chance_to_hit);
+    };
+    if (can_hit())
+    {
+        if (didHit && (tr.hit_entity->GetBaseEntity()->m_iTeamNum() != g_LocalPlayer->m_iTeamNum()))
+        {
+            if (!g_Options.aimbot.autorevolver2)
+                cmd->buttons |= IN_ATTACK;
+            if (g_Options.aimbot.autorevolver2)
+                cmd->buttons |= IN_ATTACK2;
+        }
     }
-    if (!(cmd->buttons & IN_FORWARD)) {
-        cmd->forwardmove = source.x;
-    }
-    if (!(cmd->buttons & IN_BACK)) {
-        cmd->forwardmove = source.x;
-    }*/
 }
 
 void Misc::SilentWalk(CUserCmd* cmd)
 {
-        Vector moveDir = Vector(0.f, 0.f, 0.f);
-        float maxSpeed = 130.f;
-        int movetype = g_LocalPlayer->m_nMoveType();
-        bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
-        if (movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || InAir || cmd->buttons & IN_DUCK || !(cmd->buttons & IN_SPEED))
-            return;
-        moveDir.x = cmd->sidemove;
-        moveDir.y = cmd->forwardmove;
-        moveDir = Math::ClampMagnitude(moveDir, maxSpeed);
-        cmd->sidemove = moveDir.x;
-        cmd->forwardmove = moveDir.y;
-        if (!(g_LocalPlayer->m_vecVelocity().Length2D() > maxSpeed + 1))
-            cmd->buttons &= ~IN_SPEED;
-}
 
-//--------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------
+    if (!g_LocalPlayer)
+        return;
 
-void Misc::MovementFixxa(CUserCmd* m_Cmd, QAngle wish_angle, QAngle old_angles) {
-    if (old_angles.pitch != wish_angle.pitch || old_angles.yaw != wish_angle.yaw || old_angles.roll != wish_angle.roll) {
-        Vector wish_forward, wish_right, wish_up, cmd_forward, cmd_right, cmd_up;
+    if (!g_LocalPlayer->IsAlive())
+        return;
 
-        auto viewangles = old_angles;
-        auto movedata = Vector(m_Cmd->forwardmove, m_Cmd->sidemove, m_Cmd->upmove);
-        viewangles.Normalize();
+    if (!g_Options.quickstop)
+        return;
 
-        if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && viewangles.roll != 0.f)
-            movedata.y = 0.f;
+    if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND))
+        return;
 
-        Math::AngleVectors(wish_angle, wish_forward, wish_right, wish_up);
-        Math::AngleVectors(viewangles, cmd_forward, cmd_right, cmd_up);
+    auto pressed_move_key = cmd->buttons & IN_FORWARD || cmd->buttons & IN_MOVELEFT || cmd->buttons & IN_BACK || cmd->buttons & IN_MOVERIGHT || cmd->buttons & IN_JUMP;
 
-        auto v8 = sqrt(wish_forward.x * wish_forward.x + wish_forward.y * wish_forward.y), v10 = sqrt(wish_right.x * wish_right.x + wish_right.y * wish_right.y), v12 = sqrt(wish_up.z * wish_up.z);
+    if (pressed_move_key)
+        return;
 
-        Vector wish_forward_norm(1.0f / v8 * wish_forward.x, 1.0f / v8 * wish_forward.y, 0.f),
-            wish_right_norm(1.0f / v10 * wish_right.x, 1.0f / v10 * wish_right.y, 0.f),
-            wish_up_norm(0.f, 0.f, 1.0f / v12 * wish_up.z);
+    auto velocity = g_LocalPlayer->m_vecVelocity();
 
-        auto v14 = sqrt(cmd_forward.x * cmd_forward.x + cmd_forward.y * cmd_forward.y), v16 = sqrt(cmd_right.x * cmd_right.x + cmd_right.y * cmd_right.y), v18 = sqrt(cmd_up.z * cmd_up.z);
+    if (velocity.Length2D() > 20.0f)
+    {
+        Vector direction;
+        QAngle real_view;
 
-        Vector cmd_forward_norm(1.0f / v14 * cmd_forward.x, 1.0f / v14 * cmd_forward.y, 1.0f / v14 * 0.0f),
-            cmd_right_norm(1.0f / v16 * cmd_right.x, 1.0f / v16 * cmd_right.y, 1.0f / v16 * 0.0f),
-            cmd_up_norm(0.f, 0.f, 1.0f / v18 * cmd_up.z);
+        Math::vector_angles(velocity, direction);
+        g_EngineClient->GetViewAngles(&real_view);
 
-        auto v22 = wish_forward_norm.x * movedata.x, v26 = wish_forward_norm.y * movedata.x, v28 = wish_forward_norm.z * movedata.x, v24 = wish_right_norm.x * movedata.y, v23 = wish_right_norm.y * movedata.y, v25 = wish_right_norm.z * movedata.y, v30 = wish_up_norm.x * movedata.z, v27 = wish_up_norm.z * movedata.z, v29 = wish_up_norm.y * movedata.z;
+        direction.y = real_view.yaw - direction.y;
 
-        Vector correct_movement;
-        correct_movement.x = cmd_forward_norm.x * v24 + cmd_forward_norm.y * v23 + cmd_forward_norm.z * v25 + (cmd_forward_norm.x * v22 + cmd_forward_norm.y * v26 + cmd_forward_norm.z * v28) + (cmd_forward_norm.y * v30 + cmd_forward_norm.x * v29 + cmd_forward_norm.z * v27);
-        correct_movement.y = cmd_right_norm.x * v24 + cmd_right_norm.y * v23 + cmd_right_norm.z * v25 + (cmd_right_norm.x * v22 + cmd_right_norm.y * v26 + cmd_right_norm.z * v28) + (cmd_right_norm.x * v29 + cmd_right_norm.y * v30 + cmd_right_norm.z * v27);
-        correct_movement.z = cmd_up_norm.x * v23 + cmd_up_norm.y * v24 + cmd_up_norm.z * v25 + (cmd_up_norm.x * v26 + cmd_up_norm.y * v22 + cmd_up_norm.z * v28) + (cmd_up_norm.x * v30 + cmd_up_norm.y * v29 + cmd_up_norm.z * v27);
+        Vector forward;
+        Math::angle_vectors(direction, forward);
 
-        correct_movement.x = std::clamp(correct_movement.x, -450.f, 450.f);
-        correct_movement.y = std::clamp(correct_movement.y, -450.f, 450.f);
-        correct_movement.z = std::clamp(correct_movement.z, -320.f, 320.f);
+        static auto cl_forwardspeed = g_CVar->FindVar(XorStr("cl_forwardspeed"));
+        static auto cl_sidespeed = g_CVar->FindVar(XorStr("cl_sidespeed"));
 
-        m_Cmd->forwardmove = correct_movement.x;
-        m_Cmd->sidemove = correct_movement.y;
-        m_Cmd->upmove = correct_movement.z;
+        auto negative_forward_speed = -cl_forwardspeed->GetFloat();
+        auto negative_side_speed = -cl_sidespeed->GetFloat();
 
-        m_Cmd->buttons &= ~(IN_MOVERIGHT | IN_MOVELEFT | IN_BACK | IN_FORWARD);
-        if (m_Cmd->sidemove != 0.0) {
-            if (m_Cmd->sidemove <= 0.0)
-                m_Cmd->buttons |= IN_MOVELEFT;
-            else
-                m_Cmd->buttons |= IN_MOVERIGHT;
-        }
+        auto negative_forward_direction = forward * negative_forward_speed;
+        auto negative_side_direction = forward * negative_side_speed;
 
-        if (m_Cmd->forwardmove != 0.0) {
-            if (m_Cmd->forwardmove <= 0.0)
-                m_Cmd->buttons |= IN_BACK;
-            else
-                m_Cmd->buttons |= IN_FORWARD;
-        }
+        cmd->forwardmove = negative_forward_direction.x;
+        cmd->sidemove = negative_side_direction.y;
+    }
+    else
+    {
+        auto speed = 0.1f;
+
+        if (cmd->buttons & IN_DUCK)
+            speed *= 2.94117647f;
+
+        static auto switch_move = false;
+
+        if (switch_move)
+            cmd->sidemove += speed;
+        else
+            cmd->sidemove -= speed;
+
+        switch_move = !switch_move;
     }
 }
 
@@ -491,51 +736,463 @@ void Misc::MovementFix(QAngle vOldAngles, CUserCmd* pCmd, float fOldForward, flo
     pCmd->buttons &= ~IN_BACK;
 }
 
+Vector multipoints[128];
+int multipointCount = 0;
+
+void Misc::DoMultipoint(C_BasePlayer* player, matrix3x4_t matrix, mstudiobbox_t* hitbox, int densityX, int densityY)
+{
+
+    multipointCount = 0;
+
+    if (!hitbox || !player)
+        return;
+
+    if (!player->valid(true, true))
+        return;
+
+    if (!g_Options.aimbot.multipoint)
+        return;
+
+    Vector lCenter, lPoint, dir, head2D;
+
+    lCenter = (hitbox->bbmin + hitbox->bbmax) * 0.5f;
+    Math::VectorTransform(lCenter, matrix, multipoints[multipointCount++]);
+
+    if (densityX >= 0)
+    {
+        lCenter = hitbox->bbmin - (hitbox->bbmax - hitbox->bbmin).Normalized() * 0.95f * hitbox->m_flRadius;
+        Math::VectorTransform(lCenter, matrix, multipoints[multipointCount++]);
+
+        lCenter = hitbox->bbmax + (hitbox->bbmax - hitbox->bbmin).Normalized() * 0.95f * hitbox->m_flRadius;
+        Math::VectorTransform(lCenter, matrix, multipoints[multipointCount++]);
+    }
+
+    QAngle dAngle, angle;
+    Math::VectorAngles((hitbox->bbmax - hitbox->bbmin).Normalized(), dAngle);
+    dAngle += QAngle(0, 90, 0);
+
+    if (densityX >= 0 && densityY > 1)
+    {
+        for (float p = densityX > 1 ? 0 : 0.5f; p <= 1.0f; p += densityX > 1 ? 1.0f / (densityX - 1) : 2) {
+            lCenter = hitbox->bbmin + (hitbox->bbmax - hitbox->bbmin) * p;
+            for (int o = 0; o < densityY; o++) {
+                lPoint = lCenter;
+                angle = dAngle + QAngle(360.0f / densityY, 0, 0) * o;
+                Math::AngleVectors(angle, dir);
+                lPoint += dir.Normalized() * hitbox->m_flRadius * 0.95f;
+                Math::VectorTransform(lPoint, matrix, multipoints[multipointCount++]);
+            }
+        }
+    }
+}
+
+bool Misc::cl_move_dt(CUserCmd* m_pcmd)
+{
+
+    if (!g_Options.aimbot.enabled)
+        return false;
+
+    if (!g_EngineClient->GetNetChannel())
+        return false;
+
+    if (!g_EngineClient->IsInGame())
+        return false;
+
+    if (!g_LocalPlayer)
+        return false;
+
+    if (!g_LocalPlayer->IsAlive())
+        return false;
+
+    if (g_EngineClient->IsVoiceRecording() || Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || fding)
+        return false;
+
+    auto weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+
+    static auto lastdoubletaptime = 0;
+
+    if (!g_Options.aimbot.dt)
+    {
+        Globals::cuhbedointhat = false;
+        Globals::ticks_allowed = 0;
+        Globals::tochargeamount = g_Options.aimbot.dtticks + 2;
+        return false;
+    }
+
+    if (g_Options.aimbot.dthotkey <= KEY_NONE || g_Options.aimbot.dthotkey >= KEY_MAX)
+    {
+        Globals::cuhbedointhat = false;
+        Globals::ticks_allowed = 0;
+        Globals::tochargeamount = g_Options.aimbot.dtticks + 2;
+        return false;
+    }
+
+    static bool firing_dt = false;
+    static bool was_in_dt = false;
+
+    if (!GetKeyState(g_Options.aimbot.dthotkey) || g_LocalPlayer->m_bGunGameImmunity() || Globals::freezetime)
+    {
+        Globals::cuhbedointhat = false;
+
+        if (!firing_dt && was_in_dt)
+        {
+            was_in_dt = false;
+        }
+
+        Globals::ticks_allowed = 0;
+
+        return false;
+    }
+
+    if (!GetKeyState(g_Options.aimbot.dthotkey)) {
+        Globals::shift_ticks = Globals::tocharge;
+        return false;
+    }
+
+    if (g_LocalPlayer->m_iShotsFired() <= 0 && Globals::tocharge < g_Options.aimbot.dtticks + 2 && g_LocalPlayer->m_nTickBase() - lastdoubletaptime > TIME_TO_TICKS(0.75f)) {
+        Globals::startcharge = true;
+        Globals::tochargeamount = g_Options.aimbot.dtticks + 2;
+    }
+    else {
+        Globals::startcharge = false;
+    }
+
+    if (Globals::tocharge > g_Options.aimbot.dtticks + 2)
+        Globals::shift_ticks = Globals::tocharge - g_Options.aimbot.dtticks + 2;
+
+    float dtticks;
+
+    if (Globals::valve)
+    {
+        if (g_Options.aimbot.dtticks > 6)
+            dtticks = 6;
+        else if (g_Options.aimbot.dtticks == 6 || g_Options.aimbot.dtticks < 6)
+            dtticks = g_Options.aimbot.dtticks;
+    }
+    if (!Globals::valve)
+    {
+        dtticks = g_Options.aimbot.dtticks;
+    }
+
+    if (!weapon->can_double_tap() && weapon->m_iItemDefinitionIndex() != WEAPON_SSG08)
+        return false;
+
+    if (weapon && (g_LocalPlayer->m_iShotsFired() == 1 || (m_pcmd->buttons & IN_ATTACK2 && weapon->IsKnife())) && Globals::tocharge == g_Options.aimbot.dtticks + 2) {
+        lastdoubletaptime = g_LocalPlayer->m_nTickBase();
+        Globals::shift_ticks = dtticks;
+
+        firing_dt = true;
+
+    }
+    return true;
+}
+
+void Misc::fuck(CUserCmd* cmd)
+{
+    if (!g_LocalPlayer->IsAlive()) //-V807
+        return;
+
+    if (g_LocalPlayer->m_nMoveType() == MOVETYPE_LADDER)
+        return;
+
+    if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND))
+        return;
+
+    if (!g_LocalPlayer->m_bGunGameImmunity() && g_LocalPlayer->m_fFlags() != FL_FROZEN && g_Options.slidebruh)
+    {
+        if (cmd->forwardmove > 0.0f)
+        {
+            cmd->buttons |= IN_BACK;
+            cmd->buttons &= ~IN_FORWARD;
+        }
+        else if (cmd->forwardmove < 0.0f)
+        {
+            cmd->buttons |= IN_FORWARD;
+            cmd->buttons &= ~IN_BACK;
+        }
+
+        if (cmd->sidemove > 0.0f)
+        {
+            cmd->buttons |= IN_MOVELEFT;
+            cmd->buttons &= ~IN_MOVERIGHT;
+        }
+        else if (cmd->sidemove < 0.0f)
+        {
+            cmd->buttons |= IN_MOVERIGHT;
+            cmd->buttons &= ~IN_MOVELEFT;
+        }
+    }
+    else
+    {
+        auto buttons = cmd->buttons & ~(IN_MOVERIGHT | IN_MOVELEFT | IN_BACK | IN_FORWARD);
+
+        if (g_Options.slidebruh)
+        {
+            if (cmd->forwardmove <= 0.0f)
+                buttons |= IN_BACK;
+            else
+                buttons |= IN_FORWARD;
+
+            if (cmd->sidemove > 0.0f)
+                goto LABEL_15;
+            else if (cmd->sidemove >= 0.0f)
+                goto LABEL_18;
+
+            goto LABEL_17;
+        }
+        else
+            goto LABEL_18;
+
+        if (cmd->forwardmove <= 0.0f) //-V779
+            buttons |= IN_FORWARD;
+        else
+            buttons |= IN_BACK;
+
+        if (cmd->sidemove > 0.0f)
+        {
+        LABEL_17:
+            buttons |= IN_MOVELEFT;
+            goto LABEL_18;
+        }
+
+        if (cmd->sidemove < 0.0f)
+            LABEL_15:
+
+        buttons |= IN_MOVERIGHT;
+
+    LABEL_18:
+        cmd->buttons = buttons;
+    }
+}
+
 void Misc::SlowWalk(CUserCmd* cmd) {
+
+    if (!g_Options.slowwalk)
+        return;
+
     if (g_Options.ragebot_slowwalk_amt <= 0 || !GetAsyncKeyState(g_Options.ragebot_slowwalk_key))
         return;
 
-    auto weapon_handle = g_LocalPlayer->m_hActiveWeapon();
+    auto weapon_handle = g_LocalPlayer->m_hActiveWeapon().Get();
 
     if (!weapon_handle)
         return;
 
-    float amount = 0.0034f * g_Options.ragebot_slowwalk_amt/*options.misc.slow_walk_amount*/; //max 100
-
-    Vector velocity = g_LocalPlayer->m_vecVelocity();
-    QAngle direction;
-
-    Math::VectorAngles(velocity, direction);
-
-    float speed = velocity.Length2D();
-
-    direction.yaw = cmd->viewangles.yaw - direction.yaw;
-
-    Vector forward;
-
-    Math::AngleVectors(direction, forward);
-
-    Vector source = forward * -speed;
-
-    if (speed >= (250 * amount))
+    if (g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER && g_LocalPlayer->m_fFlags() & FL_ONGROUND)
     {
-        cmd->forwardmove = source.x;
-        cmd->sidemove = source.y;
+        float amount = 0.0034f * g_Options.ragebot_slowwalk_amt; //max 100
+
+        Vector velocity = g_LocalPlayer->m_vecVelocity();
+        QAngle direction;
+
+        Math::VectorAngles(velocity, direction);
+
+        float speed = velocity.Length2D();
+
+        direction.yaw = cmd->viewangles.yaw - direction.yaw;
+
+        Vector forward;
+
+        Math::AngleVectors(direction, forward);
+
+        Vector source = forward * -speed;
+
+        if (speed >= (250 * amount))
+        {
+            cmd->forwardmove = source.x;
+            cmd->sidemove = source.y;
+
+        }
+    }
+}
+
+CInput* m_input2() {
+    if (!g_Input)
+        g_Input = *reinterpret_cast<CInput**>(Utils::PatternScan2(XorStr("client.dll"), "B9 ? ? ? ? F3 0F 11 04 24 FF 50 10") + 0x1);
+
+    return g_Input;
+}
+
+
+void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd, bool& bSendPacket)
+{
+    if (stage != ClientFrameStage_t::FRAME_RENDER_START)
+        return;
+
+    if (g_EngineClient->IsInGame() && g_LocalPlayer && g_LocalPlayer->IsAlive())
+    {
+        if (bSendPacket)
+        {
+            Globals::fake = cmd->viewangles;
+        }
+        if (!bSendPacket)
+        {
+            Globals::real = cmd->viewangles;
+        }
+
+        if (m_input2()->m_fCameraInThirdPerson) {
+
+            if (CAntiAim::Get().CanDesync(cmd) && g_Options.ragebot_antiaim_desync && g_Options.chams_fake_enabled)
+            {
+                g_LocalPlayer->SetVAngles(QAngle(Globals::real.pitch, Globals::real.yaw, -CAntiAim::Get().sexyboodyballs));
+            }
+            else if (CAntiAim::Get().CanDesync(cmd) && g_Options.ragebot_antiaim_desync && g_Options.chams_fake_enabled == false)
+            {
+                g_LocalPlayer->SetVAngles(QAngle(Globals::real.pitch, Globals::real.yaw, Globals::real.roll));
+            }
+            if (!CAntiAim::Get().CanDesync(cmd) || g_Options.ragebot_antiaim_desync == false)
+            {
+                g_LocalPlayer->SetVAngles(cmd->viewangles);
+            }
+        }
+    }
+}
+
+void Misc::NoSpread(CUserCmd* cmd)
+{
+    if (!g_LocalPlayer || !g_LocalPlayer->m_hActiveWeapon().Get())
+        return;
+
+    //this is spread all together, spread is a box, this code needs spread x and y if we do the math, a square has 4 sides so divide it by 4 to get value for both x and y
+    auto nigganuts = g_LocalPlayer->m_hActiveWeapon().Get()->GetSpread() / 4;
+
+    Vector vva;
+    Math::AngleVectors(cmd->viewangles, vva);
+
+    if (nigganuts && nigganuts > 0 && !vva.IsZero()) {
+
+        vva.y -= RAD2DEG(atan(sqrt(nigganuts * nigganuts + nigganuts * nigganuts)));
+        vva.z = RAD2DEG(atan2(nigganuts, nigganuts));
+
+        QAngle fva;
+
+        Math::VectorAngles(vva, fva);
+
+        cmd->viewangles = fva;
 
     }
 }
 
-void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd)
-{
-            if (stage != FRAME_RENDER_START)
-                return;
+bool fresh_tick() {
+    static int old_tick_count;
 
-            if (g_EngineClient->IsInGame() && g_LocalPlayer)
-            {
-                if (g_LocalPlayer->IsAlive() && g_Input->m_fCameraInThirdPerson)
-                    g_LocalPlayer->SetVAngles(cmd->viewangles);
-            }
+
+    if (old_tick_count != g_GlobalVars->tickcount) {
+        old_tick_count = g_GlobalVars->tickcount;
+        return true;
     }
+}
+
+void Misc::local_animfix(C_BasePlayer* nigga, CUserCmd* cmd, bool bSendPacket) {
+
+    auto entity = nigga;
+
+    if (!entity || !entity->IsAlive() || !cmd)
+        return;
+
+    auto proper_abs = entity->GetAbsAngles();
+    static auto sent_pose_params = entity->m_flPoseParameter();
+    static AnimationLayer backup_layers[15];
+    const auto org_tmp = g_LocalPlayer->GetRenderOrigin();
+
+    if (fresh_tick()) {
+        std::memcpy(backup_layers, entity->GetAnimOverlays(), (sizeof(AnimationLayer) * entity->NumOverlays()));
+
+        entity->UpdateAnimationState(entity->GetPlayerAnimState(), cmd->viewangles);
+
+        if (entity->GetPlayerAnimState())
+            entity->GetPlayerAnimState()->m_iLastClientSideAnimationUpdateFramecount = g_GlobalVars->framecount - 1;
+
+        entity->UpdateClientSideAnimation();
+        if (bSendPacket) {
+            proper_abs = entity->GetAbsAngles();
+            sent_pose_params = entity->m_flPoseParameter();
+        }
+    }
+
+    if (fding)
+        entity->GetPlayerAnimState()->m_fDuckAmount = 1.0;
+
+    entity->GetPlayerAnimState()->m_flGoalFeetYaw = Globals::fake.yaw;
+
+    entity->SetAbsAngles(proper_abs);
+    std::memcpy(entity->GetAnimOverlays(), backup_layers, (sizeof(AnimationLayer) * entity->NumOverlays()));
+    entity->m_flPoseParameter() = sent_pose_params;
+
+}
+
+void Misc::desyncchams(CUserCmd* cmd, bool bSendPacket) {
+
+
+    if (!g_LocalPlayer || !g_LocalPlayer->IsAlive()) {
+        m_should_update_fake = true;
+        return;
+    }
+
+
+
+    if (m_fake_spawntime != g_LocalPlayer->m_flSpawnTime() || m_should_update_fake) {
+        init_fake_anim = false;
+        m_fake_spawntime = g_LocalPlayer->m_flSpawnTime();
+        m_should_update_fake = false;
+    }
+
+    if (!init_fake_anim) {
+        m_fake_state = reinterpret_cast<CCSGOPlayerAnimState*> (g_pMemAlloc->Alloc(sizeof(CCSGOPlayerAnimState)));
+
+        if (m_fake_state != nullptr)
+            g_LocalPlayer->CreateAnimationState(m_fake_state);
+
+        init_fake_anim = true;
+    }
+
+    if (!bSendPacket) {
+        int OldFrameCount = g_GlobalVars->framecount;
+        int OldTickCount = g_GlobalVars->tickcount;
+
+        g_GlobalVars->framecount = TIME_TO_TICKS(g_LocalPlayer->m_flSimulationTime());
+        g_GlobalVars->tickcount = TIME_TO_TICKS(g_LocalPlayer->m_flSimulationTime());
+
+        std::memcpy(m_fake_layers.data(), g_LocalPlayer->GetAnimOverlays(), sizeof(m_fake_layers));
+        std::memcpy(m_fake_poses.data(), g_LocalPlayer->m_flPoseParameter().data(), sizeof(m_fake_poses));
+
+        g_LocalPlayer->UpdateAnimationState(m_fake_state, cmd->viewangles);
+
+        auto backup_absangles = g_LocalPlayer->GetAbsAngles();
+
+        /* invalidate bone cache */
+        g_LocalPlayer->GetMostRecentModelBoneCounter() = 0;
+        g_LocalPlayer->GetLastBoneSetupTime() = -FLT_MAX;
+
+        m_got_fake_matrix = g_LocalPlayer->SetupBones(m_fake_matrix, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING & ~BONE_USED_BY_ATTACHMENT, g_GlobalVars->curtime);
+
+        memcpy(m_fake_position_matrix, m_fake_matrix, sizeof(m_fake_position_matrix));
+
+        const auto org_tmp = g_LocalPlayer->GetRenderOrigin();
+
+        if (m_got_fake_matrix) {
+            for (auto& i : m_fake_matrix) {
+                i[0][3] -= org_tmp.x;
+                i[1][3] -= org_tmp.y;
+                i[2][3] -= org_tmp.z;
+            }
+        }
+
+        //vvs
+        g_LocalPlayer->SetAbsAngles(backup_absangles);
+
+        g_LocalPlayer->GetMostRecentModelBoneCounter() = 0;
+        g_LocalPlayer->GetLastBoneSetupTime() = -FLT_MAX;
+
+        std::memcpy(g_LocalPlayer->GetAnimOverlays(), m_fake_layers.data(), sizeof(m_fake_layers));
+        std::memcpy(g_LocalPlayer->m_flPoseParameter().data(), m_fake_poses.data(), sizeof(m_fake_poses));
+
+        g_GlobalVars->framecount = OldFrameCount;
+        g_GlobalVars->tickcount = OldTickCount;
+    }
+
+}
+
 
 void Misc::ChatSpama(CUserCmd* cmd) {
     {
@@ -543,30 +1200,64 @@ void Misc::ChatSpama(CUserCmd* cmd) {
         if (!g_Options.misc_chatspam)
             return;
 
-        static std::string chatspam[] =
-        {
-            crypt_str("GUGAHACKS.SU | Probably Doin' You're Mother Currently."),
-            crypt_str("GUGAHACKS.SU | eat my penris"),
-            crypt_str("GUGAHACKS.SU | Me > You"),
-            crypt_str("GUGAHACKS.SU | Your IQ must be lower than your GPA"),
-            crypt_str("GUGAHACKS.SU | femboy fucked!!."),
-            crypt_str("GUGAHACKS.SU | Farting IS NOT Cumming"),
-            crypt_str("GUGAHACKS.SU | When I shit... I SHIT"),
-            crypt_str("GUGAHACKS.SU | Gugahacks > ALL"),
-            crypt_str("GUGAHACKS.SU | discord.gg/qukzNNda75"),
-            crypt_str("GUGAHACKS.SU | i.imgur.com/mucKbbq.gif"),
-        };
+        if (Globals::stepping)
+            return;
 
-        static auto lastspammed = 0;
+        if (g_Options.chatspamtype == 0) {
+            static std::string chatspam[] =
+            {
+                XorStr("GUGAHACKS.KITCHEN | Probably Doin' You're Mother Currently."),
+                XorStr("GUGAHACKS.KITCHEN | eat my penris"),
+                XorStr("GUGAHACKS.KITCHEN | Me > You"),
+                XorStr("GUGAHACKS.KITCHEN | Your IQ must be lower than your GPA"),
+                XorStr("GUGAHACKS.KITCHEN | femboy fucked!!."),
+                XorStr("GUGAHACKS.KITCHEN | Farting IS NOT Cumming"),
+                XorStr("GUGAHACKS.KITCHEN | When I shit... I SHIT"),
+                XorStr("GUGAHACKS.KITCHEN | Gugahacks > ALL"),
+                XorStr("GUGAHACKS.KITCHEN | discord.gg/gugahacks"),
+                XorStr("GUGAHACKS.KITCHEN | i.imgur.com/mucKbbq.gif"),
+            };
 
-        if (GetTickCount() - lastspammed > 800)
-        {
-            lastspammed = GetTickCount();
+            static auto lastspammed = 0;
 
-            srand(GetTickCount());
-            std::string msg = crypt_str("say ") + chatspam[rand() % 10];
+            if (GetTickCount64() - lastspammed > 800)
+            {
+                lastspammed = GetTickCount64();
 
-            g_EngineClient->ExecuteClientCmd(msg.c_str());
+                srand(GetTickCount64());
+                std::string msg = XorStr("say ") + chatspam[rand() % 10];
+
+                g_EngineClient->ExecuteClientCmd(msg.c_str());
+            }
         }
+
+        if (g_Options.chatspamtype == 1) {
+            static std::string chatspam[] =
+            {
+                XorStr("GUGAHACKS.KITCHEN | On February 12, 2019, the NAACP marked its 110th anniversary!"),
+                XorStr("GUGAHACKS.KITCHEN | John Mercer Langston was the first Black man to become a lawyer!"),
+                XorStr("GUGAHACKS.KITCHEN | Thurgood Marshall was the first African American ever appointed to the U.S. Supreme Court!"),
+                XorStr("GUGAHACKS.KITCHEN | Shirley Chisholm was the first African American woman elected to the House of Representatives!"),
+                XorStr("GUGAHACKS.KITCHEN | Hattie McDaniel was the first African American performer to win an Academy Award!"),
+                XorStr("GUGAHACKS.KITCHEN | Robert Johnson became the first African American billionaire!"),
+                XorStr("GUGAHACKS.KITCHEN | Phillis Wheatley was the first African American to publish a book of poetry!"),
+                XorStr("GUGAHACKS.KITCHEN | Thurgood Marshall became the first African American to serve in the U.S. Supreme Court!"),
+                XorStr("GUGAHACKS.KITCHEN | Nat King Cole was the first Black American to host a TV show!"),
+                XorStr("GUGAHACKS.KITCHEN | Hattie McDaniel became the first Black person to win an Oscar!"),
+            };
+
+            static auto lastspammed = 0;
+
+            if (GetTickCount64() - lastspammed > 800)
+            {
+                lastspammed = GetTickCount64();
+
+                srand(GetTickCount64());
+                std::string msg = XorStr("say ") + chatspam[rand() % 10];
+
+                g_EngineClient->ExecuteClientCmd(msg.c_str());
+            }
+        }
+
     }
 }

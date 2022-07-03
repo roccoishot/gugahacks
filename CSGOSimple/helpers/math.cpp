@@ -115,6 +115,122 @@ namespace Math
         out[1] = in1.Dot(in2[1]) + in2[1][3];
         out[2] = in1.Dot(in2[2]) + in2[2][3];
     }
+
+    float normalize_yaw(float f)
+    {
+        while (f < -180.0f)
+            f += 360.0f;
+
+        while (f > 180.0f)
+            f -= 360.0f;
+
+        return f;
+    }
+
+    void angle_vectors(const Vector& angles, Vector& forward)
+    {
+        float sp, sy, cp, cy;
+
+        sy = sin(DEG2RAD(angles[1]));
+        cy = cos(DEG2RAD(angles[1]));
+
+        sp = sin(DEG2RAD(angles[0]));
+        cp = cos(DEG2RAD(angles[0]));
+
+        forward.x = cp * cy;
+        forward.y = cp * sy;
+        forward.z = -sp;
+    }
+    //--------------------------------------------------------------------------------
+    void angle_vectors(const Vector& angles, Vector* forward, Vector* right, Vector* up)
+    {
+        auto sin_cos = [](float radian, float* sin, float* cos)
+        {
+            *sin = std::sin(radian);
+            *cos = std::cos(radian);
+        };
+
+        float sp, sy, sr, cp, cy, cr;
+
+        sin_cos(M_PI / 180.0f * angles.x, &sp, &cp);
+        sin_cos(M_PI / 180.0f * angles.y, &sy, &cy);
+        sin_cos(M_PI / 180.0f * angles.z, &sr, &cr);
+
+        if (forward)
+        {
+            forward->x = cp * cy;
+            forward->y = cp * sy;
+            forward->z = -sp;
+        }
+
+        if (right)
+        {
+            right->x = -1.0f * sr * sp * cy + -1.0f * cr * -sy;
+            right->y = -1.0f * sr * sp * sy + -1.0f * cr * cy;
+            right->z = -1.0f * sr * cp;
+        }
+
+        if (up)
+        {
+            up->x = cr * sp * cy + -sr * -sy;
+            up->y = cr * sp * sy + -sr * cy;
+            up->z = cr * cp;
+        }
+    }
+
+    Vector cross_product(const Vector& a, const Vector& b)
+    {
+        return Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+    }
+
+    void vector_angles(const Vector& forward, Vector& angles)
+    {
+        Vector view;
+
+        if (!forward[0] && !forward[1])
+        {
+            view[0] = 0.0f;
+            view[1] = 0.0f;
+        }
+        else
+        {
+            view[1] = atan2(forward[1], forward[0]) * 180.0f / M_PI;
+
+            if (view[1] < 0.0f)
+                view[1] += 360.0f;
+
+            view[2] = sqrt(forward[0] * forward[0] + forward[1] * forward[1]);
+            view[0] = atan2(forward[2], view[2]) * 180.0f / M_PI;
+        }
+
+        angles[0] = -view[0];
+        angles[1] = view[1];
+        angles[2] = 0.f;
+    }
+    //--------------------------------------------------------------------------------
+    void vector_angles(const Vector& forward, Vector& up, Vector& angles)
+    {
+        auto left = cross_product(up, forward);
+        left.NormalizeInPlace();
+
+        auto forwardDist = forward.Length2D();
+
+        if (forwardDist > 0.001f)
+        {
+            angles.x = atan2(-forward.z, forwardDist) * 180.0f / M_PI;
+            angles.y = atan2(forward.y, forward.x) * 180.0f / M_PI;
+
+            auto upZ = (left.y * forward.x) - (left.x * forward.y);
+            angles.z = atan2(left.z, upZ) * 180.0f / M_PI;
+        }
+        else
+        {
+            angles.x = atan2(-forward.z, forwardDist) * 180.0f / M_PI;
+            angles.y = atan2(-left.x, left.y) * 180.0f / M_PI;
+            angles.z = 0.0f;
+        }
+    }
+
     //--------------------------------------------------------------------------------
     void AngleVectors(const QAngle &angles, Vector& forward)
     {
@@ -253,6 +369,17 @@ namespace Math
         return vector;
     }
 
+    float random_float(float min, float max) {
+        typedef float(*RandomFloat_t)(float, float);
+        static RandomFloat_t m_RandomFloat = (RandomFloat_t)GetProcAddress(GetModuleHandleA(XorStr("vstdlib.dll")), XorStr("RandomFloat"));
+        return m_RandomFloat(min, max);
+    }
+    int random_int(int min, int max) {
+        typedef int(*RandomInt_t)(int, int);
+        static RandomInt_t m_RandomInt = (RandomInt_t)GetProcAddress(GetModuleHandleA("vstdlib.dll"), "RandomInt");
+        return m_RandomInt(min, max);
+    }
+
     //--------------------------------------------------------------------------------
     static bool screen_transform(const Vector& in, Vector& out)
     {
@@ -276,18 +403,9 @@ namespace Math
         return true;
     }
     //--------------------------------------------------------------------------------
-    bool WorldToScreen(const Vector& in, Vector& out)
+    bool WorldToScreen(const Vector& origin, Vector& screen)
     {
-        if(screen_transform(in, out)) {
-            int w, h;
-            g_EngineClient->GetScreenSize(w, h);
-
-            out.x = (w / 2.0f) + (out.x * w) / 2.0f;
-            out.y = (h / 2.0f) - (out.y * h) / 2.0f;
-
-            return true;
-        }
-        return false;
+        return !g_DebugOverlay->ScreenPosition(origin, screen);
     }
     //--------------------------------------------------------------------------------
     void CorrectMovement(CUserCmd* m_Cmd, QAngle wish_angle, QAngle old_angles)

@@ -48,10 +48,15 @@ void Autowall::ClipTraceToPlayers(const Vector& vecAbsStart, const Vector& vecAb
 	Ray_t ray;
 	ray.Init(vecAbsStart, vecAbsEnd);
 
-	for (int i = 1; i <= g_GlobalVars->maxClients; ++i) {
-		auto ent = C_BasePlayer::GetPlayerByIndex(i);
-		if (!ent || ent->IsDormant() || ent->m_lifeState() != LIFE_ALIVE)
-			return;
+	for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
+	{
+		auto ent = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
+		if (!ent || !g_LocalPlayer) continue;
+		if (!ent->IsPlayer()) continue;
+		if (ent == g_LocalPlayer) continue;
+		if (ent->IsDormant()) continue;
+		if (!ent->IsAlive()) continue;
+		if (ent->IsTeammate()) continue;
 
 		if (filter && !filter->ShouldHitEntity(ent, mask))
 			continue;
@@ -88,85 +93,88 @@ void Autowall::ClipTraceToPlayers(const Vector& vecAbsStart, const Vector& vecAb
 
 void Autowall::ScaleDamage(int hitgroup, C_BasePlayer* enemy, float weapon_armor_ratio, float& current_damage)
 {
-	static auto mp_damage_scale_ct_head = g_CVar->FindVar("mp_damage_scale_ct_head");
-	static auto mp_damage_scale_t_head = g_CVar->FindVar("mp_damage_scale_t_head");
-	static auto mp_damage_scale_ct_body = g_CVar->FindVar("mp_damage_scale_ct_body");
-	static auto mp_damage_scale_t_body = g_CVar->FindVar("mp_damage_scale_t_body");
 
-	auto team = enemy->m_iTeamNum();
-	auto head_scale = team == 2 ? mp_damage_scale_ct_head->GetFloat() : mp_damage_scale_t_head->GetFloat();
-	auto body_scale = team == 2 ? mp_damage_scale_ct_body->GetFloat() : mp_damage_scale_t_body->GetFloat();
+	if (enemy && enemy->valid(true, true)) {
+		static auto mp_damage_scale_ct_head = g_CVar->FindVar("mp_damage_scale_ct_head");
+		static auto mp_damage_scale_t_head = g_CVar->FindVar("mp_damage_scale_t_head");
+		static auto mp_damage_scale_ct_body = g_CVar->FindVar("mp_damage_scale_ct_body");
+		static auto mp_damage_scale_t_body = g_CVar->FindVar("mp_damage_scale_t_body");
 
-	auto armor_heavy = enemy->m_bHasHeavyArmor();
-	auto armor_value = static_cast<float>(enemy->m_ArmorValue());
+		auto team = enemy->m_iTeamNum();
+		auto head_scale = team == 2 ? mp_damage_scale_ct_head->GetFloat() : mp_damage_scale_t_head->GetFloat();
+		auto body_scale = team == 2 ? mp_damage_scale_ct_body->GetFloat() : mp_damage_scale_t_body->GetFloat();
 
-	if (armor_heavy)
-		head_scale *= 0.5f;
+		auto armor_heavy = enemy->m_bHasHeavyArmor();
+		auto armor_value = static_cast<float>(enemy->m_ArmorValue());
 
-	// ref: CCSPlayer::TraceAttack
-	switch (hitgroup) {
-	case HITGROUP_HEAD:
-		current_damage = (current_damage * 4.f) * head_scale;
-		break;
-	case HITGROUP_CHEST:
-	case 8:
-		current_damage *= body_scale;
-		break;
-	case HITGROUP_STOMACH:
-		current_damage = (current_damage * 1.25f) * body_scale;
-		break;
-	case HITGROUP_LEFTARM:
-	case HITGROUP_RIGHTARM:
-		current_damage *= body_scale;
-		break;
-	case HITGROUP_LEFTLEG:
-	case HITGROUP_RIGHTLEG:
-		current_damage = (current_damage * 0.75f) * body_scale;
-		break;
-	default:
-		break;
-	}
+		if (armor_heavy)
+			head_scale *= 0.5f;
 
-	static auto IsArmored = [](C_BasePlayer* player, int hitgroup) {
-		auto has_helmet = player->m_bHasHelmet();
-		auto armor_value = static_cast<float>(player->m_ArmorValue());
+		// ref: CCSPlayer::TraceAttack
+		switch (hitgroup) {
+		case HITGROUP_HEAD:
+			current_damage = (current_damage * 4.f) * head_scale;
+			break;
+		case HITGROUP_CHEST:
+		case 8:
+			current_damage *= body_scale;
+			break;
+		case HITGROUP_STOMACH:
+			current_damage = (current_damage * 1.25f) * body_scale;
+			break;
+		case HITGROUP_LEFTARM:
+		case HITGROUP_RIGHTARM:
+			current_damage *= body_scale;
+			break;
+		case HITGROUP_LEFTLEG:
+		case HITGROUP_RIGHTLEG:
+			current_damage = (current_damage * 0.75f) * body_scale;
+			break;
+		default:
+			break;
+		}
 
-		if (armor_value > 0.f) {
-			switch (hitgroup) {
-			case HITGROUP_GENERIC:
-			case HITGROUP_CHEST:
-			case HITGROUP_STOMACH:
-			case HITGROUP_LEFTARM:
-			case HITGROUP_RIGHTARM:
-			case 8:
-				return true;
-			case HITGROUP_HEAD:
-				return has_helmet || player->m_bHasHeavyArmor();
-			default:
-				return player->m_bHasHeavyArmor();
+		static auto IsArmored = [](C_BasePlayer* player, int hitgroup) {
+			auto has_helmet = player->m_bHasHelmet();
+			auto armor_value = static_cast<float>(player->m_ArmorValue());
+
+			if (armor_value > 0.f) {
+				switch (hitgroup) {
+				case HITGROUP_GENERIC:
+				case HITGROUP_CHEST:
+				case HITGROUP_STOMACH:
+				case HITGROUP_LEFTARM:
+				case HITGROUP_RIGHTARM:
+				case 8:
+					return true;
+				case HITGROUP_HEAD:
+					return has_helmet || player->m_bHasHeavyArmor();
+				default:
+					return player->m_bHasHeavyArmor();
+				}
 			}
+
+			return false;
+		};
+
+		if (IsArmored(enemy, hitgroup)) {
+			auto armor_scale = 1.f;
+			auto armor_ratio = (weapon_armor_ratio * 0.5f);
+			auto armor_bonus_ratio = 0.5f;
+
+			if (armor_heavy) {
+				armor_ratio *= 0.2f;
+				armor_bonus_ratio = 0.33f;
+				armor_scale = 0.25f;
+			}
+
+			float new_damage = current_damage * armor_ratio;
+			float estiminated_damage = (current_damage - (current_damage * armor_ratio)) * (armor_scale * armor_bonus_ratio);
+			if (estiminated_damage > armor_value)
+				new_damage = (current_damage - (armor_value / armor_bonus_ratio));
+
+			current_damage = new_damage;
 		}
-
-		return false;
-	};
-
-	if (IsArmored(enemy, hitgroup)) {
-		auto armor_scale = 1.f;
-		auto armor_ratio = (weapon_armor_ratio * 0.5f);
-		auto armor_bonus_ratio = 0.5f;
-
-		if (armor_heavy) {
-			armor_ratio *= 0.2f;
-			armor_bonus_ratio = 0.33f;
-			armor_scale = 0.25f;
-		}
-
-		float new_damage = current_damage * armor_ratio;
-		float estiminated_damage = (current_damage - (current_damage * armor_ratio)) * (armor_scale * armor_bonus_ratio);
-		if (estiminated_damage > armor_value)
-			new_damage = (current_damage - (armor_value / armor_bonus_ratio));
-
-		current_damage = new_damage;
 	}
 }
 
@@ -199,8 +207,22 @@ bool Autowall::TraceToExit(Vector& end, trace_t* enter_trace, Vector start, Vect
 
 		if (!(exit_trace->fraction < 1.0 || exit_trace->allsolid || exit_trace->startsolid) || exit_trace->startsolid) {
 			if (exit_trace->hit_entity) {
-				if (enter_trace->hit_entity && enter_trace->hit_entity == g_EntityList->GetClientEntity(0))
-					return true;
+
+				auto exitent = (C_BasePlayer*)g_EntityList->GetClientEntity(exit_trace->hit_entity->EntIndex());
+
+				if (exitent->valid(true, true)) {
+					if (enter_trace->hit_entity && enter_trace->hit_entity == g_EntityList->GetClientEntity(0))
+					{
+						auto enterent = (C_BasePlayer*)g_EntityList->GetClientEntity(enter_trace->hit_entity->EntIndex());
+
+						if (enterent->valid(true, true))
+							return true;
+						else
+							return false;
+					}
+				}
+				else
+					return false;
 			}
 			continue;
 		}
@@ -309,7 +331,9 @@ bool Autowall::SimulateFireBullet(C_BaseCombatWeapon* pWeapon, FireBulletData& d
 			data.current_damage *= powf(weaponInfo->flRangeModifier, data.trace_length * 0.002f);
 
 			C_BasePlayer* player = (C_BasePlayer*)data.enter_trace.hit_entity;
-			Autowall::ScaleDamage(data.enter_trace.hitgroup, player, weaponInfo->flArmorRatio, data.current_damage);
+			if (player->IsAlive() && player->IsPlayer() && player->IsEnemy() && player->EntIndex() != g_LocalPlayer->EntIndex() && (!player->m_bGunGameImmunity() || player->m_fFlags() != FL_FROZEN)) {
+				Autowall::ScaleDamage(data.enter_trace.hitgroup, player, weaponInfo->flArmorRatio, data.current_damage);
+			}
 			return true;
 		}
 
@@ -337,25 +361,6 @@ float Autowall::GetDamage(const Vector& point)
 }
 #include "../helpers/math.hpp"
 #include "../options.hpp"
-
-#define HITGROUP_GENERIC   0
-#define HITGROUP_HEAD      1
-#define HITGROUP_CHEST     2
-#define HITGROUP_STOMACH   3
-#define HITGROUP_LEFTARM   4
-#define HITGROUP_RIGHTARM  5
-#define HITGROUP_LEFTLEG   6
-#define HITGROUP_RIGHTLEG  7
-#define HITGROUP_GEAR      10
-
-inline bool CGameTrace::DidHitWorld() const
-{
-	return hit_entity->EntIndex() == 0;
-}
-inline bool CGameTrace::DidHitNonWorldEntity() const
-{
-	return hit_entity != NULL && !DidHitWorld();
-}
 
 #define HITGROUP_GENERIC    0
 #define HITGROUP_HEAD        1
@@ -392,52 +397,63 @@ inline bool CGameTrace::DidHitNonWorldEntity() const
 #define CHAR_TEX_GLASS			'Y'
 #define CHAR_TEX_WARPSHIELD		'Z' ///< wierd-looking jello effect for advisor shield.
 
+inline bool CGameTrace::DidHitWorld() const
+{
+	return hit_entity->EntIndex() == 0;
+}
+inline bool CGameTrace::DidHitNonWorldEntity() const
+{
+	return hit_entity != NULL && !DidHitWorld();
+}
+
 void ScaleDamage_1(int hitgroup, C_BasePlayer* enemy, float weapon_armor_ratio, float& current_damage)
 {
-	int armor = enemy->m_ArmorValue();
-	float ratio;
+	if (enemy && enemy->valid(true, true)) {
+		int armor = enemy->m_ArmorValue();
+		float ratio;
 
-	switch (hitgroup)
-	{
-	case HITGROUP_HEAD:
-		current_damage *= 4.f;
-		break;
-	case HITGROUP_STOMACH:
-		current_damage *= 1.25f;
-		break;
-	case HITGROUP_LEFTLEG:
-	case HITGROUP_RIGHTLEG:
-		current_damage *= 0.75f;
-		break;
-	}
-
-	if (armor > 0)
-	{
 		switch (hitgroup)
 		{
 		case HITGROUP_HEAD:
-			if (enemy->m_bHasHelmet())
+			current_damage *= 4.f;
+			break;
+		case HITGROUP_STOMACH:
+			current_damage *= 1.25f;
+			break;
+		case HITGROUP_LEFTLEG:
+		case HITGROUP_RIGHTLEG:
+			current_damage *= 0.75f;
+			break;
+		}
+
+		if (armor > 0)
+		{
+			switch (hitgroup)
 			{
+			case HITGROUP_HEAD:
+				if (enemy->m_bHasHelmet())
+				{
+					ratio = (weapon_armor_ratio * 0.5) * current_damage;
+					if (((current_damage - ratio) * 0.5) > armor)
+					{
+						ratio = current_damage - (armor * 2.0);
+					}
+					current_damage = ratio;
+				}
+				break;
+			case HITGROUP_GENERIC:
+			case HITGROUP_CHEST:
+			case HITGROUP_STOMACH:
+			case HITGROUP_LEFTARM:
+			case HITGROUP_RIGHTARM:
 				ratio = (weapon_armor_ratio * 0.5) * current_damage;
 				if (((current_damage - ratio) * 0.5) > armor)
 				{
 					ratio = current_damage - (armor * 2.0);
 				}
 				current_damage = ratio;
+				break;
 			}
-			break;
-		case HITGROUP_GENERIC:
-		case HITGROUP_CHEST:
-		case HITGROUP_STOMACH:
-		case HITGROUP_LEFTARM:
-		case HITGROUP_RIGHTARM:
-			ratio = (weapon_armor_ratio * 0.5) * current_damage;
-			if (((current_damage - ratio) * 0.5) > armor)
-			{
-				ratio = current_damage - (armor * 2.0);
-			}
-			current_damage = ratio;
-			break;
 		}
 	}
 }

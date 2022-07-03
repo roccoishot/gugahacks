@@ -35,16 +35,18 @@ public:
 		void RenderBox(C_BaseEntity* pl);
 		void RenderName(C_BaseEntity* pl);
 		void RenderWeaponName(C_BaseEntity* pl);
+		void sexdick(C_BasePlayer* ent);
 		void RenderHealth(C_BaseEntity* pl);
 		void RenderArmour();
 		void RenderSnapline();
+		void Skemlanton();
+		void Drugs();
 	};
 	void RenderWeapon(C_BaseCombatWeapon* ent);
 	void RenderDefuseKit(C_BaseEntity* ent);
 	void RenderPlantedC4(C_BaseEntity* ent);
 	void RenderItemEsp(C_BaseEntity* ent);
 	void ThirdPerson();
-	void ebdetection(float unpred_z, int unpred_flags);
 public:
 	void AddToDrawList();
 	void Render();

@@ -538,16 +538,17 @@ enum ECSPlayerBones {
 
 enum EntityFlags
 {
-	FL_ONGROUND = (1 << 0), 	// At rest / on the ground
-	FL_DUCKING = (1 << 1),		// Player flag -- Player is fully crouched
-	FL_WATERJUMP = (1 << 2),	// player jumping out of water
-	FL_ONTRAIN = (1 << 3),		// Player is _controlling_ a train, so movement commands should be ignored on client during prediction.
-	FL_INRAIN = (1 << 4),		// Indicates the entity is standing in rain
-	FL_FROZEN = (1 << 5),		// Player is frozen for 3rd person camera
-	FL_ATCONTROLS = (1 << 6),	// Player can't move, but keeps key inputs for controlling another entity
-	FL_CLIENT = (1 << 7),		// Is a player
-	FL_FAKECLIENT = (1 << 8),	// Fake client, simulated server side; don't send network messages to them
-	FL_INWATER = (1 << 10),		// In water
+	FL_ONGROUND = (1 << 0),
+	FL_DUCKING = (1 << 1),
+	FL_AIMDUCKING = (1 << 2),
+	FL_WATERJUMP = (1 << 3),
+	FL_ONTRAIN = (1 << 4),
+	FL_INRAIN = (1 << 5),
+	FL_FROZEN = (1 << 6),
+	FL_ATCONTROLS = (1 << 7),
+	FL_CLIENT = (1 << 8),
+	FL_FAKECLIENT = (1 << 9),
+	MAX_ENTITYFLAGS
 };
 
 enum LifeState : unsigned char
@@ -582,9 +583,20 @@ enum WeaponSound_t
 	MAX_WEAPONSOUND
 };
 
-enum MoveType_t
-{
-	MOVETYPE_NONE = 0,
+enum ObserverType_t {
+	OBS_MODE_NONE,	// not in spectator mode
+	OBS_MODE_DEATHCAM,	// special mode for death cam animation
+	OBS_MODE_FREEZECAM,	// zooms to a target, and freeze-frames on them
+	OBS_MODE_FIXED,		// view from a fixed camera position
+	OBS_MODE_IN_EYE,	// follow a player in first person view
+	OBS_MODE_CHASE,		// follow a player in third person view
+	OBS_MODE_ROAMING,	// free roaming
+
+	NUM_OBSERVER_MODES,
+};
+
+enum MoveType_t {
+	MOVETYPE_NONE,
 	MOVETYPE_ISOMETRIC,
 	MOVETYPE_WALK,
 	MOVETYPE_STEP,

@@ -2,134 +2,82 @@
 #include "OldPrediction.h"
 #include "menu.hpp"
 #include "features/bhop.hpp"
-
-class CHudChat
-{
-public:
-    void ChatPrintf(int iPlayerIndex, int iFilter, const char* fmt, ...)
-    {
-        CallVFunction<void(__cdecl*)(void*, int, int, const char*, ...)>(this, 27)(this, iPlayerIndex, iFilter, fmt);
-    }
-};
+#include "Globals.h"
 
 static auto prediction = new PredictionSystem();
-
+//rockso can fixer deze
 void movement::edgebug(CUserCmd* cmd) {
-    auto backupflags = g_LocalPlayer->m_fFlags();
+    //losing sanity (check)
+    int backupflags = g_LocalPlayer->m_fFlags();
+    int backupbuttons = cmd->buttons;
+    Globals::EBD = eb.CUMSHITPOOPASTE;
 
-    g_CVar->FindVar("sv_min_jump_landing_sound")->SetValue("63464578");
-        if (g_Options.ebmode == 0) {
-            if (g_Options.edge_bug && GetAsyncKeyState(g_Options.edge_bug_key)) {
-            if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
-                cmd->buttons |= in_duck;
+    if (!g_EngineClient->IsInGame() || !g_LocalPlayer || !g_LocalPlayer->IsAlive())
+        return;
+
+    //monkey u put noclip not ladder :skull: :japanese_goblin:
+    if (g_LocalPlayer->m_nMoveType() == MOVETYPE_LADDER)
+        return;
+
+    if (g_Options.edge_bug && GetAsyncKeyState(g_Options.edge_bug_key)) { // issue (another one) (fixed)
+
+        for (int i = 0; i < 64; i++) {
+
+            float oldvelocity_z = g_LocalPlayer->m_vecVelocity().z;//?
+
+            cmd->buttons |= IN_DUCK;
+
+            prediction->StartPrediction(cmd);
+
+            if (!(floor(oldvelocity_z) >= -7 || floor(g_LocalPlayer->m_vecVelocity().z) != -7 || (g_LocalPlayer->m_fFlags() & FL_ONGROUND))) {
+                eb.CUMSHITPOOPASTE = true;
+                eb.CUMSHITPOOPASTETooTHpASte = cmd->tick_count;
+                eb.dicksTOsTOp = i;
+            }
+
+            prediction->EndPrediction();
+
+            cmd->buttons = backupbuttons;
         }
     }
+//I AM GOING TO DISLOCATE YOUR FUCKING DOG
 
-    if (g_Options.edge_bug && GetAsyncKeyState(g_Options.edge_bug_key)) {
-        if (g_Options.ebmode == 1) {
+    if (g_GlobalVars->tickcount - eb.dicksTOsTOp <= eb.CUMSHITPOOPASTETooTHpASte) {
+        //lmao recode this please for the love of god, use override mouse input hook in clientmode or smthn
+        g_InputSystem->EnableInput(false);
 
-            static bool edgebugging = false;
-            static int edgebugging_tick = 0;
+        //idfk what this does tbh
+        cmd->buttons &= ~0x200;
+        cmd->buttons &= ~0x400;
+        cmd->buttons &= ~0x8;
+        cmd->buttons &= ~0x10;
 
-            if (!edgebugging) {
-                float z_velocity = floor(g_LocalPlayer->m_vecVelocity().z);
-
-                for (int i = 0; i < 64; i++) {
-                    prediction->StartPrediction(cmd);
-                    //Do it be ebing?!?!?!?
-                    if (z_velocity < -7 && floor(g_LocalPlayer->m_vecVelocity().z) == -7 && (g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_LocalPlayer->m_nMoveType() != MOVETYPE_NOCLIP) {
-                        edgebugging = true;
-                        edgebugging_tick = cmd->tick_count + i;
-                        break;
-                    }
-                    else {
-                        z_velocity = floor(g_LocalPlayer->m_vecVelocity().z);
-                        backupflags = g_LocalPlayer->m_fFlags();
-                    }
-                    prediction->EndPrediction();
-                }
-            }
-
-            else {
-
-                //Autostrafe that so that we be quick
-
-                //Lockin movement like fort knox yuhnumsain
-                cmd->sidemove = 0.f;
-                cmd->forwardmove = 0.f;
-                cmd->upmove = 0.f;
-                cmd->mousedx = 0.f;
-                cmd->mousedy = 0.f;
-
-                //*yawn* is this eb done yet (cringe #fail)
-                if (cmd->tick_count > edgebugging_tick) {
-                    edgebugging = false;
-                    edgebugging_tick = 0;
-                }
-                //Stompthem Kay Very AngY!
-            }
-
-            float max_radias = DirectX::XM_2PI;
-            float step = max_radias / 128;
-            float xThick = 23;
-            bool did_jump;
-            bool edgebugz;
-            bool unduck;
-            Vector pos = g_LocalPlayer->m_vecOrigin();
-
-            for (float a = 0.f; a < max_radias; a += step)
-            {
-                Vector pt;
-                pt.x = ((xThick - 20.f) * cos(a)) + pos.x;
-                pt.y = ((xThick - 20.f) * sin(a)) + pos.y;
-                pt.z = pos.z;
-
-                Vector pt2 = pt;
-                pt2.z -= 6;
-
-                trace_t edgebug;
-                trace_t fag;
-
-                Ray_t ray;
-                ray.Init(pt, pt2);
-
-                CTraceFilter flt;
-                flt.pSkip = g_LocalPlayer;
-                g_EngineTrace->TraceRay(ray, MASK_SOLID_BRUSHONLY, &flt, &fag);
-
-                if (ray.m_IsRay != 1.f && edgebug.fraction != 0.f)
-                {
-                    did_jump = true;
-                    cmd->buttons |= in_duck;
-                    BunnyHop::EBStrafe(cmd);
-                    unduck = true;
-                    edgebugz = true;
-                }
-            }
-        }
+        cmd->buttons |= IN_DUCK;
+    } 
+    else {
+        g_InputSystem->EnableInput(true);
     }
 }
 
 
-void movement::jumpbug(CUserCmd* pCmd) {
+void movement::jumpbug(CUserCmd* cmd) {
+    auto backupflags = g_LocalPlayer->m_fFlags();
+
+    if (!g_EngineClient->IsInGame() || !g_LocalPlayer || !g_LocalPlayer->IsAlive())
+        return;
+
     if (g_Options.jump_bug && GetAsyncKeyState(g_Options.jump_bug_key)) {
+        prediction->StartPrediction(cmd);
         g_Options.misc_bhop2 = false;
-        static bool bShouldJumpNext = false;
-
-        if (bShouldJumpNext)
+        if (!(backupflags & (1 << 0)) && g_LocalPlayer->m_fFlags() & (1 << 0))
         {
-            pCmd->buttons |= in_jump;
-            bShouldJumpNext = false;
-            return;
+            cmd->buttons |= in_duck;
+            cmd->buttons &= ~in_jump;
         }
-
-        if ((g_LocalPlayer->m_fFlags() & FL_ONGROUND))
-        {
-            pCmd->buttons |= in_duck;
-            pCmd->buttons &= ~in_jump;
-            bShouldJumpNext = true;
-        }
+        prediction->EndPrediction();
     }
     else
         g_Options.misc_bhop2 = true;
 }
+
+LETSMAKETHISASBADASPOSSIBLE eb;
