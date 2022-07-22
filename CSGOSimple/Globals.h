@@ -21,6 +21,7 @@ namespace Globals
 	extern bool serverspawn;
 	extern 	float realroll;
 	extern bool bSendPacket;
+	extern bool headthing;
 	extern bool WeaponTabValid;
 	extern bool cuhbedointhat;
 	extern bool valve;

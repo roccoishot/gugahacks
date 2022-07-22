@@ -203,6 +203,7 @@ void Options::SetupWeapons()
 
 	for (auto& [key, val] : k_weapon_names) {
 		auto& option = changers.skin.m_items[key];
+		SetupValue(option.enabled, val, XorStr("Enabled"));
 		SetupValue(option.definition_vector_index, val, XorStr("d_vec_index"));
 		SetupValue(option.definition_index, val, XorStr("d_index"));
 		SetupValue(option.paint_kit_vector_index, val, XorStr("pk_vec_index"));
@@ -329,6 +330,8 @@ void Options::SetupMisc()
 	SetupValue(indicatorhb, XorStr("Rage"), XorStr("Desync Indicator Hitbox"));
 	SetupValue(fakelag, XorStr("Rage"), XorStr("Fakelag"));
 	SetupValue(faketicks, XorStr("Rage"), XorStr("Fakelag Ticks"));
+	SetupValue(flonpeek, XorStr("Rage"), XorStr("Fakelag On Peek"));
+	SetupValue(flop, XorStr("Rage"), XorStr("Fakelag On Peek Ticks"));
 	SetupValue(fakeduck, XorStr("Rage"), XorStr("Fakeduck"));
 	SetupValue(fdkey, XorStr("Rage"), XorStr("Fakeduck Key"));
 	SetupValue(fakedegree, XorStr("Rage"), XorStr("Custom Fake °"));
@@ -337,6 +340,7 @@ void Options::SetupMisc()
 	SetupValue(urrstuck, XorStr("Sexdick"), XorStr("Air Stuck"));
 	SetupValue(urrstuckkey, XorStr("Sexdick"), XorStr("Air Stuck Key"));
 	SetupValue(randomizefake, XorStr("Sexdick"), XorStr("Randomize Fake"));
+	SetupValue(headthing, XorStr("Sexdick"), XorStr("No Pitch on Land"));
 	SetupValue(invertaa, XorStr("Antiaim"), XorStr("Invert AA Key"));
 	SetupValue(speclist, XorStr("Misc"), XorStr("Spectator List"));
 	SetupValue(blockbot, XorStr("Misc"), XorStr("Blockbot"));
@@ -390,8 +394,6 @@ void Options::SetupMisc()
 	SetupColor(menucolor, XorStr("Menu Accents"));
 	SetupValue(fakeping, XorStr("Rage"), XorStr("Fake Ping"));
 	SetupValue(fakepingzzz, XorStr("Rage"), XorStr("Fake Ping Tix"));
-	SetupValue(autopeek, XorStr("Rage"), XorStr("autopeek"));
-	SetupValue(autopeek_bind, XorStr("Rage"), XorStr("autopeek bind"));
 }
 
 void Options::Initialize()

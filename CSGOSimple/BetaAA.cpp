@@ -284,23 +284,23 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 
 			if (g_Options.ragebot_antiaim_yaw != 5) {
 				if (g_Options.fakepreset != 4) {
-					if (bSendPacket)
+					if (!bSendPacket)
 					{
 						cmd->viewangles.yaw += fake;
 					}
 
-					if (!bSendPacket)
+					if (bSendPacket)
 					{
 						cmd->viewangles.yaw -= real;
 					}
 				}
 				if (g_Options.fakepreset == 4) {
-					if (bSendPacket)
+					if (!bSendPacket)
 					{
 						cmd->viewangles.yaw += fakepreset;
 					}
 
-					if (!bSendPacket)
+					if (bSendPacket)
 					{
 						cmd->viewangles.yaw -= 0.f;
 					}
@@ -308,21 +308,21 @@ void CAntiAim::DoAntiAim(CUserCmd* cmd, bool& bSendPacket)
 			}
 			if (g_Options.ragebot_antiaim_yaw == 5) {
 				if (g_Options.fakepreset != 4) {
-					if (bSendPacket)
+					if (!bSendPacket)
 					{
 						cmd->viewangles.yaw += fake;
 					}
-					else if (!bSendPacket)
+					if (bSendPacket)
 					{
 						cmd->viewangles.yaw -= g_Options.customreal;
 					}
 				}
 				if (g_Options.fakepreset == 4) {
-					if (bSendPacket)
+					if (!bSendPacket)
 					{
 						cmd->viewangles.yaw += fakepreset;
 					}
-					else if (!bSendPacket)
+					if (bSendPacket)
 					{
 						cmd->viewangles.yaw -= g_Options.customreal;
 					}
@@ -345,6 +345,12 @@ void CAntiAim::Pitch(CUserCmd* cmd, bool fake)
 	bool Standing = !Moving && !InAir;
 	PitchAntiAims mode = (PitchAntiAims)g_Options.ragebot_antiaim_pitch;
 
+	bool headthing = false;
+	if (Globals::headthing && g_Options.headthing)
+		headthing = true;
+	else
+		headthing = false;
+
 	if (Globals::valve)
 	{
 		fake = false;
@@ -359,25 +365,25 @@ void CAntiAim::Pitch(CUserCmd* cmd, bool fake)
 	switch (mode)
 	{
 	case PitchAntiAims::EMOTION:
-		cmd->viewangles.pitch = 58.f;
+		cmd->viewangles.pitch = headthing ? 0.f : 58.f;
 		break;
 
 	case PitchAntiAims::DOWN:
-		cmd->viewangles.pitch = 89.f;
+		cmd->viewangles.pitch = headthing ? 0.f : 89.f;
 		break;
 
 	case PitchAntiAims::UP:
-		cmd->viewangles.pitch = -89.f;
+		cmd->viewangles.pitch = headthing ? 0.f : -89.f;
 		break;
 
 	case PitchAntiAims::ZERO:
 		cmd->viewangles.pitch = 0.f;
 		break;
 	case PitchAntiAims::FUP:
-		cmd->viewangles.pitch = fake ? 89.f : -89.f;
+		cmd->viewangles.pitch = fake ? 89.f : (headthing ? 0.f : -89.f);
 		break;
 	case PitchAntiAims::FDOWN:
-		cmd->viewangles.pitch = fake ? -89.f : 89.f;
+		cmd->viewangles.pitch = fake ? -89.f : (headthing ? 0.f : 89.f);
 		break;
 	case PitchAntiAims::FZERO:
 		cmd->viewangles.pitch = fake ? 89.f : 0.f;

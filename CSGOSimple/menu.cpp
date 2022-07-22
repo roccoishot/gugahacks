@@ -1621,6 +1621,8 @@ XorStr("Balance"),
 				ImGui::Text(XorStr("Invert AA Key")); keybindspacing(); ImGui::Hotkey(XorStr("##invertkey"), &g_Options.invertaa);
 				ImGui::Separator(XorStr("Others"));
 				spacing();
+				ImGui::Checkbox(XorStr("No Pitch on Land"), &g_Options.headthing);
+				spacing();
 				ImGui::Checkbox(XorStr("Randomize Fake"), &g_Options.randomizefake);
 				spacing();
 				ImGui::Checkbox(XorStr("No Packets on Shot"), &g_Options.nopacketonshot);
@@ -1641,6 +1643,13 @@ XorStr("Balance"),
 				{
 					sliderspacing();
 					ImGui::SliderInt(XorStr("Ticks"), &g_Options.faketicks, 1, 16, XorStr("%.f"));
+					spacing();
+					ImGui::Checkbox(XorStr("On Peek"), &g_Options.flonpeek);
+					if (g_Options.flonpeek)
+					{
+						sliderspacing();
+						ImGui::SliderInt(XorStr("OP Ticks"), &g_Options.flop, 1, 16, XorStr("%.f"));
+					}
 				}
 				spacing();
 				ImGui::Checkbox(XorStr("Slowwalk"), &g_Options.slowwalk); keybindspacing(); ImGui::Hotkey(XorStr("##slowwalkkey"), &g_Options.ragebot_slowwalk_key);
@@ -1968,9 +1977,11 @@ XorStr("Dust")
 			ImGui::EndChild();
 		}
 
-		/*if (tab == 5) {
-			auto& entries = g_Options.changers.skin.m_items;
-			static auto definition_vector_index = 0;
+	/*if (tab == 5) {
+		static std::string selected_weapon_name = "";
+		static std::string selected_skin_name = "";
+		static auto definition_vector_index = 0;
+		auto& entries = g_Options.changers.skin.m_items;
 			auto& selected_entry = entries[k_weapon_names[definition_vector_index].definition_index];
 			auto& satatt = g_Options.changers.skin.statrack_items[k_weapon_names[definition_vector_index].definition_index];
 			selected_entry.definition_index = k_weapon_names[definition_vector_index].definition_index;
@@ -1998,72 +2009,205 @@ XorStr("Dust")
 				ImGui::Spacing();
 				ImGui::Spacing();
 				spacing();
-				if (ImGui::Checkbox(("Enabled"), &selected_entry.enabled))
-					g_ClientState->ForceFullUpdate();
+				ImGui::Checkbox(("Enabled"), &selected_entry.enabled);
 				spacing();
-				ImGui::InputText(("Nametag"), selected_entry.name, 32);
-				ImGui::Spacing();
+				ImGui::Checkbox(("Stattrak"), &selected_entry.stat_trak);
 				spacing();
-				if (ImGui::Checkbox(("Stattrak"), &selected_entry.stat_trak))
-					g_ClientState->ForceFullUpdate();
+				ImGui::InputInt(("Stattrak #"), &satatt.statrack_new.counter);
 				spacing();
-				if (ImGui::InputInt(("Stattrak #"), &satatt.statrack_new.counter))
-					g_ClientState->ForceFullUpdate();
-
-				spacing();
-				if (ImGui::InputInt(("Seed"), &selected_entry.seed))
-					g_ClientState->ForceFullUpdate();
+				ImGui::InputInt(("Seed"), &selected_entry.seed);
 				sliderspacing();
-				if (ImGui::SliderFloat(("Wear:"), &selected_entry.wear, FLT_MIN, 100.f, "%.10f", 5))
-					g_ClientState->ForceFullUpdate();
+				ImGui::SliderFloat(("Wear:"), &selected_entry.wear, FLT_MIN, 100.f, "%.10f", 5);
+				spacing();
+
 
 				ImGui::Spacing();
 				spacing();
 
-				if (selected_entry.definition_index != GLOVE_T_SIDE) {
-					if (ImGui::Combo(("Paint kit:"), &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text) {
-						*out_text = k_skins[idx].name.c_str();
-						return true;
-						}, nullptr, k_skins.size(), 20))
-						g_ClientState->ForceFullUpdate();
-						selected_entry.paint_kit_index = k_skins[selected_entry.paint_kit_vector_index].id;
+				auto& selected_entry = entries[k_weapon_names[definition_vector_index].definition_index];
+				auto& satatt = g_Options.changers.skin.statrack_items[k_weapon_names[definition_vector_index].definition_index];
+				selected_entry.definition_index = k_weapon_names[definition_vector_index].definition_index;
+				selected_entry.definition_vector_index = definition_vector_index;
+				if (selected_entry.definition_index == WEAPON_KNIFE || selected_entry.definition_index == WEAPON_KNIFE_T)
+				{
+					ImGui::PushItemWidth(160.f);
+
+					ImGui::Combo("", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
+						{
+							*out_text = k_knife_names.at(idx).name;
+							return true;
+						}, nullptr, k_knife_names.size(), 10);
+					selected_entry.definition_override_index = k_knife_names.at(selected_entry.definition_override_vector_index).definition_index;
 
 				}
-				else {
-					if (ImGui::Combo(("Paint kit:"), &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text) {
-						*out_text = k_gloves[idx].name.c_str();
-						return true;
-						}, nullptr, k_gloves.size(), 20))
-						g_ClientState->ForceFullUpdate();
-						selected_entry.paint_kit_index = k_gloves[selected_entry.paint_kit_vector_index].id;
+				else if (selected_entry.definition_index == GLOVE_T_SIDE || selected_entry.definition_index == GLOVE_CT_SIDE)
+				{
+					ImGui::PushItemWidth(160.f);
 
-				}
-				ImGui::Spacing();
-				spacing();
-				if (selected_entry.definition_index == WEAPON_KNIFE || selected_entry.definition_index == WEAPON_KNIFEGG) {
-					if (ImGui::Combo(("Knife:"), &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text) {
-						*out_text = k_knife_names.at(idx).name;
-						return true;
-						}, nullptr, k_knife_names.size(), 10))
-						g_ClientState->ForceFullUpdate();
-						selected_entry.definition_override_index = k_knife_names.at(selected_entry.definition_override_vector_index).definition_index;
-
-				}
-				else if (selected_entry.definition_index == GLOVE_T_SIDE || selected_entry.definition_index == GLOVE_CT_SIDE) {
-					if (ImGui::Combo(("Gloves:"), &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text) {
-						*out_text = k_glove_names.at(idx).name;
-						return true;
-						}, nullptr, k_glove_names.size(), 10))
-						g_ClientState->ForceFullUpdate();
-						selected_entry.definition_override_index = k_glove_names.at(selected_entry.definition_override_vector_index).definition_index;
-
+					ImGui::Combo("", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
+						{
+							*out_text = k_glove_names.at(idx).name;
+							return true;
+						}, nullptr, k_glove_names.size(), 10);
+					selected_entry.definition_override_index = k_glove_names.at(selected_entry.definition_override_vector_index).definition_index;
 				}
 				else {
 					static auto unused_value = 0;
 					selected_entry.definition_override_vector_index = 0;
 				}
+
+				if (selected_entry.definition_index != GLOVE_T_SIDE &&
+					selected_entry.definition_index != GLOVE_CT_SIDE &&
+					selected_entry.definition_index != WEAPON_KNIFE &&
+					selected_entry.definition_index != WEAPON_KNIFE_T)
+				{
+					selected_weapon_name = k_weapon_names_preview[definition_vector_index].name;
+				}
+				else
+				{
+					if (selected_entry.definition_index == GLOVE_T_SIDE ||
+						selected_entry.definition_index == GLOVE_CT_SIDE)
+					{
+						selected_weapon_name = k_glove_names_preview.at(selected_entry.definition_override_vector_index).name;
+					}
+					if (selected_entry.definition_index == WEAPON_KNIFE ||
+						selected_entry.definition_index == WEAPON_KNIFE_T)
+					{
+						selected_weapon_name = k_knife_names_preview.at(selected_entry.definition_override_vector_index).name;
+					}
+				}
+				if (skins_parsed)
+				{
+					static char filter_name[32];
+					std::string filter = filter_name;
+
+					bool is_glove = selected_entry.definition_index == GLOVE_T_SIDE ||
+						selected_entry.definition_index == GLOVE_CT_SIDE;
+
+					bool is_knife = selected_entry.definition_index == WEAPON_KNIFE ||
+						selected_entry.definition_index == WEAPON_KNIFE_T;
+
+					int cur_weapidx = 0;
+					if (!is_glove && !is_knife)
+					{
+						cur_weapidx = k_weapon_names[definition_vector_index].definition_index;
+						//selected_weapon_name = k_weapon_names_preview[definition_vector_index].name;
+					}
+					else
+					{
+						if (selected_entry.definition_index == GLOVE_T_SIDE ||
+							selected_entry.definition_index == GLOVE_CT_SIDE)
+						{
+							cur_weapidx = k_glove_names.at(selected_entry.definition_override_vector_index).definition_index;
+						}
+						if (selected_entry.definition_index == WEAPON_KNIFE ||
+							selected_entry.definition_index == WEAPON_KNIFE_T)
+						{
+							cur_weapidx = k_knife_names.at(selected_entry.definition_override_vector_index).definition_index;
+
+						}
+					}
+
+
+
+					auto weaponName = weaponnames(cur_weapidx);
+
+					{
+						if (selected_entry.definition_index != GLOVE_T_SIDE && selected_entry.definition_index != GLOVE_CT_SIDE)
+						{
+							if (ImGui::Selectable(" - ", selected_entry.paint_kit_index == -1))
+							{
+								selected_entry.paint_kit_vector_index = -1;
+								selected_entry.paint_kit_index = -1;
+								selected_skin_name = "";
+							}
+
+							int lastID = ImGui::GetItemID();
+							for (size_t w = 0; w < k_skins.size(); w++)
+							{
+								for (auto names : k_skins[w].weaponName)
+								{
+									std::string name = k_skins[w].name;
+
+									if (g_Options.changers.skin.show_cur)
+									{
+										if (names != weaponName)
+											continue;
+									}
+
+									if (name.find(filter) != name.npos)
+									{
+										ImGui::PushID(lastID++);
+
+										ImGui::PushStyleColor(ImGuiCol_Text, skins::get_color_ratiry(is_knife && g_Options.changers.skin.show_cur ? 6 : k_skins[w].rarity));
+										{
+											if (ImGui::Selectable(name.c_str(), selected_entry.paint_kit_vector_index == w))
+											{
+												selected_entry.paint_kit_vector_index = w;
+												selected_entry.paint_kit_index = k_skins[selected_entry.paint_kit_vector_index].id;
+												selected_skin_name = k_skins[w].name_short;
+											}
+										}
+										ImGui::PopStyleColor();
+
+										ImGui::PopID();
+									}
+								}
+							}
+						}
+						else
+						{
+							int lastID = ImGui::GetItemID();
+
+							if (ImGui::Selectable(" - ", selected_entry.paint_kit_index == -1))
+							{
+								selected_entry.paint_kit_vector_index = -1;
+								selected_entry.paint_kit_index = -1;
+								selected_skin_name = "";
+							}
+
+							for (size_t w = 0; w < k_gloves.size(); w++)
+							{
+								for (auto names : k_gloves[w].weaponName)
+								{
+									std::string name = k_gloves[w].name;
+
+
+									if (g_Options.changers.skin.show_cur)
+									{
+										if (names != weaponName)
+											continue;
+									}
+
+									if (name.find(filter) != name.npos)
+									{
+										ImGui::PushID(lastID++);
+
+										ImGui::PushStyleColor(ImGuiCol_Text, skins::get_color_ratiry(6));
+										{
+											if (ImGui::Selectable(name.c_str(), selected_entry.paint_kit_vector_index == w))
+											{
+												selected_entry.paint_kit_vector_index = w;
+												selected_entry.paint_kit_index = k_gloves[selected_entry.paint_kit_vector_index].id;
+												selected_skin_name = k_gloves[selected_entry.paint_kit_vector_index].name_short;
+											}
+										}
+										ImGui::PopStyleColor();
+
+										ImGui::PopID();
+									}
+								}
+							}
+						}
+					}
+					//	ImGui::ListBoxFooter();
+				}
+				else
+				{
+					ImGui::Text("skins parsing, wait...");
+				};
 			}
-			ImGui::EndChild();
+				ImGui::EndChild();
 		}*/
 
 		//misc
@@ -2154,8 +2298,6 @@ XorStr("Directional")
 				ImGui::Checkbox(XorStr("Long jump"), &g_Options.longjump); keybindspacing(); ImGui::Hotkey(XorStr("##ljkey"), &g_Options.ljkey);
 				spacing();
 				ImGui::Checkbox(XorStr("Blockbot"), &g_Options.blockbot); keybindspacing(); ImGui::Hotkey(XorStr("##blockbotkey"), &g_Options.bbkey);
-				spacing();
-				ImGui::Checkbox( XorStr( "Autopeek" ), &g_Options.autopeek ); keybindspacing(); ImGui::Hotkey( XorStr( "##autopeekkey" ), &g_Options.autopeek_bind );
 				spacing();
 				ImGui::Checkbox(XorStr("Duck In Air"), &g_Options.ducknair); keybindspacing(); ImGui::Hotkey(XorStr("##dairkey"), &g_Options.diarkey);
 				spacing();

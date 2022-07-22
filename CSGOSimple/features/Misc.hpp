@@ -23,7 +23,6 @@ public:
 	void DoMultipoint(C_BasePlayer* player, matrix3x4_t matrix, mstudiobbox_t* hitbox, int densityX, int densityY);
 	void SilentWalk(CUserCmd* cmd);
 	void SlowWalk(CUserCmd* cmd);
-	void autopeek(CUserCmd* cmd);
 	bool cl_move_dt(CUserCmd* m_pcmd);
 	void ChatSpama(CUserCmd* cmd);
 	void SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd, bool& bSendPacket);

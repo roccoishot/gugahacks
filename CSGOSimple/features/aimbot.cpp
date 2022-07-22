@@ -68,7 +68,7 @@ bool CLegitbot::IsEnabled(CUserCmd* cmd)
 
 void CLegitbot::Smooth(QAngle currentAngle, QAngle aimAngle, QAngle& angle)
 {
-	float smoothness = g_Options.aimbot.smoof;
+	int smoothness = g_Options.aimbot.smoof;
 
 	auto smooth_value = max(1.0f, smoothness);
 
@@ -224,6 +224,7 @@ int GetNearestPlayerToCrosshair2()
 
 	return BestEnt;
 }
+
 
 C_BasePlayer* CLegitbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone, float& bestFov, QAngle& bestAngles)
 {
@@ -576,7 +577,6 @@ void CLegitbot::Run(CUserCmd* cmd)
 			if (doingthezeus) {
 
 				if (!((target->m_vecOrigin() - g_LocalPlayer->m_vecOrigin()).Length() > 115.f)) {
-					if (g_Options.aimbot.autofire)
 						cmd->buttons |= IN_ATTACK;
 					const float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
 					const float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
@@ -674,8 +674,8 @@ void CLegitbot::Run(CUserCmd* cmd)
 	Globals::view_punch_old = current_punch;
 
 	if (!IsSilent()) {
-		g_EngineClient->SetViewAngles(&angles);
 		Smooth(current, angles, angles);
+		g_EngineClient->SetViewAngles(&angles);
 		Globals::abfr = true;
 	}
 	else if (IsSilent())

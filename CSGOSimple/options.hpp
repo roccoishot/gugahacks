@@ -140,6 +140,9 @@ public:
 		bool printresolver = false;
 	} aimbot;
 
+	bool flonpeek = false;
+	int flop = 0;
+
 	bool randomizefake = false;
 	bool urrstuck = false;
 	int urrstuckkey;
@@ -160,6 +163,7 @@ public:
 	bool ragebot_autozeus = false;
 	bool dormantesp = false;
 	int autostrafemode = 0;
+	bool headthing = false;
 	/*bool ragebot_hitbox[8][9] = {false, false, false, false, false, false, false, false};
 	float ragebot_hitbox_multipoint_scale[8][9] = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
 	int ragebot_selection[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -232,9 +236,6 @@ public:
 	bool forceangles = false;
 	int movementrecord = 0;
 	int movementplay = 0;
-
-	bool autopeek = false;
-	int autopeek_bind = 0;
 
 	int spinrollspeed = 1;
 	int spinroll2speed = 1;

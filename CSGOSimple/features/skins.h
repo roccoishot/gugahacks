@@ -10,135 +10,135 @@ static const char* weaponnames(const short id)
 	switch (id)
 	{
 	case WEAPON_DEAGLE:
-		return "Deagle";
+		return "deagle";
 	case WEAPON_ELITE:
-		return "Dualies";
+		return "elite";
 	case WEAPON_FIVESEVEN:
-		return "Fiveseven";
+		return "fiveseven";
 	case WEAPON_GLOCK:
-		return "Glock";
+		return "glock";
 	case WEAPON_AK47:
-		return "AK47";
+		return "ak47";
 	case WEAPON_AUG:
-		return "AUG";
+		return "aug";
 	case WEAPON_AWP:
-		return "AWP";
+		return "awp";
 	case WEAPON_FAMAS:
-		return "Famas";
+		return "famas";
 	case WEAPON_G3SG1:
-		return "Auto";
+		return "g3sg1";
 	case WEAPON_GALILAR:
-		return "Galil";
+		return "galilar";
 	case WEAPON_M249:
-		return "M249";
+		return "m249";
 	case WEAPON_M4A1_SILENCER:
-		return "M4A1-S";
+		return "m4a1_silencer";
 	case WEAPON_M4A1:
-		return "M4A4";
+		return "m4a1";
 	case WEAPON_MAC10:
-		return "Mac-10";
+		return "mac10";
 	case WEAPON_P90:
-		return "P90";
+		return "p90";
 	case WEAPON_UMP45:
-		return "UMP-45";
+		return "ump45";
 	case WEAPON_XM1014:
-		return "XM1014";
+		return "xm1014";
 	case WEAPON_BIZON:
-		return "Bizon";
+		return "bizon";
 	case WEAPON_MAG7:
-		return "Mag7";
+		return "mag7";
 	case WEAPON_NEGEV:
-		return "Negev";
+		return "negev";
 	case WEAPON_SAWEDOFF:
-		return "Sawed Off";
+		return "sawedoff";
 	case WEAPON_TEC9:
-		return "Tec 9";
+		return "tec9";
 	case WEAPON_HKP2000:
-		return "P2000";
+		return "hkp2000";
 	case WEAPON_MP5:
-		return "MP5-S";
+		return "mp5sd";
 	case WEAPON_MP7:
-		return "MP7";
+		return "mp7";
 	case WEAPON_MP9:
-		return "MP9";
+		return "mp9";
 	case WEAPON_NOVA:
-		return "Nova";
+		return "nova";
 	case WEAPON_P250:
-		return "P250";
+		return "p250";
 	case WEAPON_SCAR20:
-		return "Scar";
+		return "scar20";
 	case WEAPON_SG556:
-		return "SG553";
+		return "sg556";
 	case WEAPON_SSG08:
-		return "Scout";
+		return "ssg08";
 	case WEAPON_USP_SILENCER:
-		return "USP-S";
+		return "usp_silencer";
 	case WEAPON_CZ75A:
-		return "CZ-75A";
+		return "cz75a";
 	case WEAPON_REVOLVER:
-		return "Revolver";
+		return "revolver";
 	case WEAPON_KNIFE:
-		return "CT Knife";
+		return "knife";
 	case WEAPON_KNIFE_T:
-		return "T Knife";
+		return "knife_t";
 	case WEAPON_KNIFE_M9_BAYONET:
-		return "M9 Bayonet";
+		return "knife_m9_bayonet";
 	case WEAPON_KNIFE_BAYONET:
-		return "Bayonet";
+		return "bayonet";
 	case WEAPON_KNIFE_CSS:
-		return "Classic Knife";
+		return "knife_css";
 	case WEAPON_KNIFE_CORD:
-		return "Cord Knife";
+		return "knife_cord";
 	case WEAPON_KNIFE_CANIS:
-		return "Canis Knife";
+		return "knife_canis";
 	case WEAPON_KNIFE_OUTDOOR:
-		return "Outdoor Knife";
+		return "knife_outdoor";
 	case WEAPON_KNIFE_SKELETON:
-		return "Skeleton Knife";
+		return "knife_skeleton";
 	case WEAPON_KNIFE_FLIP:
-		return "Flip Knife";
+		return "knife_flip";
 	case WEAPON_KNIFE_GUT:
-		return "Gut Knife";
+		return "knife_gut";
 	case WEAPON_KNIFE_KARAMBIT:
-		return "Karambit";
+		return "knife_karambit";
 	case WEAPON_KNIFE_TACTICAL:
-		return "Tactical Knife";
+		return "knife_tactical";
 	case WEAPON_KNIFE_FALCHION:
-		return "Falchion Knife";
+		return "knife_falchion";
 	case WEAPON_KNIFE_SURVIVAL_BOWIE:
-		return "Bowie Knife";
+		return "knife_survival_bowie";
 	case WEAPON_KNIFE_BUTTERFLY:
-		return "Butterfly Knife";
+		return "knife_butterfly";
 	case WEAPON_KNIFE_PUSH:
-		return "Push Knife";
+		return "knife_push";
 	case WEAPON_KNIFE_URSUS:
-		return "Ursus Knife";
+		return "knife_ursus";
 	case WEAPON_KNIFE_GYPSY_JACKKNIFE:
-		return "Jackknife";
+		return "knife_gypsy_jackknife";
 	case WEAPON_KNIFE_STILETTO:
-		return "Stiletto Knife";
+		return "knife_stiletto";
 	case WEAPON_KNIFE_WIDOWMAKER:
-		return "Widowmaker Knife";
+		return "knife_widowmaker";
 	case GLOVE_STUDDED_BLOODHOUND:
-		return "Bloodhound Gloves";
+		return "studded_bloodhound_gloves";
 	case GLOVE_T_SIDE:
-		return "T Gloves";
+		return "t_gloves";
 	case GLOVE_CT_SIDE:
-		return "CT Gloves";
+		return "ct_gloves";
 	case GLOVE_SPORTY:
-		return "Sporty Gloves";
+		return "sporty_gloves";
 	case GLOVE_SLICK:
-		return "Slick Gloves";
+		return "slick_gloves";
 	case GLOVE_LEATHER_WRAP:
-		return "Leather Wraps";
+		return "leather_handwraps";
 	case GLOVE_MOTORCYCLE:
-		return "Motorcycle Gloves";
+		return "motorcycle_gloves";
 	case GLOVE_SPECIALIST:
-		return "Specialist Gloves";
+		return "specialist_gloves";
 	case GLOVE_HYDRA:
-		return "Hydra Gloves";
+		return "studded_hydra_gloves";
 	case STUDDED_BROKENFANG_GLOVES:
-		return "Broken Fang Gloves";
+		return "studded_brokenfang_gloves";
 	default:
 		return "";
 	}

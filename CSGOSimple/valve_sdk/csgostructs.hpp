@@ -478,7 +478,7 @@ public:
 	NETVAR(CHandle <C_BaseWeaponWorldModel>, m_hWeapon, "CBaseViewModel", "m_hWeapon");
 	NETVAR(CHandle <C_BasePlayer>, m_hOwner, "CBaseViewModel", "m_hOwner");
 	NETVAR(int, m_nAnimationParity, "CBaseViewModel", "m_nAnimationParity");
-	NETPROP(m_nSequence, "DT_BaseViewModel", "m_nSequence");
+	NETPROP(m_nSequence, "CBaseViewModel", "m_nSequence");
 
 	float& m_flCycle();
 	float& m_flAnimTime();

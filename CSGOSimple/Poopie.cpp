@@ -22,13 +22,12 @@
 #include<stdio.h>
 #include<string>
 #include<cstring>
-/*
 #include<wininet.h> 
 #pragma comment(lib, "wininet.lib")
 
 #define CURL_STATICLIB
 
-#include <curl/curl.h>
+#include "curl/curl.h"
 
 #pragma comment(lib, "curl/libcurl_a.lib")
 
@@ -38,7 +37,7 @@ using namespace std;
 
 #include <iostream>
 #include <string>
-*/
+
 /*std::vector<char> LoadFromUrl(const char* url)
 {
     struct Content
@@ -166,12 +165,25 @@ void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
     if (!g_Options.fakelag)
         return;
 
+    bool johnseena;
+
     bool bedting = false;
 
     if (GetKeyState(g_Options.aimbot.dthotkey) && g_Options.aimbot.dt && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive())
         bedting = true;
     else
         bedting = false;
+
+    auto i = 1; i <= g_EngineClient->GetMaxClients(); i++;
+
+    if (!C_BasePlayer::GetPlayerByIndex(i))
+        return;
+
+    for (int c = 0; c <= 18; c++)
+    johnseena = C_BasePlayer::GetPlayerByIndex(i)->CanSeePlayer(g_LocalPlayer, c);
+
+    if (g_Options.flonpeek == false || !(C_BasePlayer::GetPlayerByIndex(i)->valid(true, true)))
+        johnseena = false;
 
     Globals::dting = bedting;
 
@@ -205,7 +217,7 @@ void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
         }
         else
         {
-            tochoke = g_Options.faketicks - 1;
+            tochoke = johnseena ? g_Options.flop - 1 : g_Options.faketicks - 1;
             Globals::flcur = true;
         }
     }
@@ -221,6 +233,10 @@ void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
         else
         {
             tochoke = 5;
+
+            if ((g_Options.flop - 1) > 5 && johnseena)
+                tochoke = 5;
+
             Globals::flcur = true;
         }
     }
@@ -233,7 +249,7 @@ void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
         }
         else
         {
-            tochoke = g_Options.faketicks - 1;
+            tochoke = johnseena ? g_Options.flop - 1 : g_Options.faketicks - 1;
             Globals::flcur = true;
         }
     }
@@ -888,54 +904,6 @@ bool Misc::cl_move_dt(CUserCmd* m_pcmd)
     return true;
 }
 
-bool hasShot = false;
-Vector autopeek_pos = { 0, 0, 0 };
-
-void returnpos( CUserCmd* cmd ) {
-    //auto localPlayer = interfaces::engine_client->GetLocalPlayer());
-    if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() ) 
-        return;
-
-    Vector playerLoc = g_LocalPlayer->abs_origin();
-    auto wish_angle = cmd->viewangles;
-
-    float wish_yaw = cmd->viewangles.yaw;
-    Vector difference = playerLoc - autopeek_pos;
-
-    //if (VecForward.Length2D() > 5.0f) {
-    auto translatedVelocity = Vector( difference.x * cos( wish_yaw / 180.0f * M_PI ) + difference.y * sin( wish_yaw / 180.0f * M_PI ), difference.y * cos( wish_yaw / 180.0f * M_PI ) - difference.x * sin( wish_yaw / 180.0f * M_PI ), difference.z );
-
-    cmd->forwardmove = Math::clamp( -translatedVelocity.x * 11.f, -250.f, 250.f );
-    cmd->sidemove = Math::clamp( translatedVelocity.y * 11.f, -250.f, 250.f );
-    /* } else {
-        misc::Get().hasShot = false;
-        misc::Get().quickpeekstartpos = Vector{ 0, 0, 0 };
-    }*/
-}
-
-void Misc::autopeek( CUserCmd* cmd ) {
-
-    if ( !g_LocalPlayer )
-        return;
-
-
-    if ( GetAsyncKeyState(g_Options.autopeek_bind) && g_Options.autopeek && g_LocalPlayer->IsAlive() ) {
-        if ( autopeek_pos.IsZero() &&g_LocalPlayer->m_fFlags() & FL_ONGROUND ) {
-            autopeek_pos = g_LocalPlayer->abs_origin();
-        }
-
-        if ( cmd->buttons & cmd->buttons & IN_ATTACK && !autopeek_pos.IsZero() )
-            hasShot = true;
-
-        if ( hasShot && !autopeek_pos.IsZero() )
-            returnpos( cmd );
-
-    } else {
-        hasShot = false;
-        autopeek_pos.Zero();
-    }
-}
-
 void Misc::fuck(CUserCmd* cmd)
 {
     if (!g_LocalPlayer->IsAlive()) //-V807
@@ -1070,15 +1038,6 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd, bool& b
 
     if (g_EngineClient->IsInGame() && g_LocalPlayer && g_LocalPlayer->IsAlive())
     {
-        if (bSendPacket)
-        {
-            Globals::fake = cmd->viewangles;
-        }
-        if (!bSendPacket)
-        {
-            Globals::real = cmd->viewangles;
-        }
-
         if (m_input2()->m_fCameraInThirdPerson) {
 
             if (CAntiAim::Get().CanDesync(cmd) && g_Options.ragebot_antiaim_desync && g_Options.chams_fake_enabled)
@@ -1153,16 +1112,22 @@ void Misc::local_animfix(C_BasePlayer* nigga, CUserCmd* cmd, bool bSendPacket) {
             entity->GetPlayerAnimState()->m_iLastClientSideAnimationUpdateFramecount = g_GlobalVars->framecount - 1;
 
         entity->UpdateClientSideAnimation();
-        if (bSendPacket) {
+        if (!bSendPacket) {
             proper_abs = entity->GetAbsAngles();
             sent_pose_params = entity->m_flPoseParameter();
         }
     }
 
-    if (fding)
+    if (entity->GetPlayerAnimState()->m_bInHitGroundAnimation)
+        Globals::headthing = true;
+    else
+        Globals::headthing = false;;
+
+    if (fding && !Globals::valve)
         entity->GetPlayerAnimState()->m_fDuckAmount = 1.0;
 
-    entity->GetPlayerAnimState()->m_flGoalFeetYaw = Globals::fake.yaw;
+    entity->GetPlayerAnimState()->m_flGoalFeetYaw = Globals::real.yaw;
+    entity->GetPlayerAnimState()->m_flEyePitch = Globals::real.pitch;
 
     entity->SetAbsAngles(proper_abs);
     std::memcpy(entity->GetAnimOverlays(), backup_layers, (sizeof(AnimationLayer) * entity->NumOverlays()));
@@ -1195,7 +1160,7 @@ void Misc::desyncchams(CUserCmd* cmd, bool bSendPacket) {
         init_fake_anim = true;
     }
 
-    if (!bSendPacket) {
+    if (bSendPacket) {
         int OldFrameCount = g_GlobalVars->framecount;
         int OldTickCount = g_GlobalVars->tickcount;
 

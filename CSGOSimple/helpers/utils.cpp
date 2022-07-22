@@ -446,11 +446,11 @@ namespace Utils {
     }
 
     void ForceFullUpdate() {
-        return;
+        //return;
 
         static auto clear_hud_weapon_icon_fn =
             reinterpret_cast<std::int32_t(__thiscall*)(void*, std::int32_t)>(
-                Utils::PatternScan(GetModuleHandleA("client.dll"), "55 8B EC 51 53 56 8B 75 08 8B D9 57 6B"));
+                Utils::PatternScan2("client.dll", "55 8B EC 51 53 56 8B 75 08 8B D9 57 6B"));
 
         auto element = FindHudElement<std::uintptr_t*>("CCSGO_HudWeaponSelection");
 

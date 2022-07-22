@@ -191,9 +191,6 @@
     <ClCompile Include="bdussy.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
-    <ClCompile Include="features\rageborto.cc">
-      <Filter>Source Files\features</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="valve_sdk\misc\BaseHandle.hpp">
@@ -663,9 +660,6 @@
     </ClInclude>
     <ClInclude Include="wininet.h">
       <Filter>Source Files\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="features\rageborto.hh">
-      <Filter>Source Files\features</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

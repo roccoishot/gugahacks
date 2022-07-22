@@ -26,6 +26,7 @@ namespace Globals
 	float roll = 0.f;
 	float realroll = 0.f;
 	bool valve = false;
+	bool headthing = false;
 	bool killedplayer = false;
 	bool stepping = false;
 	CUserCmd* m_cmd = nullptr;

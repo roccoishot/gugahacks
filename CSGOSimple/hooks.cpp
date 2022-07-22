@@ -32,7 +32,6 @@
 #include "detours.h"
 #include "sexynutssexyfuckdickshitnigga.h"
 #include "Rollangles.h"
-#include "features/rageborto.hh"
 
 namespace Hooks {
 
@@ -635,16 +634,19 @@ namespace Hooks {
 		Misc::Get().Sexdick(cmd, bSendPacket);
 		Misc::Get().UpdateLBY(cmd, bSendPacket);
 
+		if (bSendPacket == true)
+		{
+			Globals::fake = cmd->viewangles;
+		}
+		if (bSendPacket == false)
+		{
+			Globals::real = cmd->viewangles;
+		}
+
 		static auto prediction = new PredictionSystem();
 		auto flags = g_LocalPlayer->m_fFlags();
-
 		prediction->StartPrediction(cmd);
-
-
 		g_Legitbot->Run(cmd);
-
-		g_rage.ragebot( cmd );
-
 		prediction->EndPrediction();
 		QAngle LastAngle = QAngle(0, 0, 0);
 		Math::Normalize3(cmd->viewangles);
@@ -665,8 +667,6 @@ namespace Hooks {
 		{
 			Misc::Get().MovementFix(oldAngle, cmd, oldForward, oldSideMove);
 		}
-
-		Misc::Get().autopeek( cmd );
 
 		Misc::Get().fuck(cmd);
 
@@ -869,7 +869,7 @@ namespace Hooks {
 				//Misc::Get().local_animfix(g_LocalPlayer, Globals::m_cmd, Globals::bSendPacket);
 			}
 
-			if (g_LocalPlayer && g_LocalPlayer->IsAlive() && g_EngineClient->IsInGame())
+			if (g_EngineClient->IsInGame() && g_LocalPlayer && g_LocalPlayer->IsAlive())
 			{
 
 				if (g_Options.fatassmf)
@@ -884,12 +884,12 @@ namespace Hooks {
 					*view_punch = QAngle(0, 0, 0);
 				}
 			}
-		}
+		}	
 
-		//if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
-			//skins::on_frame_stage_notify(false);
-		//else if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_END)
-			//skins::on_frame_stage_notify(true);
+		if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
+			skins::on_frame_stage_notify(false);
+		else if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_END)
+			skins::on_frame_stage_notify(true);
 
 		static int originalIdx = 0;
 
@@ -996,7 +996,7 @@ namespace Hooks {
 
 		static DWORD* death_notice = nullptr;
 
-		if (g_LocalPlayer->IsAlive() && Globals::stepping)
+		if (g_LocalPlayer->IsAlive() && !Globals::stepping)
 		{
 			if (!death_notice)
 				death_notice = FindHudElement <DWORD>(XorStr("CCSGO_HudDeathNotice"));

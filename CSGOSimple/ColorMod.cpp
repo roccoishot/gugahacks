@@ -111,9 +111,9 @@ void CNightmode::PerformNightmode()
 
 		if (g_Options.colormodulate) {
 
-			float worldr = 0.f, worldg = 0.f, worldb = 0.f;
-			float propr = 0.f, propg = 0.f, propb = 0.f;
-			float pillarsr = 0.f, pillarsg = 0.f, pillarsb = 0.f;
+			float worldr, worldg, worldb;
+			float propr, propg, propb;
+			float pillarsr, pillarsg, pillarsb;
 
 			if (strstr(group, XorStr("World textures")))
 			{
