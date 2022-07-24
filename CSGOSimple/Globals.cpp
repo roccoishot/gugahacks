@@ -28,6 +28,7 @@ namespace Globals
 	bool valve = false;
 	bool headthing = false;
 	bool killedplayer = false;
+	bool discham = false;
 	bool stepping = false;
 	CUserCmd* m_cmd = nullptr;
 	bool flicky = false;

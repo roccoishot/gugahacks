@@ -111,25 +111,8 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 	"$alpha" "1.0"
 		    }
 		)#")); //The actual glow shit
-	static IMaterial* intellect = (CreateMaterial(true, R"#("VertexLitGeneric"
-		    {
-	"$basetexture" "models/inventory_items/dreamhack_trophies/dreamhack_star_blur"
-    "$wireframe" "1"
-    "$alpha" "0.6"
-    "$additive" "1"
-    "proxies"
-     {
-        "texturescroll"
-        {
-            "texturescrollvar" "$basetexturetransform"
-            "texturescrollrate" "0.2"
-            "texturescrollangle" "90"
-        }
-    }
-		    }
-		)#")); //intellect wireframe
 	static IMaterial* dubble = g_MatSystem->FindMaterial(XorStr("dev/glow_armsrace"), nullptr); //Double material like an outline
-	static IMaterial* animated2 = (CreateMaterial(true, R"#("VertexLitGeneric"
+	static IMaterial* advancedaim = (CreateMaterial(true, R"#("VertexLitGeneric"
 {
     "$basetexture" "blade_mideffect_mask"
     "$texture2" "blade_mideffect"
@@ -656,13 +639,6 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 			}
 
-			if (g_Options.arms_material == 6) {
-				animated2->ColorModulate(g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
-				animated2->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
-				g_MdlRender->ForcedMaterialOverride(animated2);
-
-			}
-
 		}
 	}
 
@@ -844,9 +820,9 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 			}
 
 			if (g_Options.strap_material == 6) {
-				animated2->ColorModulate(g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
-				animated2->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
-				g_MdlRender->ForcedMaterialOverride(animated2);
+
+				modulate(g_Options.glowcolorstrap, advancedaim);
+				g_MdlRender->ForcedMaterialOverride(advancedaim);
 
 			}
 

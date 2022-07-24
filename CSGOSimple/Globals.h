@@ -17,6 +17,7 @@ namespace Globals
 	extern bool flcur;
 	extern bool hitplayer;
 	extern bool EBD;
+	extern bool discham;
 	extern std::string cfgfldr;
 	extern bool serverspawn;
 	extern 	float realroll;

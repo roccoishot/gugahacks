@@ -1871,18 +1871,25 @@ XorStr("Shine"),
 XorStr("Glow"),
 XorStr("Double"),
 XorStr("Velvet")
-//XorStr("Intellect"),
-//XorStr("AdvancedAim")
 				};
 
-				ImGui::Combo(XorStr("Player Mat"), &g_Options.player_material, MatList, IM_ARRAYSIZE(MatList));
-				spacing();
+				if (g_Options.chams_player_enabled)
+				{
+					ImGui::Combo(XorStr("Player Mat"), &g_Options.player_material, MatList, IM_ARRAYSIZE(MatList));
+					spacing();
+				}
 
-				ImGui::Combo(XorStr("Strap Mat"), &g_Options.strap_material, MatList2, IM_ARRAYSIZE(MatList2));
-				spacing();
+				if (g_Options.chams_strap_enabled)
+				{
+					ImGui::Combo(XorStr("Strap Mat"), &g_Options.strap_material, MatList2, IM_ARRAYSIZE(MatList2));
+					spacing();
+				}
 
-				ImGui::Combo(XorStr("Arm Mat"), &g_Options.arms_material, MatList3, IM_ARRAYSIZE(MatList3));
-				spacing();
+				if (g_Options.chams_arms_enabled)
+				{
+					ImGui::Combo(XorStr("Arm Mat"), &g_Options.arms_material, MatList3, IM_ARRAYSIZE(MatList3));
+					spacing();
+				}
 
 				spacing();
 			}
