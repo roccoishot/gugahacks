@@ -206,18 +206,18 @@ static auto apply_config_on_attributable_item(C_BaseAttributableItem* item, cons
 		return;
 	}*/
 
-	item->m_Item().m_iItemIDHigh() = 1;
+	item->m_Item().m_iItemIDHigh() = -1;
 	item->m_Item().m_iAccountID() = xuid_low;
-	//if (config->name[0])
-		//strcpy_s(item->m_Item().m_iCustomName(), config->name);
+	//if (config->custom_name[0])
+		//strcpy_s(item->m_Item().m_iCustomName(), config->custom_name);
 	if (config->paint_kit_index)
 		item->m_nFallbackPaintKit() = config->paint_kit_index;
 	if (config->seed)
 		item->m_nFallbackSeed() = config->seed;
-	if (config->stat_trak) {
-		item->m_nFallbackStatTrak() = g_Options.changers.skin.statrack_items[config->definition_index].statrack_new.counter;
-		item->m_Item().m_iEntityQuality() = 9;
-	}
+	//if (config->stat_trak) {
+	//	item->m_nFallbackStatTrak() = g_Options.changers.skin.statrack_items[config->definition_index].statrack_new.counter;
+	//	item->m_Item().m_iEntityQuality() = 9;
+	//}
 	if (is_knife(config->definition_index)) {
 		item->m_Item().m_iEntityQuality() = 3;
 	}
@@ -230,7 +230,7 @@ static auto apply_config_on_attributable_item(C_BaseAttributableItem* item, cons
 		definition_index = config->definition_override_index;
 		const auto& replacement_item = k_weapon_info.at(config->definition_override_index);
 		item->m_nModelIndex() = g_MdlInfo->GetModelIndex(replacement_item.model);
-		item->setModelIndex(g_MdlInfo->GetModelIndex(replacement_item.model));
+		item->SetModelIndex(g_MdlInfo->GetModelIndex(replacement_item.model));
 		item->GetClientNetworkable()->PreDataUpdate(0);
 		if (old_definition_index && k_weapon_info.count(old_definition_index))
 		{
@@ -314,7 +314,7 @@ void skins::on_frame_stage_notify(bool frame_end)
 				glove_handle = wearables[0];
 			}
 			// Thanks, Beakers
-			glove->setModelIndex(-1);
+			glove->SetModelIndex(-1);
 			apply_config_on_attributable_item(glove, glove_config, player_info.xuid_low);
 		}
 	}
@@ -356,8 +356,6 @@ void skins::on_frame_stage_notify(bool frame_end)
 		if (!world_model)
 			return;
 		world_model->m_nModelIndex() = override_model_index + 1;
-
-		Utils::ForceFullUpdate();
 
 	}
 }

@@ -25,12 +25,6 @@
 #include<wininet.h> 
 #pragma comment(lib, "wininet.lib")
 
-#define CURL_STATICLIB
-
-#include "curl/curl.h"
-
-#pragma comment(lib, "curl/libcurl_a.lib")
-
 #include <stdio.h>
 
 using namespace std;

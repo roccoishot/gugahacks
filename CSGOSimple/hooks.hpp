@@ -5,6 +5,7 @@
 #include <d3d9.h>
 #include "features/aimbot.hpp"
 #include "helpers/prediction.hpp"
+//#include "helpers/detourhook.h"
 
 namespace index
 {
@@ -45,14 +46,18 @@ namespace Hooks
 	inline vfunc_hook stdrender_hook;
 	inline vfunc_hook netgraphtext_hook;
 	inline vfunc_hook hk_netchannel;
+	//inline  CDetourHook  partition_hook;
+	//inline  CDetourHook prediction_hook;
+	//inline  CDetourHook clientstate_hook;
 	inline vfunc_hook gameevents_hook;
 	inline recv_prop_hook* sequence_hook;
 	typedef bool(__thiscall* sendnetmsg_fn)(void*, INetMessage* msg, bool reliable, bool voice);
 	inline sendnetmsg_fn original_sendnetmsg = nullptr;
 	inline vmthook* cm_hook;
 	extern vfunc_hook FindOrAddFileName_hook;
+	using ReadPacketEntities = void(__thiscall*)(void*, void*);
 	extern DWORD original_clmove;
-
+	using SuppressLists = bool(__thiscall*)(void*, int, bool);
 	using netgraphtextFn = bool(__thiscall*)(void*);
 	using FireEvent = bool(__thiscall*)(IGameEventManager2*, IGameEvent* pEvent);
 	long __stdcall hkEndScene(IDirect3DDevice9* device);
@@ -74,4 +79,6 @@ namespace Hooks
 	bool __stdcall hkFireEvent(IGameEvent* pEvent);
 	bool __fastcall hkNetGraph(void* ecx, void* edx);
 	void __vectorcall hkClMove(float accumulated_extra_samples, bool bFinalTick);
+	void __stdcall hkSuppressLists(int a2, bool a3);
+	void __fastcall hkReadPacketEntities(void* pClientState, void* pEDX, void* pEntInfo);
 }

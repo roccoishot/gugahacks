@@ -473,16 +473,14 @@ public:
 class C_BaseViewModel : public C_BaseEntity
 {
 public:
-	NETVAR(int, m_nModelIndex, "CBaseViewModel", "m_nModelIndex");
-	NETVAR(int, m_nViewModelIndex, "CBaseViewModel", "m_nViewModelIndex");
-	NETVAR(CHandle <C_BaseWeaponWorldModel>, m_hWeapon, "CBaseViewModel", "m_hWeapon");
-	NETVAR(CHandle <C_BasePlayer>, m_hOwner, "CBaseViewModel", "m_hOwner");
-	NETVAR(int, m_nAnimationParity, "CBaseViewModel", "m_nAnimationParity");
-	NETPROP(m_nSequence, "CBaseViewModel", "m_nSequence");
-
+	NETVAR(int32_t, m_nModelIndex, "DT_BaseViewModel", "m_nModelIndex");
+	NETVAR(int32_t, m_nViewModelIndex, "DT_BaseViewModel", "m_nViewModelIndex");
+	NETVAR(CHandle<C_BaseCombatWeapon>, m_hWeapon, "DT_BaseViewModel", "m_hWeapon");
+	NETVAR(CHandle<C_BasePlayer>, m_hOwner, "DT_BaseViewModel", "m_hOwner");
+	NETPROP(m_nSequence, "DT_BaseViewModel", "m_nSequence");
+	void SendViewModelMatchingSequence(int sequence);
 	float& m_flCycle();
 	float& m_flAnimTime();
-	void SendViewModelMatchingSequence(int sequence);
 };
 
 class AnimationLayer

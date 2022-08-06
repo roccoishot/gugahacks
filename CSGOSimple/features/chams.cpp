@@ -32,7 +32,7 @@ void Chams::modulate(const Color color, IMaterial* material)
 
 		if (tint)
 		{
-			tint->set_vector(Vector(color.r(), color.g(), color.b()));
+			tint->set_vector(Vector(color.r() / 255.f , color.g() / 255.f, color.b() / 255.f));
 		}
 		material->AlphaModulate(color[3] / 255.f);
 		g_RenderView->SetBlend(color[3] / 255.f);
@@ -112,51 +112,21 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 		    }
 		)#")); //The actual glow shit
 	static IMaterial* dubble = g_MatSystem->FindMaterial(XorStr("dev/glow_armsrace"), nullptr); //Double material like an outline
-	static IMaterial* advancedaim = (CreateMaterial(true, R"#("VertexLitGeneric"
-{
-    "$basetexture" "blade_mideffect_mask"
-    "$texture2" "blade_mideffect"
-     "$model" 1
-    "$nocull" "1"
-    "$additive" "1"
-    "$color2" "[1 1 1]"
-
-
-    "Proxies"
-    {
-        "TextureScroll"
-        {
-            "texturescrollvar" "$baseTextureTransform"
-            "texturescrollrate" 4
-            "texturescrollangle" 5
-        }
-        "Sine"
-        {
-            "resultVar" "$alpha"
-            "sineperiod" 1
-            "sinemin" 0.2
-            "sinemax" 1.0
-        }
-        "Sine"
-        {
-            "resultVar" "$color[0]"
-            "sineperiod" 1.3
-            "sinemin" 0.8
-            "sinemax" 1.4
-        }
-    }
-
-}
-		)#")); //this is the advancedaim lightning shit
 	static IMaterial* regular = g_MatSystem->FindMaterial(XorStr("debug/debugambientcube"), nullptr); //Textured :weary:
 	static IMaterial* flat = g_MatSystem->FindMaterial(XorStr("debug/debugdrawflat"), nullptr); //Flat like my girl chest :sob:
 	static IMaterial* pocoglow = g_MatSystem->FindMaterial(XorStr("sprites/light_glow04"), nullptr); //Its like a glow but lighter and in bulbs
+	static IMaterial* advancedaim = g_MatSystem->FindMaterial(XorStr("models/energy_sword/blade_mideffect"), nullptr); //this is the advancedaim lightning shit
+
+	if (g_EngineClient->IsTakingScreenshot())
+		return;
 
 	if (is_player) {
-		if (g_EngineClient->IsTakingScreenshot())
-			return;
 
 		if (g_Options.chams_player_enabled == false)
+			return;
+
+
+		if (is_arm || is_sleeve || is_weapon)
 			return;
 
 		const auto ent = (C_BasePlayer*)pInfo->m_pClientEntity->GetIClientUnknown()->GetBaseEntity();
@@ -172,49 +142,25 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 							fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 							if (g_Options.player_material == 2)
 							{
-								shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
-								bool bFound = false;
-								auto pVar = shine->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
-								}
+								modulate(g_Options.player_enemy_visible_shine, shine);
 								g_MdlRender->ForcedMaterialOverride(shine);
 							}
 
 							if (g_Options.player_material == 3)
 							{
-								velvet->AlphaModulate(g_Options.color_chams_player_ally_visible[3] / 255.f);
-								bool bFound = false;
-								auto pVar = velvet->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_player_ally_visible[0] / 255.f, g_Options.color_chams_player_ally_visible[1] / 255.f, g_Options.color_chams_player_ally_visible[2] / 255.f);
-								}
+								modulate(g_Options.color_chams_player_ally_visible, velvet);
 								g_MdlRender->ForcedMaterialOverride(velvet);
 							}
 
 							if (g_Options.player_material == 4)
 							{
-								shit->AlphaModulate(g_Options.glowcolor[3] / 255.f);
-								bool bFound = false;
-								auto pVar = shit->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolor[0] / 255.f, g_Options.glowcolor[1] / 255.f, g_Options.glowcolor[2] / 255.f);
-								}
+								modulate(g_Options.glowcolor, shit);
 								g_MdlRender->ForcedMaterialOverride(shit);
 							}
 
 							if (g_Options.player_material == 5)
 							{
-								dubble->AlphaModulate(g_Options.glowcolor[3] / 255.f);
-								bool bFound = false;
-								auto pVar = dubble->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolor[0] / 255.f, g_Options.glowcolor[1] / 255.f, g_Options.glowcolor[2] / 255.f);
-								}
+								modulate(g_Options.glowcolor, dubble);
 								g_MdlRender->ForcedMaterialOverride(dubble);
 							}
 							fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
@@ -237,58 +183,31 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 						if (g_Options.chams_player_enabled)
 						{
 							player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
-							modulate(g_Options.color_chams_player_ally_visible, player_enemies_type);
-							/*player_enemies_type->find_var("$phong")->set_string("1");
-							player_enemies_type->find_var("$basemapalphaphongmask")->set_string("1");
-							player_enemies_type->find_var("$pearlescent")->set_string("6");*/
+							modulate(g_Options.color_chams_player_ally_visible, player_enemies_type);;
 							g_MdlRender->ForcedMaterialOverride(player_enemies_type);
 							fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 
 							if (g_Options.player_material == 2)
 							{
-								shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
-								bool bFound = false;
-								auto pVar = shine->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
-								}
+								modulate(g_Options.player_enemy_visible_shine, shine);
 								g_MdlRender->ForcedMaterialOverride(shine);
 							}
 
 							if (g_Options.player_material == 3)
 							{
-								velvet->AlphaModulate(g_Options.color_chams_player_ally_visible[3] / 255.f);
-								bool bFound = false;
-								auto pVar = velvet->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_player_ally_visible[0] / 255.f, g_Options.color_chams_player_ally_visible[1] / 255.f, g_Options.color_chams_player_ally_visible[2] / 255.f);
-								}
+								modulate(g_Options.color_chams_player_ally_visible, velvet);
 								g_MdlRender->ForcedMaterialOverride(velvet);
 							}
 
 							if (g_Options.player_material == 4)
 							{
-								shit->AlphaModulate(g_Options.glowcolor[3] / 255.f);
-								bool bFound = false;
-								auto pVar = shit->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolor[0] / 255.f, g_Options.glowcolor[1] / 255.f, g_Options.glowcolor[2] / 255.f);
-								}
+								modulate(g_Options.glowcolor, shit);
 								g_MdlRender->ForcedMaterialOverride(shit);
 							}
 
 							if (g_Options.player_material == 5)
 							{
-								dubble->AlphaModulate(g_Options.glowcolor[3] / 255.f);
-								bool bFound = false;
-								auto pVar = dubble->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolor[0] / 255.f, g_Options.glowcolor[1] / 255.f, g_Options.glowcolor[2] / 255.f);
-								}
+								modulate(g_Options.glowcolor, dubble);
 								g_MdlRender->ForcedMaterialOverride(dubble);
 							}
 
@@ -303,49 +222,25 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 							fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 							if (g_Options.player_material == 2)
 							{
-								shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
-								bool bFound = false;
-								auto pVar = shine->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
-								}
+								modulate(g_Options.player_enemy_visible_shine, shine);
 								g_MdlRender->ForcedMaterialOverride(shine);
 							}
 
 							if (g_Options.player_material == 3)
 							{
-								velvet->AlphaModulate(g_Options.color_chams_player_ally_visible[3] / 255.f);
-								bool bFound = false;
-								auto pVar = velvet->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_player_local_visible[0] / 255.f, g_Options.color_chams_player_local_visible[1] / 255.f, g_Options.color_chams_player_local_visible[2] / 255.f);
-								}
+								modulate(g_Options.color_chams_player_ally_visible, velvet);
 								g_MdlRender->ForcedMaterialOverride(velvet);
 							}
 
 							if (g_Options.player_material == 4)
 							{
-								shit->AlphaModulate(g_Options.glowcolorlocal[3] / 255.f);
-								bool bFound = false;
-								auto pVar = shit->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorlocal[0] / 255.f, g_Options.glowcolorlocal[1] / 255.f, g_Options.glowcolorlocal[2] / 255.f);
-								}
+								modulate(g_Options.glowcolorlocal, shit);
 								g_MdlRender->ForcedMaterialOverride(shit);
 							}
 
 							if (g_Options.player_material == 5)
 							{
-								dubble->AlphaModulate(g_Options.glowcolorlocal[3] / 255.f);
-								bool bFound = false;
-								auto pVar = dubble->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorlocal[0] / 255.f, g_Options.glowcolorlocal[1] / 255.f, g_Options.glowcolorlocal[2] / 255.f);
-								}
+								modulate(g_Options.glowcolorlocal, dubble);
 								g_MdlRender->ForcedMaterialOverride(dubble);
 							}
 
@@ -369,59 +264,37 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 						if (g_Options.chams_player_enabled)
 						{
 							player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
+
+								//player_enemies_type->find_var("$phong")->set_string("1");
+								//player_enemies_type->find_var("$basemapalphaphongmask")->set_string("1");
+								//player_enemies_type->find_var("$pearlescent")->set_string("6");
 							modulate(g_Options.color_chams_player_local_visible, player_enemies_type);
 							g_MdlRender->ForcedMaterialOverride(player_enemies_type);
 							fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 
 							if (g_Options.player_material == 2)
 							{
-								shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
-								bool bFound = false;
-								auto pVar = shine->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
-								}
+								modulate(g_Options.player_enemy_visible_shine, shine);
 								g_MdlRender->ForcedMaterialOverride(shine);
 							}
 
 							if (g_Options.player_material == 3)
 							{
-								velvet->AlphaModulate(g_Options.color_chams_player_ally_visible[3] / 255.f);
-								bool bFound = false;
-								auto pVar = velvet->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_player_local_visible[0] / 255.f, g_Options.color_chams_player_local_visible[1] / 255.f, g_Options.color_chams_player_local_visible[2] / 255.f);
-								}
+								modulate(g_Options.color_chams_player_ally_visible, velvet);
 								g_MdlRender->ForcedMaterialOverride(velvet);
 							}
 
 							if (g_Options.player_material == 4)
 							{
-								shit->AlphaModulate(g_Options.glowcolorlocal[3] / 255.f);
-								bool bFound = false;
-								auto pVar = shit->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorlocal[0] / 255.f, g_Options.glowcolorlocal[1] / 255.f, g_Options.glowcolorlocal[2] / 255.f);
-								}
+								modulate(g_Options.glowcolorlocal, shit);
 								g_MdlRender->ForcedMaterialOverride(shit);
 							}
 
 							if (g_Options.player_material == 5)
 							{
-								dubble->AlphaModulate(g_Options.glowcolorlocal[3] / 255.f);
-								bool bFound = false;
-								auto pVar = dubble->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorlocal[0] / 255.f, g_Options.glowcolorlocal[1] / 255.f, g_Options.glowcolorlocal[2] / 255.f);
-								}
+								modulate(g_Options.glowcolorlocal, dubble);
 								g_MdlRender->ForcedMaterialOverride(dubble);
 							}
-
-							Globals::rendered = true;
 
 						}
 					}
@@ -433,49 +306,25 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 							fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 							if (g_Options.player_material == 2)
 							{
-								shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
-								bool bFound = false;
-								auto pVar = shine->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
-								}
+								modulate(g_Options.player_enemy_visible_shine, shine);
 								g_MdlRender->ForcedMaterialOverride(shine);
 							}
 
 							if (g_Options.player_material == 3)
 							{
-								velvet->AlphaModulate(g_Options.color_chams_player_enemy_visible[3] / 255.f);
-								bool bFound = false;
-								auto pVar = velvet->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_player_enemy_visible[0] / 255.f, g_Options.color_chams_player_enemy_visible[1] / 255.f, g_Options.color_chams_player_enemy_visible[2] / 255.f);
-								}
+								modulate(g_Options.color_chams_player_enemy_visible, velvet);
 								g_MdlRender->ForcedMaterialOverride(velvet);
 							}
 
 							if (g_Options.player_material == 4)
 							{
-								shit->AlphaModulate(g_Options.glowcolorenemy[3] / 255.f);
-								bool bFound = false;
-								auto pVar = shit->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorenemy[0] / 255.f, g_Options.glowcolorenemy[1] / 255.f, g_Options.glowcolorenemy[2] / 255.f);
-								}
+								modulate(g_Options.glowcolorenemy, shit);
 								g_MdlRender->ForcedMaterialOverride(shit);
 							}
 
 							if (g_Options.player_material == 5)
 							{
-								dubble->AlphaModulate(g_Options.glowcolorenemy[3] / 255.f);
-								bool bFound = false;
-								auto pVar = dubble->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorenemy[0] / 255.f, g_Options.glowcolorenemy[1] / 255.f, g_Options.glowcolorenemy[2] / 255.f);
-								}
+								modulate(g_Options.glowcolorenemy, dubble);
 								g_MdlRender->ForcedMaterialOverride(dubble);
 							}
 							fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
@@ -504,49 +353,25 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 							if (g_Options.player_material == 2)
 							{
-								shine->AlphaModulate(g_Options.player_enemy_visible_shine[3] / 255.f);
-								bool bFound = false;
-								auto pVar = shine->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
-								}
+								modulate(g_Options.player_enemy_visible_shine, shine);
 								g_MdlRender->ForcedMaterialOverride(shine);
 							}
 
 							if (g_Options.player_material == 3)
 							{
-								velvet->AlphaModulate(g_Options.color_chams_player_enemy_visible[3] / 255.f);
-								bool bFound = false;
-								auto pVar = velvet->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_player_enemy_visible[0] / 255.f, g_Options.color_chams_player_enemy_visible[1] / 255.f, g_Options.color_chams_player_enemy_visible[2] / 255.f);
-								}
+								modulate(g_Options.color_chams_player_enemy_visible, velvet);
 								g_MdlRender->ForcedMaterialOverride(velvet);
 							}
 
 							if (g_Options.player_material == 4)
 							{
-								shit->AlphaModulate(g_Options.glowcolorenemy[3] / 255.f);
-								bool bFound = false;
-								auto pVar = shit->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorenemy[0] / 255.f, g_Options.glowcolorenemy[1] / 255.f, g_Options.glowcolorenemy[2] / 255.f);
-								}
+								modulate(g_Options.glowcolorenemy, shit);
 								g_MdlRender->ForcedMaterialOverride(shit);
 							}
 
 							if (g_Options.player_material == 5)
 							{
-								dubble->AlphaModulate(g_Options.glowcolorenemy[3] / 255.f);
-								bool bFound = false;
-								auto pVar = dubble->FindVar(XorStr("$envmaptint"), &bFound);
-								if (bFound)
-								{
-									(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorenemy[0] / 255.f, g_Options.glowcolorenemy[1] / 255.f, g_Options.glowcolorenemy[2] / 255.f);
-								}
+								modulate(g_Options.glowcolorenemy, dubble);
 								g_MdlRender->ForcedMaterialOverride(dubble);
 							}
 
@@ -568,7 +393,8 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 		if (g_Options.chams_arms_enabled == false)
 			return;
 
-		if (is_player)
+
+		if (is_player || is_sleeve || is_weapon)
 			return;
 
 		static IMaterial* player_enemies_type = nullptr;
@@ -590,51 +416,27 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 			if (g_Options.arms_material == 2)
 			{
-				othershine->AlphaModulate(g_Options.ohthuhshine[3] / 255.f);
-				bool bFound = false;
-				auto pVar = othershine->FindVar(XorStr("$envmaptint"), &bFound);
-				if (bFound)
-				{
-					(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.ohthuhshine[0] / 255.f, g_Options.ohthuhshine[1] / 255.f, g_Options.ohthuhshine[2] / 255.f);
-				}
+				modulate(g_Options.ohthuhshine, othershine);
 				g_MdlRender->ForcedMaterialOverride(othershine);
 
 			}
 
 			if (g_Options.arms_material == 3)
 			{
-				shit->AlphaModulate(g_Options.glowcolorarms[3] / 255.f);
-				bool bFound = false;
-				auto pVar = shit->FindVar(XorStr("$envmaptint"), &bFound);
-				if (bFound)
-				{
-					(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorarms[0] / 255.f, g_Options.glowcolorarms[1] / 255.f, g_Options.glowcolorarms[2] / 255.f);
-				}
+				modulate(g_Options.glowcolorarms, shit);
 				g_MdlRender->ForcedMaterialOverride(shit);
 
 			}
 
 			if (g_Options.arms_material == 4)
 			{
-				dubble->AlphaModulate(g_Options.glowcolorarms[3] / 255.f);
-				bool bFound = false;
-				auto pVar = dubble->FindVar(XorStr("$envmaptint"), &bFound);
-				if (bFound)
-				{
-					(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorarms[0] / 255.f, g_Options.glowcolorarms[1] / 255.f, g_Options.glowcolorarms[2] / 255.f);
-				}
+				modulate(g_Options.glowcolorarms, dubble);
 				g_MdlRender->ForcedMaterialOverride(dubble);
 
 			}
 
 			if (g_Options.arms_material == 5) {
-				velvet->AlphaModulate(g_Options.color_chams_arms_visible[3] / 255.f);
-				bool bFound = false;
-				auto pVar = velvet->FindVar(XorStr("$envmaptint"), &bFound);
-				if (bFound)
-				{
-					(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_arms_visible[0] / 255.f, g_Options.color_chams_arms_visible[1] / 255.f, g_Options.color_chams_arms_visible[2] / 255.f);
-				}
+				modulate(g_Options.color_chams_arms_visible, velvet);
 				g_MdlRender->ForcedMaterialOverride(velvet);
 
 			}
@@ -653,7 +455,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 		if (g_Options.chams_arms_enabled == false)
 			return;
 
-		if (is_player)
+		if (is_player || is_arm || is_weapon)
 			return;
 
 		static IMaterial* player_enemies_type = nullptr;
@@ -676,49 +478,25 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 			if (g_Options.arms_material == 2)
 			{
-				shine->AlphaModulate(g_Options.ohthuhshine[3] / 255.f);
-				bool bFound = false;
-				auto pVar = shine->FindVar(XorStr("$envmaptint"), &bFound);
-				if (bFound)
-				{
-					(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.player_enemy_visible_shine[0] / 255.f, g_Options.player_enemy_visible_shine[1] / 255.f, g_Options.player_enemy_visible_shine[2] / 255.f);
-				}
+				modulate(g_Options.ohthuhshine, shine);
 				g_MdlRender->ForcedMaterialOverride(shine);
 			}
 
 			if (g_Options.arms_material == 3)
 			{
-				shit->AlphaModulate(g_Options.glowcolorarms[3] / 255.f);
-				bool bFound = false;
-				auto pVar = shit->FindVar(XorStr("$envmaptint"), &bFound);
-				if (bFound)
-				{
-					(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorarms[0] / 255.f, g_Options.glowcolorarms[1] / 255.f, g_Options.glowcolorarms[2] / 255.f);
-				}
+				modulate(g_Options.ohthuhshine, shit);
 				g_MdlRender->ForcedMaterialOverride(shit);
 			}
 
 			if (g_Options.arms_material == 4)
 			{
-				dubble->AlphaModulate(g_Options.glowcolorarms[3] / 255.f);
-				bool bFound = false;
-				auto pVar = dubble->FindVar(XorStr("$envmaptint"), &bFound);
-				if (bFound)
-				{
-					(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorarms[0] / 255.f, g_Options.glowcolorarms[1] / 255.f, g_Options.glowcolorarms[2] / 255.f);
-				}
+				modulate(g_Options.ohthuhshine, dubble);
 				g_MdlRender->ForcedMaterialOverride(dubble);
 			}
 
 			if (g_Options.arms_material == 5)
 			{
-				velvet->AlphaModulate(g_Options.color_chams_player_enemy_visible[3] / 255.f);
-				bool bFound = false;
-				auto pVar = velvet->FindVar(XorStr("$envmaptint"), &bFound);
-				if (bFound)
-				{
-					(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_sleeve_visible[0] / 255.f, g_Options.color_chams_sleeve_visible[1] / 255.f, g_Options.color_chams_sleeve_visible[2] / 255.f);
-				}
+				modulate(g_Options.ohthuhshine, velvet);
 				g_MdlRender->ForcedMaterialOverride(velvet);
 			}
 
@@ -736,7 +514,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 		if (g_Options.chams_strap_enabled == false)
 			return;
 
-		if (is_arm || is_sleeve)
+		if (is_player || is_arm || is_sleeve)
 			return;
 
 		auto weapon = g_LocalPlayer->m_hActiveWeapon().Get();
@@ -770,51 +548,27 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 			if (g_Options.strap_material == 2)
 			{
-				othershine->AlphaModulate(g_Options.ohthuhshine[3] / 255.f);
-				bool bFound = false;
-				auto pVar = othershine->FindVar(XorStr("$envmaptint"), &bFound);
-				if (bFound)
-				{
-					(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.ohthuhshine[0] / 255.f, g_Options.ohthuhshine[1] / 255.f, g_Options.ohthuhshine[2] / 255.f);
-				}
+				modulate(g_Options.glowcolorstrap, othershine);
 				g_MdlRender->ForcedMaterialOverride(othershine);
 
 			}
 
 			if (g_Options.strap_material == 3)
 			{
-				shit->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
-				bool bFound = false;
-				auto pVar = shit->FindVar(XorStr("$envmaptint"), &bFound);
-				if (bFound)
-				{
-					(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
-				}
+				modulate(g_Options.glowcolorstrap, shit);
 				g_MdlRender->ForcedMaterialOverride(shit);
 
 			}
 
 			if (g_Options.strap_material == 4)
 			{
-				dubble->AlphaModulate(g_Options.glowcolorstrap[3] / 255.f);
-				bool bFound = false;
-				auto pVar = dubble->FindVar(XorStr("$envmaptint"), &bFound);
-				if (bFound)
-				{
-					(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.glowcolorstrap[0] / 255.f, g_Options.glowcolorstrap[1] / 255.f, g_Options.glowcolorstrap[2] / 255.f);
-				}
+				modulate(g_Options.glowcolorstrap, dubble);
 				g_MdlRender->ForcedMaterialOverride(dubble);
 
 			}
 
 			if (g_Options.strap_material == 5) {
-				velvet->AlphaModulate(g_Options.color_chams_strap_visible[3] / 255.f);
-				bool bFound = false;
-				auto pVar = velvet->FindVar(XorStr("$envmaptint"), &bFound);
-				if (bFound)
-				{
-					(*(void(__thiscall**)(int, float, float, float))(*(DWORD*)pVar + 44))((uintptr_t)pVar, g_Options.color_chams_strap_visible[0] / 255.f, g_Options.color_chams_strap_visible[1] / 255.f, g_Options.color_chams_strap_visible[2] / 255.f);
-				}
+				modulate(g_Options.glowcolorstrap, velvet);
 				g_MdlRender->ForcedMaterialOverride(velvet);
 
 			}

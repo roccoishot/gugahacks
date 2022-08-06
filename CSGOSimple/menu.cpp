@@ -97,6 +97,7 @@ IDirect3DTexture9* legiticonD = nullptr;
 IDirect3DTexture9* visualsiconD = nullptr;
 IDirect3DTexture9* misciconD = nullptr;
 IDirect3DTexture9* skinsiconD = nullptr;
+IDirect3DTexture9* sexdickD = nullptr;
 IDirect3DTexture9* playericonD = nullptr;
 IDirect3DTexture9* cfgiconD = nullptr;
 void Menu::Initialize()
@@ -130,6 +131,9 @@ void Menu::Initialize()
 	}
 	if (cfgiconD == nullptr) {
 		D3DXCreateTextureFromFileInMemoryEx(g_D3DDevice9, &cfgicon, sizeof(cfgicon), 42, 42, D3DX_DEFAULT, D3DUSAGE_DYNAMIC, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, &cfgiconD);
+	}
+	if (sexdickD == nullptr) {
+		D3DXCreateTextureFromFileInMemoryEx(g_D3DDevice9, &sexdick, sizeof(sexdick), 42, 42, D3DX_DEFAULT, D3DUSAGE_DYNAMIC, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, &sexdickD);
 	}
 }
 
@@ -1273,7 +1277,7 @@ void Menu::Render()
 
 
 	int rightsidesize = end_width;
-	int verticalsize = 500;
+	int verticalsize = 560;
 
 	ImVec2 startsize = ImVec2(500, verticalsize); //setup sum vars
 
@@ -1355,11 +1359,16 @@ void Menu::Render()
 		if (Tab(XorStr("Misc"), ImVec2(163, 36), tab == 3, misciconD))
 			tab = 3;
 
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + tabspacing);
+		ImGui::SetCursorPosX(0);
+		if (Tab(XorStr("Skins"), ImVec2(163, 36), tab == 6, sexdickD))
+			tab = 6;
+
 
 		//aimbot
 		if (tab == 0) {
 			ImGui::SetCursorPos(ImVec2(173, 50));
-			ImGui::BeginChild("Aimbot", ImVec2(254, 428)); {
+			ImGui::BeginChild("Aimbot", ImVec2(254, 498)); {
 
 				ImGui::Spacing();
 				ImGui::Spacing();
@@ -1444,7 +1453,7 @@ void Menu::Render()
 
 			ImGui::SameLine(0, 21);
 
-			ImGui::BeginChild("Rage / Other", ImVec2(254, 428)); {
+			ImGui::BeginChild("Rage / Other", ImVec2(254, 498)); {
 
 				ImGui::Spacing();
 				ImGui::Spacing();
@@ -1494,7 +1503,7 @@ void Menu::Render()
 		//aa
 		if (tab == 1) {
 			ImGui::SetCursorPos(ImVec2(173, 50));
-			ImGui::BeginChild("Antiaim", ImVec2(529, 428)); {
+			ImGui::BeginChild("Antiaim", ImVec2(529, 498)); {
 
 				ImGui::Spacing();
 				ImGui::Spacing();
@@ -1671,7 +1680,7 @@ XorStr("Balance"),
 		//esp
 		if (tab == 2) {
 			ImGui::SetCursorPos(ImVec2(173, 50));
-			ImGui::BeginChild("ESP", ImVec2(254, 428)); {
+			ImGui::BeginChild("ESP", ImVec2(254, 498)); {
 
 				ImGui::Spacing();
 				ImGui::Spacing();
@@ -1733,7 +1742,7 @@ XorStr("Balance"),
 			ImGui::SameLine(0, 21);
 
 			ImGui::SetCursorPos(ImVec2(448, 50));
-			ImGui::BeginChild("Others", ImVec2(254, 428)); {
+			ImGui::BeginChild("Others", ImVec2(254, 498)); {
 
 				ImGui::Spacing();
 				ImGui::Spacing();
@@ -1793,7 +1802,7 @@ XorStr("Balance"),
 		//chams
 		if (tab == 4) {
 			ImGui::SetCursorPos(ImVec2(173, 50));
-			ImGui::BeginChild("Chams", ImVec2(254, 428)); {
+			ImGui::BeginChild("Chams", ImVec2(254, 498)); {
 
 				ImGui::Spacing();
 				ImGui::Spacing();
@@ -1842,6 +1851,8 @@ XorStr("Balance"),
 						colspacing2(); ImGuiEx::ColorEdit4a(XorStr("Double Strap"), &g_Options.glowcolorstrap);
 					}
 					spacing();
+					//ImGui::Checkbox(XorStr("Pearlecent"), &g_Options.pearlescent);
+					//spacing();
 					ImGui::Checkbox(XorStr("Draw OG Mdl"), &g_Options.drawogplaya);
 				}
 				spacing();
@@ -1870,7 +1881,8 @@ XorStr("Flat"),
 XorStr("Shine"),
 XorStr("Glow"),
 XorStr("Double"),
-XorStr("Velvet")
+XorStr("Velvet"),
+XorStr("AdvancedAim [MIGI]")
 				};
 
 				if (g_Options.chams_player_enabled)
@@ -1901,7 +1913,7 @@ XorStr("Velvet")
 		//world
 		if (tab == 5) {
 			ImGui::SetCursorPos(ImVec2(173, 50));
-			ImGui::BeginChild("World", ImVec2(254, 428)); {
+			ImGui::BeginChild("World", ImVec2(254, 498)); {
 
 				ImGui::Spacing();
 				ImGui::Spacing();
@@ -1984,7 +1996,7 @@ XorStr("Dust")
 			ImGui::EndChild();
 		}
 
-	/*if (tab == 5) {
+	if (tab == 6) {
 		static std::string selected_weapon_name = "";
 		static std::string selected_skin_name = "";
 		static auto definition_vector_index = 0;
@@ -1997,7 +2009,7 @@ XorStr("Dust")
 
 
 			ImGui::SetCursorPos(ImVec2(173, 50));
-			ImGui::BeginChild("Weapon", ImVec2(254, 428)); {
+			ImGui::BeginChild("Weapon", ImVec2(254, 498)); {
 
 				ImGui::Spacing();
 
@@ -2012,15 +2024,11 @@ XorStr("Dust")
 
 			ImGui::SameLine(0, 21);
 
-			ImGui::BeginChild("Colors", ImVec2(254, 428)); {
+			ImGui::BeginChild("Colors", ImVec2(254, 498)); {
 				ImGui::Spacing();
 				ImGui::Spacing();
 				spacing();
 				ImGui::Checkbox(("Enabled"), &selected_entry.enabled);
-				spacing();
-				ImGui::Checkbox(("Stattrak"), &selected_entry.stat_trak);
-				spacing();
-				ImGui::InputInt(("Stattrak #"), &satatt.statrack_new.counter);
 				spacing();
 				ImGui::InputInt(("Seed"), &selected_entry.seed);
 				sliderspacing();
@@ -2215,7 +2223,7 @@ XorStr("Dust")
 				};
 			}
 				ImGui::EndChild();
-		}*/
+		}
 
 		//misc
 		if (tab == 3) {
@@ -2275,7 +2283,7 @@ XorStr("Dust")
 
 
 			ImGui::SetCursorPos(ImVec2(448, 50));
-			ImGui::BeginChild("Misc", ImVec2(254, 428)); {
+			ImGui::BeginChild("Misc", ImVec2(254, 498)); {
 				spacing();
 				int screenx;
 				int screeny;
@@ -2337,7 +2345,7 @@ XorStr("Directional")
 			ImGui::EndChild();
 
 			ImGui::SetCursorPos(ImVec2(173, 278));
-			ImGui::BeginChild("Others", ImVec2(254, 200)); {
+			ImGui::BeginChild("Others", ImVec2(254, 270)); {
 				spacing();
 				static char newname[64];
 				//Ha penis

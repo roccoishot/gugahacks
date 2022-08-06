@@ -13,6 +13,7 @@ public:
 	int  GetEventDebugID(void);
 	void RegisterSelf();
 	void UnregisterSelf();
+	int sexdickballsfuck = 0;
 private:
 	std::vector<HitMarkerInfo> hitMarkerInfo;
 };

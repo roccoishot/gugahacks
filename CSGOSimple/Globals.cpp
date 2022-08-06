@@ -24,6 +24,7 @@ namespace Globals
 	bool WeaponTabValid = false;
 	bool cuhbedointhat = false;
 	float roll = 0.f;
+	IGameEvent* eventgl;
 	float realroll = 0.f;
 	bool valve = false;
 	bool headthing = false;

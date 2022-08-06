@@ -185,9 +185,6 @@
     <ClCompile Include="glow.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
-    <ClCompile Include="GoogaKillah.cpp">
-      <Filter>Source Files\features</Filter>
-    </ClCompile>
     <ClCompile Include="bdussy.cpp">
       <Filter>Source Files\features</Filter>
     </ClCompile>
@@ -649,9 +646,6 @@
     <ClInclude Include="glow.hpp">
       <Filter>Source Files\features</Filter>
     </ClInclude>
-    <ClInclude Include="GoogaKillah.h">
-      <Filter>Source Files\features</Filter>
-    </ClInclude>
     <ClInclude Include="sexynutssexyfuckdickshitnigga.h">
       <Filter>Source Files\features</Filter>
     </ClInclude>
@@ -660,6 +654,9 @@
     </ClInclude>
     <ClInclude Include="wininet.h">
       <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jmerge\hooks.hpp">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -673,5 +670,8 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="detours.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Gugahacks.rc" />
   </ItemGroup>
 </Project>

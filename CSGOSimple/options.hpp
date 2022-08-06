@@ -67,9 +67,11 @@ struct item_setting
 	bool stat_trak = 0;
 	float wear = FLT_MIN;
 };
+
 class Options
 {
 public:
+
 	struct
 	{
 
@@ -81,6 +83,10 @@ public:
 			std::map<int, statrack_setting> statrack_items = { };
 			std::map<int, item_setting> m_items = { };
 			std::map<std::string, std::string> m_icon_overrides = { };
+			auto get_icon_override(const std::string original) const -> const char*
+			{
+				return m_icon_overrides.count(original) ? m_icon_overrides.at(original).data() : nullptr;
+			}
 		}skin;
 	}changers;
 	// 
@@ -310,6 +316,7 @@ public:
 	bool clantag = false;
 	bool skychange = false;
 	bool namec = false;
+	bool pearlescent = false;
 	bool Velocity = false;
 	bool outline = false;
 	bool lastjump = false;

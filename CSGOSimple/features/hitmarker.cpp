@@ -11,6 +11,8 @@ void HitMarkerEvent::FireGameEvent(IGameEvent* event)
 	if (!event)
 		return;
 
+	Globals::eventgl = event;
+
 	const char* szEventName = event->GetName();
 
 	if (!strcmp(szEventName, "round_freeze_end"))
@@ -71,7 +73,6 @@ void HitMarkerEvent::FireGameEvent(IGameEvent* event)
 			Globals::playerid = g_EngineClient->GetPlayerForUserID(event->GetInt("userid"));
 			Globals::hitplayer = true;
 		}
-
 		if (g_Options.misc_hitmarker)
 		{
 			if (g_EngineClient->GetPlayerForUserID(event->GetInt("attacker")) == g_EngineClient->GetLocalPlayer() &&

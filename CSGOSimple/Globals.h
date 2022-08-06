@@ -7,6 +7,7 @@ namespace Globals
 	extern QAngle LastAngle;
 	extern bool ThirdPersponToggle;
 	extern bool Unload;
+	extern IGameEvent* eventgl;
 	extern bool MenuOpened;
 	extern bool PlayerListOpened;
 	extern bool RadioOpened;

@@ -144,6 +144,31 @@ namespace Hooks {
 		return oFireEvent(g_GameEvents, pEvent);
 	}
 
+	/*void __stdcall hkSuppressLists(int a2, bool a3) {
+		static auto ofunc = partition_hook.GetOriginal< SuppressLists >();
+
+		static auto OnRenderStart_Return = Utils::PatternScan(GetModuleHandleA("client.dll"), "FF 50 40 8B 1D ? ? ? ?") + 0x3;
+		static auto FrameNetUpdateEnd_Return = Utils::PatternScan(GetModuleHandleA("client.dll"), "5F 5E 5D C2 04 00 83 3D ? ? ? ? ?");
+
+		if (g_LocalPlayer && g_LocalPlayer->IsAlive()) {
+			if (_ReturnAddress() == OnRenderStart_Return) {
+
+			}
+			else if (_ReturnAddress() == FrameNetUpdateEnd_Return) {
+				skins::on_frame_stage_notify(true);
+			}
+		}
+
+		ofunc(g_SpatialPartition, a2, a3);
+	}
+
+	void __fastcall hkReadPacketEntities(void* pClientState, void* pEDX, void* pEntInfo) {
+		static auto original = clientstate_hook.GetOriginal<ReadPacketEntities>();
+
+		original(pClientState, pEntInfo);
+		skins::on_frame_stage_notify(false);
+	}*/
+
 	//--------------------------------------------------------------------------------
 	long __stdcall hkEndScene(IDirect3DDevice9* pDevice)
 	{
@@ -884,7 +909,7 @@ namespace Hooks {
 					*view_punch = QAngle(0, 0, 0);
 				}
 			}
-		}	
+		}
 
 		if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
 			skins::on_frame_stage_notify(false);
@@ -973,21 +998,22 @@ namespace Hooks {
 			}
 		};
 
-			if (const auto model = getModel(g_LocalPlayer->m_iTeamNum())) {
-				if (stage == FRAME_RENDER_START)
-					originalIdx = g_LocalPlayer->m_nModelIndex();
+		if (const auto model = getModel(g_LocalPlayer->m_iTeamNum())) {
+			if (stage == FRAME_RENDER_START)
+				originalIdx = g_LocalPlayer->m_nModelIndex();
 
-				const auto idx = stage == ClientFrameStage_t::FRAME_RENDER_END && originalIdx ? originalIdx : g_MdlInfo->GetModelIndex(model);
+			const auto idx = stage == ClientFrameStage_t::FRAME_RENDER_END && originalIdx ? originalIdx : g_MdlInfo->GetModelIndex(model);
 
-				g_LocalPlayer->setModelIndex(idx);
+			g_LocalPlayer->setModelIndex(idx);
 
-				if (const auto ragdoll = g_LocalPlayer->get_entity_from_handle(g_LocalPlayer->m_hRagdoll()))
-					ragdoll->setModelIndex(idx);
-			}
+			if (const auto ragdoll = g_LocalPlayer->get_entity_from_handle(g_LocalPlayer->m_hRagdoll()))
+				ragdoll->setModelIndex(idx);
+		}
 
 		if (stage == ClientFrameStage_t::FRAME_RENDER_END)
 		{
 			Fixed::Get().PerformNightmode();
+			
 			if (g_Options.colormodulate)
 				CNightmode::Get().PerformNightmode();
 			else
@@ -996,31 +1022,33 @@ namespace Hooks {
 
 		static DWORD* death_notice = nullptr;
 
-		if (g_LocalPlayer->IsAlive() && !Globals::stepping)
-		{
-			if (!death_notice)
-				death_notice = FindHudElement <DWORD>(XorStr("CCSGO_HudDeathNotice"));
-
-			if (death_notice)
+		if (g_Options.drugs) {
+			if (g_LocalPlayer->IsAlive() && !Globals::stepping)
 			{
-				auto local_death_notice = (float*)((uintptr_t)death_notice + 0x50);
+				if (!death_notice)
+					death_notice = FindHudElement <DWORD>(XorStr("CCSGO_HudDeathNotice"));
 
-				if (local_death_notice)
-					*local_death_notice = g_Options.drugs ? FLT_MAX : 1.5f;;
-
-				if (Globals::clear)
+				if (death_notice)
 				{
-					Globals::clear = false;
+					auto local_death_notice = (float*)((uintptr_t)death_notice + 0x50);
 
-					using Fn = void(__thiscall*)(uintptr_t);
-					static auto clear_notices = (Fn)Utils::PatternScan2(XorStr("client.dll"), XorStr("55 8B EC 83 EC 0C 53 56 8B 71 58"));
+					if (local_death_notice)
+						*local_death_notice = g_Options.drugs ? FLT_MAX : 1.5f;;
 
-					clear_notices((uintptr_t)death_notice - 0x14);
+					if (Globals::clear)
+					{
+						Globals::clear = false;
+
+						using Fn = void(__thiscall*)(uintptr_t);
+						static auto clear_notices = (Fn)Utils::PatternScan2(XorStr("client.dll"), XorStr("55 8B EC 83 EC 0C 53 56 8B 71 58"));
+
+						clear_notices((uintptr_t)death_notice - 0x14);
+					}
 				}
 			}
+			else
+				death_notice = 0;
 		}
-		else
-			death_notice = 0;
 
 		ofunc(g_CHLClient, edx, stage);
 	}

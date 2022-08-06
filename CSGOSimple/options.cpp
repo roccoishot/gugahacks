@@ -1,10 +1,11 @@
-#include <ShlObj.h>
+﻿#include <ShlObj.h>
 #include <filesystem>
 #include "options.hpp"
 #include "valve_sdk/misc/Enums.hpp"
 #include "valve_sdk/sdk.hpp"
 #include "xor.h"
 #include "Globals.h"
+#pragma comment(lib, "Shell32.lib")
 #ifdef ENABLE_XOR
 #define XorStr _xor_ 
 #else
@@ -334,7 +335,7 @@ void Options::SetupMisc()
 	SetupValue(flop, XorStr("Rage"), XorStr("Fakelag On Peek Ticks"));
 	SetupValue(fakeduck, XorStr("Rage"), XorStr("Fakeduck"));
 	SetupValue(fdkey, XorStr("Rage"), XorStr("Fakeduck Key"));
-	SetupValue(fakedegree, XorStr("Rage"), XorStr("Custom Fake �"));
+	SetupValue(fakedegree, XorStr("Rage"), XorStr("Custom Fake °"));
 	SetupValue(fakepreset, XorStr("Rage"), XorStr("Fake Preset"));
 	SetupValue(nopacketonshot, XorStr("Sexdick"), XorStr("No Packet on Shot"));
 	SetupValue(urrstuck, XorStr("Sexdick"), XorStr("Air Stuck"));

@@ -51,13 +51,13 @@
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>C:\Program Files %28x86%29\Microsoft SDKs\cpp-netlib-0.12.0-final;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <TargetName>csgosimple</TargetName>
-    <LibraryPath>C:\Users\Rocco\Desktop\GUGAHACKS\CSGOSimple\curl;C:\Users\Rocco\Desktop\GUGAHACKS\CSGOSimple;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\Rocco\Desktop\GUGAHACKS\CSGOSimple;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>C:\Program Files %28x86%29\Microsoft SDKs\cpp-netlib-0.12.0-final;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)Include</IncludePath>
-    <LibraryPath>C:\Users\Rocco\Desktop\GUGAHACKS\CSGOSimple\curl;C:\Users\Rocco\Desktop\GUGAHACKS\CSGOSimple;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\Rocco\Desktop\GUGAHACKS\CSGOSimple;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -65,14 +65,14 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;CSGOSIMPLE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\Rocco\Desktop\GUGAHACKS\CSGOSimple\curl\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -83,7 +83,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;CURL_STATICLIB;CSGOSIMPLE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;CSGOSIMPLE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -91,13 +91,14 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>Normaliz.lib;Ws2_32.lib;Wldap32.lib;Crypt32.lib;advapi32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\Rocco\Desktop\GUGAHACKS\CSGOSimple\jmerge\helpers\minhook.lib;Normaliz.lib;Ws2_32.lib;Wldap32.lib;Crypt32.lib;advapi32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -120,7 +121,6 @@
     <ClCompile Include="FixSkyboxes.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="glow.cpp" />
-    <ClCompile Include="GoogaKillah.cpp" />
     <ClCompile Include="helpers\input.cpp" />
     <ClCompile Include="helpers\math.cpp" />
     <ClCompile Include="helpers\prediction.cpp" />
@@ -175,12 +175,12 @@
     <ClInclude Include="fonts.hpp" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="glow.hpp" />
-    <ClInclude Include="GoogaKillah.h" />
     <ClInclude Include="helpers\prediction.hpp" />
     <ClInclude Include="ilocalise.hpp" />
     <ClInclude Include="image.hpp" />
     <ClInclude Include="imgui\impl\imgui_impl_dx9.h" />
     <ClInclude Include="imgui\impl\imgui_impl_win32.h" />
+    <ClInclude Include="jmerge\hooks.hpp" />
     <ClInclude Include="Keyvalues.hpp" />
     <ClInclude Include="resolver.h" />
     <ClInclude Include="Material.h" />
@@ -321,6 +321,9 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="detours.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Gugahacks.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
