@@ -15,6 +15,7 @@ public: // puberty
 	int side = 0;
 	int ohyeahbabythatsthespot = 0;
 	bool resetted = false;
+	bool sexdickballs = false;
 	bool tryagain = true;
 	bool tryagain2 = true;
 	bool candesync = false;

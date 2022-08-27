@@ -61,10 +61,7 @@ void CBlockBot::draw() {
     for (auto i = 1; i <= g_EntityList->GetHighestEntityIndex(); ++i) {
         auto entity = C_BasePlayer::GetPlayerByIndex(i);
         if (!entity || !g_LocalPlayer) continue;
-        if (!entity->IsPlayer()) continue;
-        if (entity == g_LocalPlayer) continue;
-        if (entity->IsDormant()) continue;
-        if (!entity->IsAlive()) continue;
+        if (!(entity->valid(true, true))) continue;
 
         if (!Target || Target == nullptr)
             Target = entity;
@@ -85,7 +82,7 @@ void CBlockBot::cmove(CUserCmd* pCmd) {
     if (!C_BasePlayer::GetPlayerByIndex(i))
         return;
 
-    if (Target && Target->IsAlive()) {
+    if (Target && Target->valid(true, true)) {
         QAngle LocalAngles;
         g_EngineClient->GetViewAngles(&LocalAngles);
         auto VecForward = sub3(Target->GetRenderOrigin(), g_LocalPlayer->GetRenderOrigin());

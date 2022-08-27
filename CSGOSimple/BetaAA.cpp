@@ -15,21 +15,39 @@ bool CAntiAim::CanDesync(CUserCmd* cmd)
 		return false;
 	}
 
-	if (Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || !g_Options.ragebot_antiaim_desync || g_Options.fakepreset == 0)
+	C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+
+	if ((Globals::freezetime && !Globals::stepping) || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || !g_Options.ragebot_antiaim_desync || g_Options.fakepreset == 0)
 		return false;
 
 	int movetype = g_LocalPlayer->m_nMoveType();
+
+	bool firing = false;
+	
+	if (weapon->m_iItemDefinitionIndex() == WEAPON_REVOLVER)
+	{
+		if (cmd->buttons & IN_ATTACK2)
+			firing = true;
+		else
+			firing = false;
+	}
+	else
+	{
+		if (cmd->buttons & IN_ATTACK)
+			firing = true;
+		else
+			firing = false;
+
+	}
 
 	if (g_Options.aimbot.fastaimbot && g_Options.aimbot.enabled) {
 		if (movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || cmd->buttons & IN_USE || cmd->buttons & IN_GRENADE1 || cmd->buttons & IN_GRENADE2)
 			return false;
 	}
 	else {
-		if (movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || cmd->buttons & IN_ATTACK || cmd->buttons & IN_USE || cmd->buttons & IN_GRENADE1 || cmd->buttons & IN_GRENADE2)
+		if (movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || firing || cmd->buttons & IN_USE || cmd->buttons & IN_GRENADE1 || cmd->buttons & IN_GRENADE2)
 			return false;
 	}
-
-	C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon().Get();
 
 	if (!weapon)
 		return false;
@@ -54,7 +72,7 @@ void CAntiAim::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		return;
 	}
 
-	if (Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN)
+	if ((Globals::freezetime && !Globals::stepping) || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN)
 		return;
 
 	int movetype = g_LocalPlayer->m_nMoveType();

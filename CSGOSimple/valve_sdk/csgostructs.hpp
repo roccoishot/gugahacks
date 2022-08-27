@@ -200,6 +200,8 @@ public:
 	NETVAR(float_t, m_flC4Blow, "DT_PlantedC4", "m_flC4Blow");
 	NETVAR(int, m_hRagdoll, "CCSPlayer", "m_hRagdoll")
 
+	NETVAR(bool, m_bBombDefused, "DT_PlantedC4", "m_bBombDefused");
+
 	std::array<Vector, 5>& m_vecPlayerPatchEconIndices()
 	{
 		static int _m_vecPlayerPatchEconIndices = NetvarSys::Get().GetOffset("DT_CSPlayer", "m_vecPlayerPatchEconIndices");

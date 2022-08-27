@@ -52,11 +52,7 @@ void Autowall::ClipTraceToPlayers(const Vector& vecAbsStart, const Vector& vecAb
 	{
 		auto ent = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
 		if (!ent || !g_LocalPlayer) continue;
-		if (!ent->IsPlayer()) continue;
-		if (ent == g_LocalPlayer) continue;
-		if (ent->IsDormant()) continue;
-		if (!ent->IsAlive()) continue;
-		if (ent->IsTeammate()) continue;
+		if (!(ent->valid(true,true))) continue;
 
 		if (filter && !filter->ShouldHitEntity(ent, mask))
 			continue;
@@ -331,7 +327,7 @@ bool Autowall::SimulateFireBullet(C_BaseCombatWeapon* pWeapon, FireBulletData& d
 			data.current_damage *= powf(weaponInfo->flRangeModifier, data.trace_length * 0.002f);
 
 			C_BasePlayer* player = (C_BasePlayer*)data.enter_trace.hit_entity;
-			if (player->IsAlive() && player->IsPlayer() && player->IsEnemy() && player->EntIndex() != g_LocalPlayer->EntIndex() && (!player->m_bGunGameImmunity() || player->m_fFlags() != FL_FROZEN)) {
+			if (player->valid(true, true)) {
 				Autowall::ScaleDamage(data.enter_trace.hitgroup, player, weaponInfo->flArmorRatio, data.current_damage);
 			}
 			return true;

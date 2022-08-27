@@ -72,6 +72,7 @@ namespace Hooks {
 		cm_hook->hook_function(reinterpret_cast<uintptr_t>(hkOverrideView), 18);
 		sv_cheats.hook_index(index::SvCheatsGetBool, hkSvCheatsGetBool);
 		stdrender_hook.hook_index(index::DrawModelExecute2, hkDrawModelExecute2);
+		//hk_netchannel.hook_index(46, hkSendDatagram);
 		viewrender_hook.hook_index(index::RenderSmokeOverlay, RenderSmokeOverlay);
 		//netgraphtext_hook.hook_index(index::NetGraph, hkNetGraph);
 
@@ -100,6 +101,7 @@ namespace Hooks {
 		mdlrender_hook.unhook_all();
 		clientmode_hook.unhook_all();
 		sound_hook.unhook_all();
+		hk_netchannel.unhook_all();
 		sv_cheats.unhook_all();
 
 		sequence_hook->~recv_prop_hook();
@@ -174,294 +176,21 @@ namespace Hooks {
 	{
 		static auto oEndScene = direct3d_hook.get_original<decltype(&hkEndScene)>(index::EndScene);
 
-		if (g_Options.antiobs) {
-			static uintptr_t gameoverlay_return_address = 0;
+		static uintptr_t gameoverlay_return_address = 0;
 
-			if (!gameoverlay_return_address) {
-				MEMORY_BASIC_INFORMATION info;
-				VirtualQuery(_ReturnAddress(), &info, sizeof(MEMORY_BASIC_INFORMATION));
-
+		if (!gameoverlay_return_address) {
+		
+			MEMORY_BASIC_INFORMATION info;
+			VirtualQuery(_ReturnAddress(), &info, sizeof(MEMORY_BASIC_INFORMATION));
 				char mod[MAX_PATH];
-				GetModuleFileNameA((HMODULE)info.AllocationBase, mod, MAX_PATH);
-
+			GetModuleFileNameA((HMODULE)info.AllocationBase, mod, MAX_PATH);
 				if (strstr(mod, XorStr("gameoverlay")))
-					gameoverlay_return_address = (uintptr_t)(_ReturnAddress());
-			}
+				gameoverlay_return_address = (uintptr_t)(_ReturnAddress());
 
-			if (gameoverlay_return_address != (uintptr_t)(_ReturnAddress()))
-				return oEndScene(pDevice);
 		}
 
-		static auto setthemcheat = g_CVar->FindVar(XorStr("sv_cheats"));
-		if (setthemcheat->GetInt() != 1)
-		setthemcheat->SetValue(1);
-
-		if (g_Options.viewmodel_fov)
-		{
-			auto viewFOV = (float)g_Options.viewmodel_fov + 68.0f;
-			static auto viewFOVcvar = g_CVar->FindVar(XorStr("viewmodel_fov"));
-
-			if (viewFOVcvar->GetFloat() != viewFOV) //-V550
-			{
-				*(float*)((DWORD)&viewFOVcvar->m_fnChangeCallbacks + 0xC) = 0.0f;
-				viewFOVcvar->SetValue(viewFOV);
-			}
-		}
-
-		if (g_Options.viewmodel_offset_x)
-		{
-			auto viewX = (float)g_Options.viewmodel_offset_x / 2.5f;
-			static auto viewXcvar = g_CVar->FindVar(XorStr("viewmodel_offset_x")); //-V807
-
-			if (viewXcvar->GetFloat() != viewX) //-V550
-			{
-				*(float*)((DWORD)&viewXcvar->m_fnChangeCallbacks + 0xC) = 0.0f;
-				viewXcvar->SetValue(viewX);
-			}
-		}
-
-		if (g_Options.viewmodel_offset_y)
-		{
-			auto viewY = (float)g_Options.viewmodel_offset_y / 2.0f;
-			static auto viewYcvar = g_CVar->FindVar(XorStr("viewmodel_offset_y"));
-
-			if (viewYcvar->GetFloat() != viewY) //-V550
-			{
-				*(float*)((DWORD)&viewYcvar->m_fnChangeCallbacks + 0xC) = 0.0f;
-				viewYcvar->SetValue(viewY);
-			}
-		}
-
-		if (g_Options.viewmodel_offset_z)
-		{
-			auto viewZ = (float)g_Options.viewmodel_offset_z / 2.0f;
-			static auto viewZcvar = g_CVar->FindVar(XorStr("viewmodel_offset_z"));
-
-			if (viewZcvar->GetFloat() != viewZ) //-V550
-			{
-				*(float*)((DWORD)&viewZcvar->m_fnChangeCallbacks + 0xC) = 0.0f;
-				viewZcvar->SetValue(viewZ);
-			}
-		}
-
-		if (g_Options.fullbright == true) {
-			static auto fullbright = g_CVar->FindVar(XorStr("mat_fullbright"));
-			fullbright->m_fnChangeCallbacks.m_Size = 0;
-			fullbright->SetValue(TRUE);
-		}
-		if (g_Options.fullbright == false) {
-			static auto fullbright = g_CVar->FindVar(XorStr("mat_fullbright"));
-			fullbright->m_fnChangeCallbacks.m_Size = 0;
-			fullbright->SetValue(FALSE);
-		}
-
-		//Metallic Props
-		if (g_Options.metallica == true) {
-			static auto metallica = g_CVar->FindVar(XorStr("r_showenvcubemap"));
-			metallica->m_fnChangeCallbacks.m_Size = 0;
-			metallica->SetValue(TRUE);
-		}
-		if (g_Options.metallica == false) {
-			static auto metallica = g_CVar->FindVar(XorStr("r_showenvcubemap"));
-			metallica->m_fnChangeCallbacks.m_Size = 0;
-			metallica->SetValue(FALSE);
-		}
-
-		static auto r_modelAmbientMin = g_CVar->FindVar(XorStr("r_modelAmbientMin"));
-		if (g_Options.amibence && r_modelAmbientMin->GetFloat() != g_Options.amibence * 0.05f) //-V550
-			r_modelAmbientMin->SetValue(g_Options.amibence * 0.05f);
-		else if ((g_Options.amibence < 2.f) && r_modelAmbientMin->GetFloat())
-			r_modelAmbientMin->SetValue(XorStr("0"));
-
-		//Matrix Mode
-		if (g_Options.matrix == true) {
-			static auto matrix = g_CVar->FindVar(XorStr("mat_luxels"));
-			matrix->m_fnChangeCallbacks.m_Size = 0;
-			matrix->SetValue(TRUE);
-		}
-		if (g_Options.matrix == false) {
-			static auto matrix = g_CVar->FindVar(XorStr("mat_luxels"));
-			matrix->m_fnChangeCallbacks.m_Size = 0;
-			matrix->SetValue(FALSE);
-		}
-
-		//Disable Blur
-		static auto disableblur = g_CVar->FindVar(XorStr("@panorama_disable_blur"));
-		disableblur->m_fnChangeCallbacks.m_Size = 0;
-		disableblur->SetValue(g_Options.removeblur);
-
-		//aspectratio
-		if (g_Options.aspectchange == true) {
-			static auto r_aspectratio = g_CVar->FindVar(XorStr("r_aspectratio"));
-			r_aspectratio->m_fnChangeCallbacks.m_Size = 0;
-			r_aspectratio->SetValue(g_Options.aspectratio);
-		}
-		else if (g_Options.aspectchange == false) {
-			static auto r_aspectratio = g_CVar->FindVar(XorStr("r_aspectratio"));
-			r_aspectratio->m_fnChangeCallbacks.m_Size = 0;
-			r_aspectratio->SetValue(XorStr("0"));
-		}
-
-		if (g_Options.faketicks >= 1)
-		{
-			static auto unlag = g_CVar->FindVar(XorStr("sv_maxunlag"));
-			unlag->m_fnChangeCallbacks.m_Size = 0;
-			unlag->SetValue(XorStr("1.000"));
-		}
-
-		//Fake Ping
-		if (g_Options.fakepingkey == 0) {
-			if (g_Options.fakeping == true && g_EngineClient->IsInGame()) {
-				static auto fakeping = g_CVar->FindVar(XorStr("net_fakelag"));
-				fakeping->m_fnChangeCallbacks.m_Size = 0;
-				fakeping->SetValue(g_Options.fakepingzzz);
-			}
-			if (g_Options.fakeping == false) {
-				static auto fakeping = g_CVar->FindVar(XorStr("net_fakelag"));
-				fakeping->m_fnChangeCallbacks.m_Size = 0;
-				fakeping->SetValue(0);
-			}
-		}
-		if (g_Options.fakepingkey != 0) {
-			if (GetAsyncKeyState(g_Options.fakepingkey)) {
-				if (g_Options.fakeping && g_EngineClient->IsInGame()) {
-					static auto fakeping = g_CVar->FindVar(XorStr("net_fakelag"));
-					fakeping->m_fnChangeCallbacks.m_Size = 0;
-					fakeping->SetValue(g_Options.fakepingzzz);
-				}
-			}
-			else {
-				static auto fakeping = g_CVar->FindVar(XorStr("net_fakelag"));
-				fakeping->m_fnChangeCallbacks.m_Size = 0;
-				fakeping->SetValue(0);
-			}
-		}
-
-		//Nade Prediction
-		static auto pnade = g_CVar->FindVar(XorStr("cl_grenadepreview"));
-		if (pnade->GetInt() != g_Options.pnade)
-		pnade->SetValue(g_Options.pnade);
-
-		//Ragdoll Gravity
-		if (g_Options.ragfloat == true) {
-			static auto levito = g_CVar->FindVar(XorStr("cl_ragdoll_gravity"));
-			levito->SetValue(XorStr("-1"));
-		}
-		if (g_Options.ragfloat == false) {
-			static auto levito = g_CVar->FindVar(XorStr("cl_ragdoll_gravity"));
-			levito->SetValue(XorStr("600"));
-		}
-
-		//Sky Changer
-		if (g_Options.sky_changer) {
-			if (g_Options.skyshitsssss == 0) {
-				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
-				buttsex->SetValue(XorStr("sky_csgo_night02"));
-			}
-			if (g_Options.skyshitsssss == 1) {
-				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
-				buttsex->SetValue(XorStr("cs_baggage_skybox_"));
-			}
-			if (g_Options.skyshitsssss == 2) {
-				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
-				buttsex->SetValue(XorStr("cs_tibet"));
-			}
-			if (g_Options.skyshitsssss == 3) {
-				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
-				buttsex->SetValue(XorStr("vietnam"));
-			}
-			if (g_Options.skyshitsssss == 4) {
-				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
-				buttsex->SetValue(XorStr("sky_lunacy"));
-			}
-			if (g_Options.skyshitsssss == 5) {
-				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
-				buttsex->SetValue(XorStr("embassy"));
-			}
-			if (g_Options.skyshitsssss == 6) {
-				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
-				buttsex->SetValue(XorStr("italy"));
-			}
-			if (g_Options.skyshitsssss == 7) {
-				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
-				buttsex->SetValue(XorStr("jungle"));
-			}
-			if (g_Options.skyshitsssss == 8) {
-				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
-				buttsex->SetValue(XorStr("office"));
-			}
-			if (g_Options.skyshitsssss == 9) {
-				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
-				buttsex->SetValue(XorStr("sky_cs15_daylight02_hdr"));
-			}
-			if (g_Options.skyshitsssss == 10) {
-				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
-				buttsex->SetValue(XorStr("sky_csgo_cloudy01"));
-			}
-			if (g_Options.skyshitsssss == 11) {
-				static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
-				buttsex->SetValue(XorStr("sky_dust"));
-			}
-		}
-
-		//Recoil Crosshair
-		if (g_Options.rcross == false) {
-			static auto recoilcrosshaii = g_CVar->FindVar(XorStr("cl_crosshair_recoil"));
-			recoilcrosshaii->SetValue(FALSE);
-		}
-		else if (g_Options.rcross == true) {
-			static auto recoilcrosshaii = g_CVar->FindVar(XorStr("cl_crosshair_recoil"));
-			recoilcrosshaii->SetValue(TRUE);
-		}
-
-		if (g_Options.disablepro == true) {
-			static auto GETITOUT = g_CVar->FindVar(XorStr("mat_postprocess_enable"));
-			GETITOUT->SetValue(FALSE);
-		}
-		if (g_Options.disablepro == false) {
-			static auto GETITOUT = g_CVar->FindVar(XorStr("mat_postprocess_enable"));
-			GETITOUT->SetValue(TRUE);
-		}
-
-		//Far Esp
-		static auto faresp = g_CVar->FindVar(XorStr("r_drawallrenderables"));
-		if (faresp->GetInt() != g_Options.faresp)
-		faresp->SetValue(g_Options.faresp);
-
-		//Fog
-		static auto fog_override = g_CVar->FindVar(XorStr("fog_override")); //-V807
-		if (!g_Options.fogoverride)
-		{
-			if (fog_override->GetBool())
-				fog_override->SetValue(FALSE);
-		}
-		if (!fog_override->GetBool())
-			fog_override->SetValue(TRUE);
-		static auto fog_start = g_CVar->FindVar(XorStr("fog_start"));
-		if (fog_start->GetInt())
-			fog_start->SetValue(0);
-		static auto fog_end = g_CVar->FindVar(XorStr("fog_end"));
-		if (fog_end->GetInt() != g_Options.fogfardamn)
-			fog_end->SetValue(g_Options.fogfardamn);
-		static auto fog_maxdensity = g_CVar->FindVar(XorStr("fog_maxdensity"));
-		if (fog_maxdensity->GetFloat() != (float)g_Options.fogdens * 0.01f) //-V550
-			fog_maxdensity->SetValue((float)g_Options.fogdens * 0.01f);
-		char buffer_color[12];
-		sprintf_s(buffer_color, 12, "%i %i %i", g_Options.fogcoluh.r(), g_Options.fogcoluh.g(), g_Options.fogcoluh.b());
-		static auto fog_color = g_CVar->FindVar(XorStr("fog_color"));
-		if (strcmp(fog_color->GetString(), buffer_color)) //-V526
-			fog_color->SetValue(buffer_color);
-		//World Glow
-		static auto mat_ambient_light_r = g_CVar->FindVar(XorStr("mat_ambient_light_r"));
-		static auto mat_ambient_light_g = g_CVar->FindVar(XorStr("mat_ambient_light_g"));
-		static auto mat_ambient_light_b = g_CVar->FindVar(XorStr("mat_ambient_light_b"));
-
-		if (mat_ambient_light_r->GetFloat() != g_Options.color_worldglow.r() / 255.f)
-		mat_ambient_light_r->SetValue(g_Options.color_worldglow.r() / 255.f);
-		if (mat_ambient_light_g->GetFloat() != g_Options.color_worldglow.g() / 255.f)
-		mat_ambient_light_g->SetValue(g_Options.color_worldglow.g() / 255.f);
-		if (mat_ambient_light_b->GetFloat() != g_Options.color_worldglow.b() / 255.f)
-		mat_ambient_light_b->SetValue(g_Options.color_worldglow.b() / 255.f);
+		if (gameoverlay_return_address != (uintptr_t)(_ReturnAddress()) && g_Options.antiobs)
+			return oEndScene(pDevice);
 
 		DWORD colorwrite, srgbwrite;
 		IDirect3DVertexDeclaration9* vert_dec = nullptr;
@@ -492,9 +221,8 @@ namespace Hooks {
 
 		auto esp_drawlist = Render::Get().RenderScene();
 
-		Menu::Get().SpecList();
 		Menu::Get().Render();
-
+		Menu::Get().SpecList();
 
 		ImGui::Render(esp_drawlist);
 
@@ -620,9 +348,8 @@ namespace Hooks {
 		Misc::Get().cl_move_dt(cmd);
 		Misc::Get().SilentWalk(cmd);
 		Misc::Get().Fakelag(cmd, bSendPacket);
-		if (g_Options.aimbot.backtrack) {
-			TimeWarp().Get().CreateMove(cmd);
-		}
+		TimeWarp().Get().CreateMove(cmd);
+		//TimeWarp().Get().ForwardTrack(cmd);
 
 		if (Menu::Get().IsVisible())
 			cmd->buttons &= ~IN_ATTACK;
@@ -658,6 +385,9 @@ namespace Hooks {
 		Misc::Get().ClanTag();
 		Misc::Get().Sexdick(cmd, bSendPacket);
 		Misc::Get().UpdateLBY(cmd, bSendPacket);
+		movement_recorder::Get().run(cmd);
+		Misc::Get().local_animfix(g_LocalPlayer, cmd, bSendPacket);
+		Misc::Get().desyncchams(cmd, bSendPacket);
 
 		if (bSendPacket == true)
 		{
@@ -791,12 +521,6 @@ namespace Hooks {
 			}
 		}
 
-		movement_recorder::Get().run(cmd);
-
-		Misc::Get().local_animfix(g_LocalPlayer, cmd, bSendPacket);
-
-		Misc::Get().desyncchams(cmd, bSendPacket);
-
 		Globals::bSendPacket = bSendPacket;
 
 		verified->m_cmd = *cmd;
@@ -867,11 +591,31 @@ namespace Hooks {
 		static auto oDoPostScreenEffects = clientmode_hook.get_original<decltype(&hkDoPostScreenEffects)>(index::DoPostScreenSpaceEffects);
 
 		//if (g_LocalPlayer && g_Options.glow_enabled)
-		//if (g_LocalPlayer && g_LocalPlayer->IsAlive())
-		//Glow::Get().Run();
+			//Glow::Get().Run();
 
 		return oDoPostScreenEffects(g_ClientMode, edx, a1);
 	}
+
+	/*int __fastcall hkSendDatagram(void* net_channel, void*, void* datagram) {
+
+		if (!g_Options.aimbot.backtrack || !g_EngineClient->IsInGame())
+			return oSendDatagram(net_channel, datagram);
+
+		auto* channel = reinterpret_cast<INetChannel*>(net_channel);
+
+		int instate = channel->m_nInReliableState;
+		int insequencenr = channel->m_nInSequenceNr;
+
+		TimeWarp::Get().AddLatency(channel, 500.f / 1000.f);
+
+		int ret = oSendDatagram(channel, datagram);
+
+		channel->m_nInReliableState = instate;
+		channel->m_nInSequenceNr = insequencenr;
+
+		return ret;
+	}*/
+
 	//--------------------------------------------------------------------------------
 	void __fastcall hkFrameStageNotify(void* _this, int edx, ClientFrameStage_t stage)
 	{
@@ -912,7 +656,10 @@ namespace Hooks {
 		}
 
 		if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
+		{
 			skins::on_frame_stage_notify(false);
+			//TimeWarp::Get().UpdateIncomingSequences();
+		}
 		else if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_END)
 			skins::on_frame_stage_notify(true);
 
@@ -1012,6 +759,256 @@ namespace Hooks {
 
 		if (stage == ClientFrameStage_t::FRAME_RENDER_END)
 		{
+
+			static auto setthemcheat = g_CVar->FindVar(XorStr("sv_cheats"));
+			if (setthemcheat->GetInt() != 1)
+				setthemcheat->SetValue(1);
+
+			//Nade Prediction
+			static auto sexboot = g_CVar->FindVar(XorStr("sv_maxunlag"));
+				sexboot->SetValue("1");
+
+			static auto fullbright = g_CVar->FindVar(XorStr("mat_fullbright"));
+			fullbright->SetValue(g_Options.fullbright);
+
+			//Metallic Props
+			static auto metallica = g_CVar->FindVar(XorStr("r_showenvcubemap"));
+			metallica->m_fnChangeCallbacks.m_Size = 0;
+			metallica->SetValue(g_Options.metallica);
+
+			//Matrix Mode
+			static auto matrix = g_CVar->FindVar(XorStr("mat_luxels"));
+			matrix->m_fnChangeCallbacks.m_Size = 0;
+			matrix->SetValue(g_Options.matrix);
+
+			//Disable Blur
+			static auto disableblur = g_CVar->FindVar(XorStr("@panorama_disable_blur"));
+			disableblur->m_fnChangeCallbacks.m_Size = 0;
+			disableblur->SetValue(g_Options.removeblur);
+
+			//Aspect Ratio
+			if (g_Options.aspectchange == true) {
+				static auto r_aspectratio = g_CVar->FindVar(XorStr("r_aspectratio"));
+				r_aspectratio->m_fnChangeCallbacks.m_Size = 0;
+				r_aspectratio->SetValue(g_Options.aspectratio);
+			}
+			else if (g_Options.aspectchange == false) {
+				static auto r_aspectratio = g_CVar->FindVar(XorStr("r_aspectratio"));
+				r_aspectratio->m_fnChangeCallbacks.m_Size = 0;
+				r_aspectratio->SetValue(XorStr("0"));
+			}
+
+			//Fake Ping
+			if (g_Options.fakepingkey == 0) {
+				if (g_Options.fakeping == true && g_EngineClient->IsInGame()) {
+					static auto fakeping = g_CVar->FindVar(XorStr("net_fakelag"));
+					fakeping->m_fnChangeCallbacks.m_Size = 0;
+					fakeping->SetValue(g_Options.fakepingzzz);
+				}
+				if (g_Options.fakeping == false) {
+					static auto fakeping = g_CVar->FindVar(XorStr("net_fakelag"));
+					fakeping->m_fnChangeCallbacks.m_Size = 0;
+					fakeping->SetValue(0);
+				}
+			}
+			if (g_Options.fakepingkey != 0) {
+				if (GetAsyncKeyState(g_Options.fakepingkey)) {
+					if (g_Options.fakeping && g_EngineClient->IsInGame()) {
+						static auto fakeping = g_CVar->FindVar(XorStr("net_fakelag"));
+						fakeping->m_fnChangeCallbacks.m_Size = 0;
+						fakeping->SetValue(g_Options.fakepingzzz);
+					}
+				}
+				else {
+					static auto fakeping = g_CVar->FindVar(XorStr("net_fakelag"));
+					fakeping->m_fnChangeCallbacks.m_Size = 0;
+					fakeping->SetValue(0);
+				}
+			}
+
+			//Nade Prediction
+			static auto pnade = g_CVar->FindVar(XorStr("cl_grenadepreview"));
+			if (pnade->GetInt() != g_Options.pnade)
+				pnade->SetValue(g_Options.pnade);
+
+			bool sex = false;
+
+			//Ragdoll Gravity
+			if (g_EngineClient->IsInGame()) {
+				if (g_Options.ragfloat == true) {
+					static auto levito = g_CVar->FindVar(XorStr("cl_ragdoll_gravity"));
+					levito->SetValue(XorStr("-1"));
+					sex = true;
+				}
+				if (g_Options.ragfloat == false && sex == true) {
+					static auto levito = g_CVar->FindVar(XorStr("cl_ragdoll_gravity"));
+					levito->SetValue(XorStr("600"));
+				}
+			}
+			else
+			{
+				sex = false;
+			}
+
+			//Recoil Crosshair
+			static auto recoilcrosshaii = g_CVar->FindVar(XorStr("cl_crosshair_recoil"));
+			recoilcrosshaii->SetValue(g_Options.rcross);
+
+			static auto GETITOUT = g_CVar->FindVar(XorStr("mat_postprocess_enable"));
+			GETITOUT->SetValue(!g_Options.disablepro);
+
+			//Far Esp
+			static auto faresp = g_CVar->FindVar(XorStr("r_drawallrenderables"));
+			if (faresp->GetInt() != g_Options.faresp)
+				faresp->SetValue(g_Options.faresp);
+
+			//World Glow
+			static auto mat_ambient_light_r = g_CVar->FindVar(XorStr("mat_ambient_light_r"));
+			static auto mat_ambient_light_g = g_CVar->FindVar(XorStr("mat_ambient_light_g"));
+			static auto mat_ambient_light_b = g_CVar->FindVar(XorStr("mat_ambient_light_b"));
+
+			if (g_Options.color_worldglow.r() > 0 || g_Options.color_worldglow.g() > 0 || g_Options.color_worldglow.b() > 0)
+			{
+				if (mat_ambient_light_r->GetFloat() != g_Options.color_worldglow.r() / 255.f)
+					mat_ambient_light_r->SetValue(g_Options.color_worldglow.r() / 255.f);
+				if (mat_ambient_light_g->GetFloat() != g_Options.color_worldglow.g() / 255.f)
+					mat_ambient_light_g->SetValue(g_Options.color_worldglow.g() / 255.f);
+				if (mat_ambient_light_b->GetFloat() != g_Options.color_worldglow.b() / 255.f)
+					mat_ambient_light_b->SetValue(g_Options.color_worldglow.b() / 255.f);
+			}
+
+			if (g_Options.amibence > FLT_MIN) {
+				static auto r_modelAmbientMin = g_CVar->FindVar(XorStr("r_modelAmbientMin"));
+				if (g_Options.amibence && r_modelAmbientMin->GetFloat() != g_Options.amibence * 0.05f) //-V550
+					r_modelAmbientMin->SetValue(g_Options.amibence * 0.05f);
+				else if ((g_Options.amibence < 2.f) && r_modelAmbientMin->GetFloat())
+					r_modelAmbientMin->SetValue(XorStr("0"));
+			}
+
+			if (g_Options.viewmodel_fov)
+			{
+				auto viewFOV = (float)g_Options.viewmodel_fov + 68.0f;
+				static auto viewFOVcvar = g_CVar->FindVar(XorStr("viewmodel_fov"));
+
+				if (viewFOVcvar->GetFloat() != viewFOV) //-V550
+				{
+					*(float*)((DWORD)&viewFOVcvar->m_fnChangeCallbacks + 0xC) = 0.0f;
+					viewFOVcvar->SetValue(viewFOV);
+				}
+			}
+
+			if (g_Options.viewmodel_offset_x)
+			{
+				auto viewX = (float)g_Options.viewmodel_offset_x / 2.5f;
+				static auto viewXcvar = g_CVar->FindVar(XorStr("viewmodel_offset_x")); //-V807
+
+				if (viewXcvar->GetFloat() != viewX) //-V550
+				{
+					*(float*)((DWORD)&viewXcvar->m_fnChangeCallbacks + 0xC) = 0.0f;
+					viewXcvar->SetValue(viewX);
+				}
+			}
+
+			if (g_Options.viewmodel_offset_y)
+			{
+				auto viewY = (float)g_Options.viewmodel_offset_y / 2.0f;
+				static auto viewYcvar = g_CVar->FindVar(XorStr("viewmodel_offset_y"));
+
+				if (viewYcvar->GetFloat() != viewY) //-V550
+				{
+					*(float*)((DWORD)&viewYcvar->m_fnChangeCallbacks + 0xC) = 0.0f;
+					viewYcvar->SetValue(viewY);
+				}
+			}
+
+			if (g_Options.viewmodel_offset_z)
+			{
+				auto viewZ = (float)g_Options.viewmodel_offset_z / 2.0f;
+				static auto viewZcvar = g_CVar->FindVar(XorStr("viewmodel_offset_z"));
+
+				if (viewZcvar->GetFloat() != viewZ) //-V550
+				{
+					*(float*)((DWORD)&viewZcvar->m_fnChangeCallbacks + 0xC) = 0.0f;
+					viewZcvar->SetValue(viewZ);
+				}
+			}
+
+			//Sky Changer
+			if (g_Options.sky_changer) {
+				if (g_Options.skyshitsssss == 0) {
+					static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+					buttsex->SetValue(XorStr("sky_csgo_night02"));
+				}
+				if (g_Options.skyshitsssss == 1) {
+					static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+					buttsex->SetValue(XorStr("cs_baggage_skybox_"));
+				}
+				if (g_Options.skyshitsssss == 2) {
+					static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+					buttsex->SetValue(XorStr("cs_tibet"));
+				}
+				if (g_Options.skyshitsssss == 3) {
+					static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+					buttsex->SetValue(XorStr("vietnam"));
+				}
+				if (g_Options.skyshitsssss == 4) {
+					static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+					buttsex->SetValue(XorStr("sky_lunacy"));
+				}
+				if (g_Options.skyshitsssss == 5) {
+					static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+					buttsex->SetValue(XorStr("embassy"));
+				}
+				if (g_Options.skyshitsssss == 6) {
+					static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+					buttsex->SetValue(XorStr("italy"));
+				}
+				if (g_Options.skyshitsssss == 7) {
+					static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+					buttsex->SetValue(XorStr("jungle"));
+				}
+				if (g_Options.skyshitsssss == 8) {
+					static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+					buttsex->SetValue(XorStr("office"));
+				}
+				if (g_Options.skyshitsssss == 9) {
+					static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+					buttsex->SetValue(XorStr("sky_cs15_daylight02_hdr"));
+				}
+				if (g_Options.skyshitsssss == 10) {
+					static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+					buttsex->SetValue(XorStr("sky_csgo_cloudy01"));
+				}
+				if (g_Options.skyshitsssss == 11) {
+					static auto buttsex = g_CVar->FindVar(XorStr("sv_skyname"));
+					buttsex->SetValue(XorStr("sky_dust"));
+				}
+			}
+
+			//Fog
+			static auto fog_override = g_CVar->FindVar(XorStr("fog_override")); //-V807
+			if (!g_Options.fogoverride)
+			{
+				if (fog_override->GetBool())
+					fog_override->SetValue(FALSE);
+			}
+			if (!fog_override->GetBool())
+				fog_override->SetValue(TRUE);
+			static auto fog_start = g_CVar->FindVar(XorStr("fog_start"));
+			if (fog_start->GetInt())
+				fog_start->SetValue(0);
+			static auto fog_end = g_CVar->FindVar(XorStr("fog_end"));
+			if (fog_end->GetInt() != g_Options.fogfardamn)
+				fog_end->SetValue(g_Options.fogfardamn);
+			static auto fog_maxdensity = g_CVar->FindVar(XorStr("fog_maxdensity"));
+			if (fog_maxdensity->GetFloat() != (float)g_Options.fogdens * 0.01f) //-V550
+				fog_maxdensity->SetValue((float)g_Options.fogdens * 0.01f);
+			char buffer_color[12];
+			sprintf_s(buffer_color, 12, "%i %i %i", g_Options.fogcoluh.r(), g_Options.fogcoluh.g(), g_Options.fogcoluh.b());
+			static auto fog_color = g_CVar->FindVar(XorStr("fog_color"));
+			if (strcmp(fog_color->GetString(), buffer_color)) //-V526
+				fog_color->SetValue(buffer_color);
+
 			Fixed::Get().PerformNightmode();
 			
 			if (g_Options.colormodulate)

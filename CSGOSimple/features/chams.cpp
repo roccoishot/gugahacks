@@ -394,7 +394,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 			return;
 
 
-		if (is_player || is_sleeve || is_weapon)
+		if (is_player || is_weapon)
 			return;
 
 		static IMaterial* player_enemies_type = nullptr;
@@ -455,7 +455,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 		if (g_Options.chams_arms_enabled == false)
 			return;
 
-		if (is_player || is_arm || is_weapon)
+		if (is_player || is_weapon)
 			return;
 
 		static IMaterial* player_enemies_type = nullptr;
@@ -472,7 +472,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 				fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 
 			player_enemies_type->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
-			modulate(g_Options.color_chams_sleeve_visible, player_enemies_type);
+			modulate(g_Options.color_chams_arms_visible, player_enemies_type);
 			g_MdlRender->ForcedMaterialOverride(player_enemies_type);
 			fnDME(g_StudioRender, 0, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 
@@ -484,19 +484,19 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 			if (g_Options.arms_material == 3)
 			{
-				modulate(g_Options.ohthuhshine, shit);
+				modulate(g_Options.glowcolorarms, shit);
 				g_MdlRender->ForcedMaterialOverride(shit);
 			}
 
 			if (g_Options.arms_material == 4)
 			{
-				modulate(g_Options.ohthuhshine, dubble);
+				modulate(g_Options.glowcolorarms, dubble);
 				g_MdlRender->ForcedMaterialOverride(dubble);
 			}
 
 			if (g_Options.arms_material == 5)
 			{
-				modulate(g_Options.ohthuhshine, velvet);
+				modulate(g_Options.color_chams_arms_visible, velvet);
 				g_MdlRender->ForcedMaterialOverride(velvet);
 			}
 
@@ -548,7 +548,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 			if (g_Options.strap_material == 2)
 			{
-				modulate(g_Options.glowcolorstrap, othershine);
+				modulate(g_Options.ohthuhshine, othershine);
 				g_MdlRender->ForcedMaterialOverride(othershine);
 
 			}
@@ -568,7 +568,7 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 			}
 
 			if (g_Options.strap_material == 5) {
-				modulate(g_Options.glowcolorstrap, velvet);
+				modulate(g_Options.color_chams_strap_visible, velvet);
 				g_MdlRender->ForcedMaterialOverride(velvet);
 
 			}

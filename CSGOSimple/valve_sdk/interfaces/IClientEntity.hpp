@@ -10,7 +10,7 @@ struct SpatializationInfo_t;
 class IClientEntity : public IClientUnknown, public IClientRenderable, public IClientNetworkable, public IClientThinkable
 {
 public:
-	virtual void Release(void) = 0;
+    virtual void Release(void) = 0;
 };
 
 #pragma pack(push, 1)
@@ -109,8 +109,8 @@ public:
 
 class IWeaponSystem
 {
-	virtual void unused0() = 0;
-	virtual void unused1() = 0;
+    virtual void unused0() = 0;
+    virtual void unused1() = 0;
 public:
-	virtual CCSWeaponInfo* GetWpnData(unsigned ItemDefinitionIndex) = 0;
+    virtual CCSWeaponInfo* GetWpnData(unsigned ItemDefinitionIndex) = 0;
 };

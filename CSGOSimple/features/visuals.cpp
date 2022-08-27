@@ -271,6 +271,24 @@ void Visuals::Player::RenderName(C_BaseEntity* pl)
 		Render::Get().RenderText(info.szName, ctx.bbox.left + (ctx.bbox.right - ctx.bbox.left - sz.x) / 2, (ctx.bbox.top - sz.y - 1), 0.f, Color(g_Options.color_name_player), false, true, g_pDefaultFont);
 }
 
+void Visuals::Player::BruhTubb()
+{
+	if (g_Options.aimbot.backtrack && g_Options.showbt)
+	{
+		for (int t = 0; t < static_cast<int>(NUM_OF_TICKS); ++t)
+		{
+			if (Globals::bestbtid > -1) {
+				Vector sex;
+				Math::WorldToScreen(TimeWarp::Get().TimeWarpData[Globals::bestbtid][t].hitboxPos, sex);
+
+				Render::Get().RenderCircleFilled(sex.x, sex.y, 3.f, 48, g_Options.color_backtrackind);
+
+			}
+
+		}
+	}
+}
+
 //--------------------------------------------------------------------------------
 void Visuals::Player::RenderHealth(C_BaseEntity* pl)
 {
@@ -482,7 +500,7 @@ void Visuals::Player::sexdick(C_BasePlayer* ent)
 		QAngle newangle = Math::CalcAngle(Vector(g_LocalPlayer->abs_origin().x, g_LocalPlayer->abs_origin().y, 0), Vector(ent->abs_origin().x, ent->abs_origin().y, 0));
 		Math::AngleVectors(QAngle(0, 270, 0) - newangle + QAngle(0, eyeangles.yaw, 0), balls);
 		auto circlevec = Vector(screen_w / 2, screen_h / 2, 0) + (balls * 250.f);
-		Render::Get().RenderCircleFilled(circlevec.x, circlevec.y, 13, 25, ent->IsDormant() ? Color(100, 100, 100, 100) : Color(Color::rainbow().r(), Color::rainbow().g(), Color::rainbow().b(), 100));
+		Render::Get().RenderCircleFilled(circlevec.x, circlevec.y, 13, 25, ent->IsDormant() ? Color(100, 100, 100, 70) : Color(g_Options.color_indicator.r(), g_Options.color_indicator.g(), g_Options.color_indicator.b(), 100));
 	}
 }
 
@@ -593,6 +611,8 @@ void Visuals::ThirdPerson() {
 
 	static auto require_reset = false;
 
+	bool fat = false;
+
 	if (g_LocalPlayer->IsAlive())
 	{
 		require_reset = false;
@@ -604,11 +624,16 @@ void Visuals::ThirdPerson() {
 
 		if (g_LocalPlayer->m_iObserverMode() == OBS_MODE_IN_EYE)
 			require_reset = true;
+
+		fat = true;
 	}
 	else
 	{
-		g_LocalPlayer->m_iObserverMode() = OBS_MODE_IN_EYE;
-		require_reset = false;
+		if (fat == true) {
+			g_LocalPlayer->m_iObserverMode() = OBS_MODE_IN_EYE;
+			require_reset = false;
+			fat = false;
+		}
 	}
 }
 
@@ -723,6 +748,7 @@ void Visuals::AddToDrawList() {
 		if (i <= g_EngineClient->GetMaxClients()) {
 			if (player.Begin((C_BasePlayer*)entity)) {
 				if (g_Options.snaplines)			player.Drugs();
+				if (g_Options.showbt)			    player.BruhTubb();
 				if (g_Options.skeletonesp)			player.Skemlanton();
 				if (g_Options.esp_player_boxes)     player.RenderBox(entity);
 				if (g_Options.esp_player_weapons)   player.RenderWeaponName(entity);

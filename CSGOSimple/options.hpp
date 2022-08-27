@@ -133,7 +133,7 @@ public:
 		int dthotkey = 0;
 		int dtticks = 6;
 		bool rageresolver = false;
-		int backtix = 0;
+
 		bool backtrack = false;
 		int dmgovrd = 1;
 		int dmgovrdk = 0;
@@ -148,6 +148,8 @@ public:
 
 	bool flonpeek = false;
 	int flop = 0;
+
+	bool showbt = false;
 
 	bool randomizefake = false;
 	bool urrstuck = false;
@@ -269,16 +271,26 @@ public:
 	int ragebot_slowwalk_amt = 0;
 	int ragebot_slowwalk_key = 0;
 
-	bool rainbowplayers = false;
-	bool rainbowesp = false;
-	bool rainbowstrap = false;
-	bool rainbowarms = false;
-	bool rainbowglow = false;
-	bool rainbowprops = false;
-	bool rainbowworld = false;
-	bool rainbowfog = false;
-	bool rainbowaccent = false;
+	bool glow_enabled = true;
+	bool glow_enemies_only = true;
+	bool glow_players = true;
+	bool glow_chickens = false;
+	bool glow_c4_carrier = false;
+	bool glow_planted_c4 = false;
+	bool glow_nades = false;
+	bool glow_defuse_kits = false;
+	bool glow_weapons = false;
 
+	Color color_glow_ally = { 255, 255, 255, 255 };
+	Color color_glow_enemy = { 255, 255, 255, 255 };
+	Color color_glow_chickens = { 255, 255, 255, 255 };
+	Color color_glow_c4_carrier = { 255, 255, 255, 255 };
+	Color color_glow_planted_c4 = { 255, 255, 255, 255 };
+	Color color_glow_defuse = { 255, 255, 255, 255 };
+	Color color_glow_weapons = { 255, 255, 255, 255 };
+
+	Color color_glow_nades = { 255, 255, 255, 255 };
+	
 	bool fakelag = false;
 	float roll = 0.f;
 	float realroll = 0.f;
@@ -347,6 +359,8 @@ public:
 	// 
 	// COLORS
 	// 
+	Color color_indicator = { 255, 255, 255, 255 };
+	Color color_backtrackind = { 255, 255, 255, 255 };
 	Color color_worldglow = {0, 0, 0, 255};
 	Color color_cumming = { 255, 255, 255, 255 };
 	Color color_skemletom = { 255, 255, 255, 255 };

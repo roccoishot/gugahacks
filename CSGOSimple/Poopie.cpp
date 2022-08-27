@@ -22,13 +22,10 @@
 #include<stdio.h>
 #include<string>
 #include<cstring>
-#include<wininet.h> 
-#pragma comment(lib, "wininet.lib")
 
 #include <stdio.h>
 
 using namespace std;
-
 #include <iostream>
 #include <string>
 
@@ -211,7 +208,10 @@ void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
         }
         else
         {
+            if (g_Options.flonpeek)
             tochoke = johnseena ? g_Options.flop - 1 : g_Options.faketicks - 1;
+            else
+            tochoke = g_Options.faketicks - 1;
             Globals::flcur = true;
         }
     }
@@ -528,58 +528,6 @@ void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {
                 cmd->sidemove = cmd->tick_count % 2 ? 1.10 : -1.10;
             }
         }
-}
-
-void Misc::Aimatbt(CUserCmd* cmd, C_BasePlayer* player, QAngle angles)
-{
-    if (player && player->valid(true, true)) {
-        if (g_Options.aimbot.backtrack && g_Options.aimbot.backtix > 0)
-        {
-            Vector btposv = TimeWarp::Get().TimeWarpData[player->EntIndex()][g_Options.aimbot.backtix].hitboxPos;
-            Vector currentheadposv;
-            player->GetHitboxPos(HITBOX_HEAD, currentheadposv);
-
-            QAngle btpos;
-            QAngle currentheadpos;
-
-            if (!btposv.IsZero())
-                Math::VectorAngles(btposv, btpos);
-
-            if (!currentheadposv.IsZero())
-                Math::VectorAngles(currentheadposv, currentheadpos);
-
-            float sexyaw = currentheadpos.yaw - btpos.yaw;
-            float dickyaw = btpos.yaw - currentheadpos.yaw;
-            float sexpitch = currentheadpos.pitch - btpos.pitch;
-            float dickpitch = btpos.pitch - currentheadpos.pitch;
-
-            if (!angles.IsZero() && !btpos.IsZero() && !currentheadpos.IsZero()) {
-                if (currentheadpos.pitch > btpos.pitch)
-                {
-                    angles.pitch -= sexpitch;
-                }
-                if (currentheadpos.pitch < btpos.pitch)
-                {
-                    angles.pitch += dickpitch;
-                }
-
-                if (currentheadpos.yaw > btpos.yaw)
-                {
-                    angles.yaw -= sexyaw;
-                }
-
-                if (currentheadpos.yaw < btpos.yaw)
-                {
-                    angles.yaw += dickyaw;
-                }
-            }
-            else
-            {
-                angles.yaw += 0.f;
-                angles.pitch += 0.f;
-            }
-        }
-    }
 }
 
 void Misc::Triggerbot(CUserCmd* cmd) {
@@ -1040,7 +988,7 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd, bool& b
             }
             else if (CAntiAim::Get().CanDesync(cmd) && g_Options.ragebot_antiaim_desync && g_Options.chams_fake_enabled == false)
             {
-                g_LocalPlayer->SetVAngles(QAngle(Globals::real.pitch, Globals::real.yaw, Globals::real.roll));
+                g_LocalPlayer->SetVAngles(QAngle(Globals::real.pitch, Globals::fake.yaw, Globals::real.roll));
             }
             if (!CAntiAim::Get().CanDesync(cmd) || g_Options.ragebot_antiaim_desync == false)
             {
@@ -1120,8 +1068,22 @@ void Misc::local_animfix(C_BasePlayer* nigga, CUserCmd* cmd, bool bSendPacket) {
     if (fding && !Globals::valve)
         entity->GetPlayerAnimState()->m_fDuckAmount = 1.0;
 
-    entity->GetPlayerAnimState()->m_flGoalFeetYaw = Globals::real.yaw;
-    entity->GetPlayerAnimState()->m_flEyePitch = Globals::real.pitch;
+    if (g_Options.ragebot_antiaim_desync && CAntiAim::Get().CanDesync(cmd))
+    {
+        if (entity->GetPlayerAnimState()->m_flGoalFeetYaw != Globals::real.yaw)
+            entity->GetPlayerAnimState()->m_flGoalFeetYaw = Globals::real.yaw;
+
+        if (entity->GetPlayerAnimState()->m_flEyePitch != Globals::real.pitch)
+            entity->GetPlayerAnimState()->m_flEyePitch = Globals::real.pitch;
+    }
+    else
+    {
+        if (entity->GetPlayerAnimState()->m_flGoalFeetYaw != cmd->viewangles.yaw)
+            entity->GetPlayerAnimState()->m_flGoalFeetYaw = cmd->viewangles.yaw;
+
+        if (entity->GetPlayerAnimState()->m_flEyePitch != cmd->viewangles.pitch)
+            entity->GetPlayerAnimState()->m_flEyePitch = cmd->viewangles.pitch;
+    }
 
     entity->SetAbsAngles(proper_abs);
     std::memcpy(entity->GetAnimOverlays(), backup_layers, (sizeof(AnimationLayer) * entity->NumOverlays()));

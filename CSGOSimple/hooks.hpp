@@ -40,6 +40,7 @@ namespace Hooks
 	inline vfunc_hook vguisurf_hook;
 	inline vfunc_hook mdlrender_hook;
 	inline vfunc_hook viewrender_hook;
+	using SendDatagram_t = int(__thiscall*)(void*, void*);
 	inline vfunc_hook sound_hook;
 	inline vfunc_hook clientmode_hook;
 	inline vfunc_hook sv_cheats;
@@ -50,6 +51,7 @@ namespace Hooks
 	//inline  CDetourHook prediction_hook;
 	//inline  CDetourHook clientstate_hook;
 	inline vfunc_hook gameevents_hook;
+	//SendDatagram_t oSendDatagram = NULL;
 	inline recv_prop_hook* sequence_hook;
 	typedef bool(__thiscall* sendnetmsg_fn)(void*, INetMessage* msg, bool reliable, bool voice);
 	inline sendnetmsg_fn original_sendnetmsg = nullptr;
@@ -71,6 +73,7 @@ namespace Hooks
 	void __fastcall hkFrameStageNotify(void* _this, int, ClientFrameStage_t stage);
 	void __stdcall hkOverrideView(CViewSetup* vsView);
 	void __fastcall hkLockCursor(void* _this);
+	int __fastcall hkSendDatagram(void* net_channel, void*, void* datagram);
 	int  __fastcall hkDoPostScreenEffects(void* _this, int, int a1);
 	bool __fastcall hkSvCheatsGetBool(void* pConVar, void* edx);
 	void __fastcall hkDrawModelExecute2(void* _this, int, void* pResults, DrawModelInfo_t* pInfo, matrix3x4_t* pBoneToWorld, float* flpFlexWeights, float* flpFlexDelayedWeights, Vector& vrModelOrigin, int32_t iFlags);

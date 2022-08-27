@@ -72,10 +72,12 @@ void resolver::Resolve(CUserCmd* cmd)
 		tryagain = false;
 		tryagain2 = false;
 		resetted = false;
+		sexdickballs = false;
 	}
 
-	if (g_EngineClient->IsInGame() && g_LocalPlayer && g_LocalPlayer->IsAlive()) {
+	if (g_EngineClient->IsInGame()) {
 
+		if (g_LocalPlayer && g_LocalPlayer->IsAlive()){
 		bool ibeshootin = g_LocalPlayer->m_iShotsFired() >= 1;
 
 		if (ibeshootin)
@@ -114,7 +116,7 @@ void resolver::Resolve(CUserCmd* cmd)
 
 				//Some bools for desync checks
 				bool onground = player->m_fFlags() & FL_ONGROUND;
-				bool fastasf = player->m_vecVelocity().Length2D() >= 125;
+				bool fastasf = player->m_vecVelocity().Length2D() >= 120;
 				bool climbin = player->m_nMoveType() & MOVETYPE_LADDER;
 
 				if (player->m_vecVelocity().Length2D() <= 1.1f)
@@ -131,17 +133,17 @@ void resolver::Resolve(CUserCmd* cmd)
 					if (tryagain) {
 						//sets desync value Depending on shots fired
 						if (shotsfired == 0)
-							ohyeahbabythatsthespot = (Math::random_float(29.f, 46.f));
-						if (shotsfired == 1)
 							ohyeahbabythatsthespot = 58.f;
-						if (shotsfired == 2)
-							ohyeahbabythatsthespot = (Math::random_float(12.f, 29.f));
-						if (shotsfired == 3)
+						if (shotsfired == 1)
 							ohyeahbabythatsthespot = (Math::random_float(38.f, 50.f));
+						if (shotsfired == 2)
+							ohyeahbabythatsthespot = (Math::random_float(29.f, 46.f));
+						if (shotsfired == 3)
+							ohyeahbabythatsthespot = (Math::random_float(12.f, 29.f));
 						if (shotsfired == 4)
-							ohyeahbabythatsthespot = -player->m_flLowerBodyYawTarget();
-						if (shotsfired == 5)
 							ohyeahbabythatsthespot = player->m_flLowerBodyYawTarget();
+						if (shotsfired == 5)
+							ohyeahbabythatsthespot = -player->m_flLowerBodyYawTarget();
 					}
 					if (shotsfired >= 6)
 						tryagain = false;
@@ -152,10 +154,14 @@ void resolver::Resolve(CUserCmd* cmd)
 				if (player->m_angEyeAngles().yaw < 180)
 				{
 					ohyeahbabythatsthespot = -ohyeahbabythatsthespot;
+					sexdickballs = true;
 				}
 				else if (player->m_angEyeAngles().yaw > 180)
 				{
-					ohyeahbabythatsthespot = ohyeahbabythatsthespot;
+					if (sexdickballs == false)
+						ohyeahbabythatsthespot = ohyeahbabythatsthespot;
+					else
+						ohyeahbabythatsthespot = -ohyeahbabythatsthespot;
 				}
 
 				float africanamerican = 0.f;
@@ -208,12 +214,14 @@ void resolver::Resolve(CUserCmd* cmd)
 					candesync = false;
 					player->m_angEyeAngles().yaw += 0;
 				}
+			}
 
 				//Sees if killed player because now we gotta restart again
 				if (Globals::killedplayer && shotsfired >= 1)
 				{
 					resolver::Get().PrintInChat(ohyeahbabythatsthespot, candesync);
 					//Resetting shit
+					sexdickballs = false;
 					ohyeahbabythatsthespot = 0;
 					Globals::hitplayer = false;
 					tryagain = false;

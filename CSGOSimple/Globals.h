@@ -31,6 +31,7 @@ namespace Globals
 	extern float roll;
 	extern bool hitplayer2;
 	extern int playerid;
+	extern int bestbtid;
 	extern bool rendered;
 	extern bool stepping;
 	extern bool killedplayer;

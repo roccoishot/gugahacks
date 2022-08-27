@@ -195,7 +195,6 @@ void Options::SetupWeapons()
 			SetupValue(aimbot.hc, key, XorStr("Hitchance"));
 			SetupValue(aimbot.hitchance, key, XorStr("Hitchance %"));
 			SetupValue(aimbot.backtrack, key, XorStr("Backtrack"));
-			SetupValue(aimbot.backtix, key, XorStr("Backtrack Ticks"));
 			SetupValue(aimbot.multipoint, key, XorStr("Multipoint"));
 			SetupValue(aimbot.mpscale, key, XorStr("Multipoint Scale"));
 
@@ -220,7 +219,10 @@ void Options::SetupWeapons()
 
 void Options::SetupVisuals()
 {
+	SetupColor(color_backtrackind, XorStr("Backtrack Color"));
+	SetupValue(showbt, XorStr("Visuals"), XorStr("Show BT"));
 	SetupValue(playerind, XorStr("Visuals"), XorStr("Player Indicator"));
+	SetupColor(color_indicator, XorStr("Indicator Color"));
 	SetupValue(boxtype, XorStr("Visuals"), XorStr("Box Style"));
 	SetupValue(snapthicc, XorStr("Visuals"), XorStr("Snapline Thickness"));
 	SetupValue(snaplines, XorStr("Visuals"), XorStr("Snaplines"));

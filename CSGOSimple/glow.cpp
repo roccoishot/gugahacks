@@ -3,6 +3,7 @@
 #include "./valve_sdk/csgostructs.hpp"
 #include "./options.hpp"
 
+
 Glow::Glow()
 {
 }
@@ -59,31 +60,68 @@ void Glow::Run()
         auto color = Color{};
 
         switch (class_id) {
+        case ClassId_CBaseAnimating:
+            if (!g_Options.glow_defuse_kits)
+                continue;
+            color = Color(g_Options.color_glow_defuse);
+            break;
         case ClassId_CCSPlayer:
         {
             auto is_enemy = entity->m_iTeamNum() != g_LocalPlayer->m_iTeamNum();
 
-            if (entity->HasC4() && is_enemy){ //&& g_Options.glow_c4_carrier) {
-                color = Color(255, 0, 0);
+            if (entity->HasC4() && is_enemy && g_Options.glow_c4_carrier) {
+                color = Color(g_Options.color_glow_c4_carrier);
                 break;
             }
-            //!g_Options.glow_players || 
-            if (!entity->IsAlive())
+
+            if (!g_Options.glow_players || !entity->IsAlive())
                 continue;
 
-            if (!is_enemy) //&& g_Options.glow_enemies_only)
+            if (!is_enemy && g_Options.glow_enemies_only)
                 continue;
 
-            color = is_enemy ? Color(255, 0, 0) : Color(255, 0, 0);
+            color = is_enemy ? Color(g_Options.color_glow_enemy) : Color(g_Options.color_glow_ally);
 
             break;
         }
+        case ClassId_CChicken:
+            if (!g_Options.glow_chickens)
+                continue;
+            entity->m_bShouldGlow() = true;
+            color = Color(g_Options.color_glow_chickens);
+            break;
+        case ClassId_CPlantedC4:
+            if (!g_Options.glow_planted_c4)
+                continue;
+            color = entity->m_bBombDefused() ? Color::Green : Color(g_Options.color_glow_planted_c4);
+            break;
+        case ClassId_CHEGrenade:
+        case ClassId_CFlashbang:
+        case ClassId_CMolotovGrenade:
+        case ClassId_CMolotovProjectile:
+        case ClassId_CIncendiaryGrenade:
+        case ClassId_CDecoyGrenade:
+        case ClassId_CDecoyProjectile:
+        case ClassId_CSmokeGrenade:
+        case ClassId_CSmokeGrenadeProjectile:
+        case ClassId_ParticleSmokeGrenade:
+        case ClassId_CBaseCSGrenade:
+        case ClassId_CBaseCSGrenadeProjectile:
+        case ClassId_CBaseGrenade:
+        case ClassId_CBaseParticleEntity:
+        case ClassId_CSensorGrenade:
+        case ClassId_CSensorGrenadeProjectile:
+            if (!g_Options.glow_nades)
+                continue;
+
+            color = Color(g_Options.color_glow_nades);
+            break;
         default:
         {
             if (entity->IsWeapon()) {
-                //if (!g_Options.glow_weapons)
-                    //continue;
-                color = Color(255, 0, 0);
+                if (!g_Options.glow_weapons)
+                    continue;
+                color = Color(g_Options.color_glow_weapons);
             }
         }
         }
@@ -96,3 +134,540 @@ void Glow::Run()
         glowObject.m_bRenderWhenUnoccluded = false;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

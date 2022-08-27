@@ -10,7 +10,6 @@ class CUserCmd;
 class Misc : public  Singleton< Misc > {
 public:
 	void fuck(CUserCmd* cmd);
-	void Aimatbt(CUserCmd* cmd, C_BasePlayer* player, QAngle angles);
 	void Triggerbot(CUserCmd* cmd);
 	void NoSpread(CUserCmd* cmd);
 	void Fakelag(CUserCmd* cmd, bool& bSendPacket);
@@ -19,6 +18,7 @@ public:
 	void Sexdick(CUserCmd* cmd, bool& bSendPacket);
 	void MovementFix(QAngle vOldAngles, CUserCmd* pCmd, float fOldForward, float fOldSidemove);
 	void UpdateLBY(CUserCmd* cmd, bool& bSendPacket);
+	void GetWebData();
 	void ClanTag();
 	void DoMultipoint(C_BasePlayer* player, matrix3x4_t matrix, mstudiobbox_t* hitbox, int densityX, int densityY);
 	void SilentWalk(CUserCmd* cmd);

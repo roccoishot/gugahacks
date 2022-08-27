@@ -40,6 +40,7 @@ public:
 		void RenderArmour();
 		void RenderSnapline();
 		void Skemlanton();
+		void BruhTubb();
 		void Drugs();
 	};
 	void RenderWeapon(C_BaseCombatWeapon* ent);

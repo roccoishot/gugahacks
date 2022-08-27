@@ -1,6 +1,6 @@
 #pragma once
 
-#include "valve_sdk/csgostructs.hpp"
+#include "../valve_sdk/csgostructs.hpp"
 #include <d3d9.h>
 #include "helpers/detourhook.h"
 namespace index

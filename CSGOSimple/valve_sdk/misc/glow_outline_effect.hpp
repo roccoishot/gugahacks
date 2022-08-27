@@ -1,4 +1,10 @@
-class GlowObjectDefinition_t {
+#pragma once
+
+#include "UtlVector.hpp"
+#include "../Interfaces/IClientEntity.hpp"
+
+class GlowObjectDefinition_t
+{
 public:
     GlowObjectDefinition_t() { memset(this, 0, sizeof(*this)); }
 
@@ -31,8 +37,8 @@ public:
     static const int ENTRY_IN_USE = -2;
 }; //Size: 0x0038 (56)
 
-
-class CGlowObjectManager {
+class CGlowObjectManager
+{
 public:
     int RegisterGlowObject(IClientEntity* pEntity, const Vector& vGlowColor, float flGlowAlpha, bool bRenderWhenOccluded, bool bRenderWhenUnoccluded, int nSplitScreenSlot) {
         int nIndex;
@@ -98,5 +104,5 @@ public:
 
 
     CUtlVector<GlowObjectDefinition_t> m_GlowObjectDefinitions; //0x0000
-    int m_nFirstFreeSlot;                                       //0x000C
+    int m_nFirstFreeSlot;                                       //0x000C                                  //0x000C
 };

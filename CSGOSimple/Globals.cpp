@@ -17,6 +17,7 @@ namespace Globals
 	bool flcur = false;
 	bool abfr = false;
 	int playerid = 0;
+	int bestbtid = -1;
 	bool PlayerListOpened = false;
 	bool RadioOpened = false;
 	std::string cfgfldr;

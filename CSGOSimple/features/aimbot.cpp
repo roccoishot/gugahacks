@@ -420,13 +420,12 @@ void CLegitbot::Run(CUserCmd* cmd)
 	if (GetClosestPlayer(cmd, bestBone, fov, angles))
 	{
 		bool onground = target->m_fFlags() & FL_ONGROUND;
-		bool fastasf = target->m_vecVelocity().Length2D() >= 125;
+		bool fastasf = target->m_vecVelocity().Length2D() >= 120;
 		bool climbin = target->m_nMoveType() & MOVETYPE_LADDER;
 
 		if (target && target->valid(true, true)) {
 
 			Misc::Get().DoMultipoint(target, target->GetBoneMatrix(bestBone), target->GetHitbox(bestBone), g_Options.aimbot.mpscale, g_Options.aimbot.mpscale);
-			Misc::Get().Aimatbt(cmd, target, angles);
 
 			if (g_Options.aimbot.autostop) {
 				if (g_LocalPlayer && g_LocalPlayer->IsAlive() && !g_LocalPlayer->m_hActiveWeapon().Get()->IsZeus() && (!(cmd->buttons & IN_JUMP))) {
