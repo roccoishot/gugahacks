@@ -18,6 +18,5 @@ public:
 	int last_incoming_sequence = 0;
 	StoredData TimeWarpData[64][NUM_OF_TICKS];
 	void CreateMove(CUserCmd* cmd);
-	void ForwardTrack(CUserCmd* cmd);
 };
 

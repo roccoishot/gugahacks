@@ -386,8 +386,6 @@ namespace Hooks {
 		Misc::Get().Sexdick(cmd, bSendPacket);
 		Misc::Get().UpdateLBY(cmd, bSendPacket);
 		movement_recorder::Get().run(cmd);
-		Misc::Get().local_animfix(g_LocalPlayer, cmd, bSendPacket);
-		Misc::Get().desyncchams(cmd, bSendPacket);
 
 		if (bSendPacket == true)
 		{
@@ -505,6 +503,9 @@ namespace Hooks {
 
 		if (g_Options.rankreveal && cmd->buttons & IN_SCORE)
 			g_CHLClient->DispatchUserMessage(CS_UM_ServerRankRevealAll, 0, 0, nullptr);
+
+		Misc::Get().local_animfix(g_LocalPlayer, cmd, bSendPacket);
+		Misc::Get().desyncchams(cmd, bSendPacket);
 
 		// https://github.com/spirthack/CSGOSimple/issues/69
 		if (g_Options.sniper_xhair && !g_LocalPlayer->m_bIsScoped())

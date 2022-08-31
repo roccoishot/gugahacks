@@ -377,7 +377,14 @@ void Menu::SpecList()
 
 	bool misc_Spectators = true;
 
-	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 1.f, 1.f, 1.f));
+	float sexdickyaw = 1.f;
+
+	if (g_EngineClient->IsInGame() && specs)
+		sexdickyaw = 1.f;
+	else
+		sexdickyaw = alpha;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, sexdickyaw);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, 1.f);
 	if (ImGui::Begin(XorStr("Spectator List"), &g_Options.speclist, ImVec2(), 1.f, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
@@ -448,17 +455,17 @@ void Menu::Render()
 	Style->PopupRounding = 0;
 	Style->GrabRounding = 0;
 	Style->Colors[ImGuiCol_Text] = ImColor(255, 255, 255, 255);
-	Style->Colors[ImGuiCol_TitleBg] = ImColor(9, 9, 9);
+	Style->Colors[ImGuiCol_TitleBg] = ImColor(8, 8, 8);
 	Style->Colors[ImGuiCol_Border] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
 	Style->Colors[ImGuiCol_Separator] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_WindowBg] = ImColor(9, 9, 9);
-	Style->Colors[ImGuiCol_ChildBg] = ImColor(9, 9, 9, 0);
-	Style->Colors[ImGuiCol_FrameBg] = ImColor(18, 18, 18);
-	Style->Colors[ImGuiCol_Button] = ImColor(18, 18, 18);
+	Style->Colors[ImGuiCol_WindowBg] = ImColor(8, 8, 8);
+	Style->Colors[ImGuiCol_ChildBg] = ImColor(8, 8, 8, 0);
+	Style->Colors[ImGuiCol_FrameBg] = ImColor(17, 17, 17);
+	Style->Colors[ImGuiCol_Button] = ImColor(17, 17, 17);
 	Style->Colors[ImGuiCol_ButtonHovered] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ButtonActive] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ScrollbarGrab] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
-	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(19, 19, 19);
+	Style->Colors[ImGuiCol_ScrollbarBg] = ImColor(18, 18, 18);
 	Style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImColor(0, 0, 0);
 	Style->Colors[ImGuiCol_ScrollbarGrabActive] = ImColor(g_Options.menucolor.r(), g_Options.menucolor.g(), g_Options.menucolor.b(), 255);
 
