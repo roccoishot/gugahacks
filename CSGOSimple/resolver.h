@@ -17,6 +17,7 @@ public: // puberty
 	bool resetted = false;
 	bool sexdickballs = false;
 	bool tryagain = true;
+	bool go = false;
 	bool tryagain2 = true;
 	bool candesync = false;
 };

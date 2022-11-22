@@ -20,6 +20,30 @@ Vector extrapolate(C_BasePlayer* nigga, float value)
 	return nigga->m_vecOrigin() + (nigga->m_vecVelocity() * (g_GlobalVars->interval_per_tick * value));
 }
 
+float LagFix()
+{
+	float updaterate = g_CVar->FindVar("cl_updaterate")->GetFloat();
+	auto* minupdate = g_CVar->FindVar("sv_minupdaterate");
+	auto* maxupdate = g_CVar->FindVar("sv_maxupdaterate");
+
+	if (minupdate && maxupdate)
+		updaterate = maxupdate->GetFloat();
+
+	float ratio = g_CVar->FindVar("cl_interp_ratio")->GetFloat();
+
+	if (ratio == 0)
+		ratio = 1.0f;
+
+	float lerp = g_CVar->FindVar("cl_interp")->GetFloat();
+	auto* cmin = g_CVar->FindVar("sv_client_min_interp_ratio");
+	auto* cmax = g_CVar->FindVar("sv_client_max_interp_ratio");
+
+	if (cmin && cmax && cmin->GetFloat() != 1)
+		ratio = std::clamp(ratio, cmin->GetFloat(), cmax->GetFloat());
+
+	return max(lerp, ratio / updaterate);
+}
+
 void TimeWarp::CreateMove(CUserCmd* cmd)
 {
 	int bestTargetIndex = -1;
@@ -75,8 +99,8 @@ void TimeWarp::CreateMove(CUserCmd* cmd)
 			{
 				auto thenigga = (C_BasePlayer*)(g_EntityList->GetClientEntity(bestTargetIndex));
 
-				thenigga->m_vecOrigin() = extrapolate(thenigga, TIME_TO_TICKS(g_EngineClient->GetNetChannelInfo()->GetAvgLatency(FLOW_OUTGOING) + g_EngineClient->GetNetChannelInfo()->GetAvgLatency(FLOW_INCOMING)));
-				cmd->tick_count = TIME_TO_TICKS(bestTargetSimTime) + TIME_TO_TICKS(g_EngineClient->GetNetChannelInfo()->GetAvgLatency(FLOW_OUTGOING) + g_EngineClient->GetNetChannelInfo()->GetAvgLatency(FLOW_INCOMING));
+				//thenigga->m_vecOrigin() = extrapolate(thenigga, TIME_TO_TICKS(g_EngineClient->GetNetChannelInfo()->GetAvgLatency(FLOW_OUTGOING) + g_EngineClient->GetNetChannelInfo()->GetAvgLatency(FLOW_INCOMING)));
+				cmd->tick_count = TIME_TO_TICKS(bestTargetSimTime) + TIME_TO_TICKS(LagFix()); //+ TIME_TO_TICKS(g_EngineClient->GetNetChannelInfo()->GetAvgLatency(FLOW_OUTGOING) + g_EngineClient->GetNetChannelInfo()->GetAvgLatency(FLOW_INCOMING));
 			}
 		}
 	}

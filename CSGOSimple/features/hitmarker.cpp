@@ -59,6 +59,9 @@ void HitMarkerEvent::FireGameEvent(IGameEvent* event)
 			g_EngineClient->GetPlayerForUserID(event->GetInt("userid")) != g_EngineClient->GetLocalPlayer())
 		{
 			Globals::killedplayer = true;
+
+			//Luke said pop off like da ruger in da clipppppp
+			//g_EngineClient->ExecuteClientCmd("say ez");
 		}
 
 	}

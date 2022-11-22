@@ -705,6 +705,8 @@ void Menu::Render()
 				spacing();
 				ImGui::Checkbox(XorStr("Safe Head"), &g_Options.aimbot.safehead);
 				spacing();
+				ImGui::Checkbox(XorStr("Hide Shots"), &g_Options.aimbot.hs); keybindspacing(); ImGui::Hotkey(XorStr("##hskey"), &g_Options.aimbot.hshotkey);
+				spacing();
 				ImGui::Checkbox(XorStr("Doubletap"), &g_Options.aimbot.dt); keybindspacing(); ImGui::Hotkey(XorStr("##dtkey"), &g_Options.aimbot.dthotkey);
 				if (g_Options.aimbot.dt)
 				{
@@ -1611,7 +1613,7 @@ XorStr("Metallic"),
 				ImGui::SameLine();
 				ImGuiEx::ColorEdit4(XorStr("Velocity Color"), &g_Options.Velocitycol);
 				spacing();
-				if (ImGui::BeginCombo(XorStr("Velocity"), XorStr("Velocity")))
+				if (ImGui::BeginCombo(XorStr("##velocity_filter"), XorStr("Velocity")))
 				{
 					ImGui::Selectable(XorStr("Outline"), &g_Options.outline, ImGuiSelectableFlags_DontClosePopups);
 					ImGui::Selectable(XorStr("Last jump"), &g_Options.lastjump, ImGuiSelectableFlags_DontClosePopups);

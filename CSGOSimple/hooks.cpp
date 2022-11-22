@@ -345,7 +345,16 @@ namespace Hooks {
 			Misc::Get().ChatSpama(cmd);
 		}
 
-		Misc::Get().cl_move_dt(cmd);
+		auto backup_ticks_allowed = Globals::ticks_allowed;
+
+		if (Misc::Get().cl_move_dt(cmd))
+			Misc::Get().hide_shots(cmd, false);
+		else
+		{
+			Globals::ticks_allowed = backup_ticks_allowed;
+			Misc::Get().hide_shots(cmd, true);
+		}
+
 		Misc::Get().SilentWalk(cmd);
 		Misc::Get().Fakelag(cmd, bSendPacket);
 		TimeWarp().Get().CreateMove(cmd);
@@ -764,10 +773,6 @@ namespace Hooks {
 			static auto setthemcheat = g_CVar->FindVar(XorStr("sv_cheats"));
 			if (setthemcheat->GetInt() != 1)
 				setthemcheat->SetValue(1);
-
-			//Nade Prediction
-			static auto sexboot = g_CVar->FindVar(XorStr("sv_maxunlag"));
-				sexboot->SetValue("1");
 
 			static auto fullbright = g_CVar->FindVar(XorStr("mat_fullbright"));
 			fullbright->SetValue(g_Options.fullbright);

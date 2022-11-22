@@ -13,6 +13,7 @@ namespace Globals
 	bool clear = false;
 	bool serverspawn = false;
 	bool hitplayer = false;
+	bool candt = false;
 	bool hitplayer2 = false;
 	bool flcur = false;
 	bool abfr = false;

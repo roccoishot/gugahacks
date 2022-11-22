@@ -18,6 +18,7 @@ namespace Globals
 	extern bool flcur;
 	extern bool hitplayer;
 	extern bool EBD;
+	extern bool candt;
 	extern bool discham;
 	extern std::string cfgfldr;
 	extern bool serverspawn;
@@ -41,6 +42,7 @@ namespace Globals
 	extern QAngle fake;
 	extern Vector realabs;
 	extern Vector fakeabs;
+	extern bool fartdicksexnigga;
 	extern bool startcharge, is_shifting;
 	extern int tocharge, tochargeamount, ticks_allowed, shift_ticks;
 

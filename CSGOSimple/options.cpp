@@ -185,6 +185,8 @@ void Options::SetupWeapons()
 			SetupValue(aimbot.dthc, key, XorStr("DT HC"));
 			SetupValue(aimbot.dtticks, key, XorStr("DT Ticks"));
 			SetupValue(aimbot.dthotkey, key, XorStr("DT Hotkey"));
+			SetupValue(aimbot.hs, key, XorStr("Hide Shots"));
+			SetupValue(aimbot.hshotkey, key, XorStr("HS Hotkey"));
 			SetupValue(aimbot.rageresolver, XorStr("Rage"), XorStr("Resolver"));
 			SetupValue(aimbot.printresolver, XorStr("Rage"), XorStr("Print Resolver"));
 			SetupValue(aimbot.fastaimbot, key, XorStr("Fast Aimbot"));

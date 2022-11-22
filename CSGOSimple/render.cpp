@@ -156,17 +156,23 @@ void Render::BeginScene() {
 		Render::Get().RenderText(watermark, 10, 5, 16.f, g_Options.menucolor, false, true, SHitted);
 	}
 
-	const char* dt;
-		if (g_Options.aimbot.dt && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive())
-			dt = "DT Be On";
+	const char* exploit = " ";
 
-	if (GetKeyState(g_Options.aimbot.dthotkey) && g_Options.aimbot.dt && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive())
-		Render::Get().RenderText(XorStr(dt), 10, 40, 16.f, g_Options.menucolor, false, true, SHitted);
+	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive()) {
+		if (GetKeyState(g_Options.aimbot.dthotkey) && g_Options.aimbot.dt)
+			exploit = "DT Be On";
+		else if (GetKeyState(g_Options.aimbot.hshotkey) && g_Options.aimbot.hs)
+			exploit = "Where Yo Shots At";
+
+		Render::Get().RenderText(XorStr(exploit), 10, 40, 16.f, g_Options.menucolor, false, true, SHitted);
+	}
 	else
-		Render::Get().RenderText(XorStr(" "), 10, 40, 16.f, g_Options.menucolor, false, true, SHitted);
+	{
+		Render::Get().RenderText(exploit, 10, 40, 16.f, g_Options.menucolor, false, true, SHitted);
+	}
 
 	if (g_EngineClient->IsInGame() && g_LocalPlayer && g_LocalPlayer->IsAlive() && g_Options.drawfov && c > 0)
-		Render::Get().RenderCircle(960.f, 540.f, c, 48, g_Options.menucolor, 1.3f);
+		Render::Get().RenderCircle(screenWidth / 2, screenHeight / 2, c, 48, g_Options.menucolor, 1.3f);
 
 	if (g_EngineClient->IsInGame() && g_LocalPlayer)
 		Visuals::Get().AddToDrawList();

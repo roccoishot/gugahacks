@@ -88,7 +88,7 @@ void resolver::Resolve(CUserCmd* cmd)
 			tryagain2 = true;
 		}
 
-		if (tryagain == false)
+		if (tryagain == false && go == true)
 		{
 			//Resets when it stops
 			shotsfired = 0;
@@ -128,26 +128,56 @@ void resolver::Resolve(CUserCmd* cmd)
 					side = player->m_flPoseParameter()[7] > 0.5 ? 1 : -1;
 				}
 
-				if (!Globals::killedplayer)
+				float africanamerican = 0.f;
+
+				if (!Globals::hitplayer)
 				{
 					if (tryagain) {
 						//sets desync value Depending on shots fired
-						if (shotsfired == 0)
-							ohyeahbabythatsthespot = 58.f;
-						if (shotsfired == 1)
-							ohyeahbabythatsthespot = (Math::random_float(38.f, 50.f));
-						if (shotsfired == 2)
-							ohyeahbabythatsthespot = (Math::random_float(29.f, 46.f));
-						if (shotsfired == 3)
-							ohyeahbabythatsthespot = (Math::random_float(12.f, 29.f));
-						if (shotsfired == 4)
-							ohyeahbabythatsthespot = player->m_flLowerBodyYawTarget();
-						if (shotsfired == 5)
-							ohyeahbabythatsthespot = -player->m_flLowerBodyYawTarget();
+						if ((player->m_angEyeAngles().yaw > -58 || player->m_angEyeAngles().yaw < 58) || (player->m_angEyeAngles().yaw > -238 || player->m_angEyeAngles().yaw < 238))
+						{
+							if (shotsfired == 0)
+								ohyeahbabythatsthespot = (Math::random_float(12.f, 29.f));
+							if (shotsfired == 1)
+								ohyeahbabythatsthespot = 58.f;
+							if (shotsfired == 2)
+								ohyeahbabythatsthespot = (Math::random_float(29.f, 46.f));
+							if (shotsfired == 3)
+								ohyeahbabythatsthespot = (Math::random_float(38.f, 50.f));
+							if (shotsfired == 4)
+								ohyeahbabythatsthespot = player->m_flLowerBodyYawTarget();
+							if (shotsfired == 5)
+								ohyeahbabythatsthespot = -player->m_flLowerBodyYawTarget();
+						}
+						else
+						{
+							if (shotsfired == 0)
+								ohyeahbabythatsthespot = 58.f;
+							if (shotsfired == 1)
+								ohyeahbabythatsthespot = (Math::random_float(38.f, 50.f));
+							if (shotsfired == 2)
+								ohyeahbabythatsthespot = (Math::random_float(29.f, 46.f));
+							if (shotsfired == 3)
+								ohyeahbabythatsthespot = (Math::random_float(12.f, 29.f));
+							if (shotsfired == 4)
+								ohyeahbabythatsthespot = -player->m_flLowerBodyYawTarget();
+							if (shotsfired == 5)
+								ohyeahbabythatsthespot = player->m_flLowerBodyYawTarget();
+						}
 					}
 					if (shotsfired >= 6)
 						tryagain = false;
 
+				}
+				if (Globals::hitplayer)
+				{
+					if (player->EntIndex() != Globals::playerid)
+						go = true;
+					else
+					{
+						africanamerican = ohyeahbabythatsthespot;
+						go = false;
+					}
 				}
 
 				//Flip if backwards better resolve
@@ -162,13 +192,6 @@ void resolver::Resolve(CUserCmd* cmd)
 						ohyeahbabythatsthespot = ohyeahbabythatsthespot;
 					else
 						ohyeahbabythatsthespot = -ohyeahbabythatsthespot;
-				}
-
-				float africanamerican = 0.f;
-
-				if (Globals::hitplayer)
-				{
-					africanamerican = ohyeahbabythatsthespot;
 				}
 
 				//Roll angles

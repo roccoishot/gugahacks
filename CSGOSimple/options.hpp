@@ -132,6 +132,8 @@ public:
 		bool dt = false;
 		int dthotkey = 0;
 		int dtticks = 6;
+		bool hs = false;
+		int hshotkey = 0;
 		bool rageresolver = false;
 
 		bool backtrack = false;

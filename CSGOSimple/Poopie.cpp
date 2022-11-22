@@ -29,50 +29,6 @@ using namespace std;
 #include <iostream>
 #include <string>
 
-/*std::vector<char> LoadFromUrl(const char* url)
-{
-    struct Content
-    {
-        std::vector<char> data;
-        static size_t Write(char* data, size_t size, size_t nmemb, void* p)
-        {
-            return static_cast<Content*>(p)->WriteImpl(data, size, nmemb);
-        }
-
-        size_t WriteImpl(char* ptr, size_t size, size_t nmemb)
-        {
-            data.insert(end(data), ptr, ptr + size * nmemb);
-            return size * nmemb;
-        }
-    };
-
-    Content content;
-
-    CURL* curl = curl_easy_init();
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &content);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &Content::Write);
-    curl_easy_setopt(curl, CURLOPT_URL, url);
-    curl_easy_perform(curl);
-
-    content.data.push_back('\0');
-
-    return content.data;
-}
-
-std::string Misc::readwebdata()
-{
-    auto content = LoadFromUrl("https://pastebin.com/raw/T6AmHc0t");
-    char sex = content.front();
-
-    return std::to_string(sex);
-}
-*/
-
-void Misc::gugakillswitch(CUserCmd* cmd)
-{
-
-}
-
 void Misc::Sexdick(CUserCmd* cmd, bool& bSendPacket) {
     if (!g_EngineClient->IsInGame())
         return;
@@ -159,11 +115,17 @@ void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
     bool johnseena;
 
     bool bedting = false;
+    bool fart = false;
 
     if (GetKeyState(g_Options.aimbot.dthotkey) && g_Options.aimbot.dt && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive())
         bedting = true;
     else
         bedting = false;
+
+    if (GetKeyState(g_Options.aimbot.hshotkey) && g_Options.aimbot.hs && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive())
+        fart = true;
+    else
+        fart = false;
 
     auto i = 1; i <= g_EngineClient->GetMaxClients(); i++;
 
@@ -201,7 +163,7 @@ void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
         tochoke = 14;
     else
     {
-        if (g_EngineClient->IsVoiceRecording() || Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || movetype == MOVETYPE_LADDER || movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || bedting)
+        if (g_EngineClient->IsVoiceRecording() || Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || movetype == MOVETYPE_LADDER || movetype == MOVETYPE_FLY || movetype == MOVETYPE_NOCLIP || bedting || fart)
         {
             tochoke = 1;
             Globals::flcur = false;
@@ -219,7 +181,7 @@ void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
     if ((g_Options.faketicks - 1) > 5 && Globals::valve)
     {
 
-        if (g_EngineClient->IsVoiceRecording() || Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || bedting)
+        if (g_EngineClient->IsVoiceRecording() || Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || bedting || fart)
         {
             tochoke = 1;
             Globals::flcur = false;
@@ -236,7 +198,7 @@ void Misc::Fakelag(CUserCmd* cmd, bool& bSendPacket) {
     }
     else
     {
-        if (g_EngineClient->IsVoiceRecording() || Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || bedting)
+        if (g_EngineClient->IsVoiceRecording() || Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || bedting || fart)
         {
             tochoke = 1;
             Globals::flcur = false;
@@ -530,64 +492,6 @@ void Misc::UpdateLBY(CUserCmd* cmd, bool& bSendPacket) {
         }
 }
 
-void Misc::Triggerbot(CUserCmd* cmd) {
-    if (!g_LocalPlayer->IsAlive())
-        return;
-
-    auto pWeapon = g_LocalPlayer->m_hActiveWeapon();
-
-    if (!pWeapon)
-        return;
-
-    static bool enable = false;
-
-    if (&CLegitbot::IsEnabled)
-        enable = true;
-
-    Vector src, dst, forward;
-    trace_t tr;
-    Ray_t ray;
-    CTraceFilter filter;
-
-    QAngle viewangle = cmd->viewangles;
-
-    viewangle += g_LocalPlayer->m_aimPunchAngle() * 2.f;
-
-    Math::AngleVectors(viewangle, forward);
-
-    forward *= g_LocalPlayer->m_hActiveWeapon()->GetCSWeaponData()->flRangeModifier;
-    filter.pSkip = g_LocalPlayer;
-    src = g_LocalPlayer->GetEyePos();
-    dst = src + forward;
-    ray.Init(src, dst);
-
-    g_EngineTrace->TraceRay(ray, 0x46004003, &filter, &tr);
-    if (!tr.hit_entity)
-        return;
-
-    int hitgroup = tr.hitgroup;
-    bool didHit = false;
-    if (tr.hitgroup == 1 || tr.hitgroup == 2 || tr.hitgroup == 3 || tr.hitgroup == 4 || tr.hitgroup == 5 || tr.hitgroup == 6 || tr.hitgroup == 7 || tr.hitgroup == 8 || tr.hitgroup == 9 || tr.hitgroup == 10 || tr.hitgroup == 11 || tr.hitgroup == 12 || tr.hitgroup == 13 || tr.hitgroup == 14 || tr.hitgroup == 15 || tr.hitgroup == 16 || tr.hitgroup == 17 || tr.hitgroup == 18)
-    {
-        didHit = true;
-    }
-
-    auto can_hit = [&]() {
-        auto chance_to_hit = (100.0f - 40) * 0.65f * 0.01125f;
-        return !(pWeapon->GetInaccuracy() >= chance_to_hit);
-    };
-    if (can_hit())
-    {
-        if (didHit && (tr.hit_entity->GetBaseEntity()->m_iTeamNum() != g_LocalPlayer->m_iTeamNum()))
-        {
-            if (!g_Options.aimbot.autorevolver2)
-                cmd->buttons |= IN_ATTACK;
-            if (g_Options.aimbot.autorevolver2)
-                cmd->buttons |= IN_ATTACK2;
-        }
-    }
-}
-
 void Misc::SilentWalk(CUserCmd* cmd)
 {
 
@@ -763,7 +667,7 @@ bool Misc::cl_move_dt(CUserCmd* m_pcmd)
     if (!g_LocalPlayer->IsAlive())
         return false;
 
-    if (g_EngineClient->IsVoiceRecording() || Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || fding)
+    if (Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || fding)
         return false;
 
     auto weapon = g_LocalPlayer->m_hActiveWeapon().Get();
@@ -844,6 +748,101 @@ bool Misc::cl_move_dt(CUserCmd* m_pcmd)
 
     }
     return true;
+}
+
+bool Misc::hide_shots(CUserCmd* m_pcmd, bool should_work)
+{
+    if (!g_Options.aimbot.enabled)
+        return false;
+
+    if (!g_EngineClient->GetNetChannel())
+        return false;
+
+    if (!g_EngineClient->IsInGame())
+        return false;
+
+    if (!g_LocalPlayer)
+        return false;
+
+    if (!g_LocalPlayer->IsAlive())
+        return false;
+
+    if (Globals::freezetime || g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN || fding)
+        return false;
+
+    auto weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+
+    bool hide_shots_enabled = true;
+    int hide_shots_key = -1;
+    bool double_tap_key = GetKeyState(g_Options.aimbot.dthotkey);
+
+    if (!g_Options.aimbot.hs)
+    {
+        hide_shots_enabled = false;
+        hide_shots_key = false;
+
+        if (should_work)
+        {
+            Globals::ticks_allowed = 0;
+            Globals::shift_ticks = 0;
+        }
+
+        return false;
+    }
+
+    if (g_Options.aimbot.hshotkey <= KEY_NONE || g_Options.aimbot.hshotkey >= KEY_MAX)
+    {
+        hide_shots_enabled = false;
+        hide_shots_key = false;
+
+        if (should_work)
+        {
+            Globals::ticks_allowed = 0;
+            Globals::shift_ticks = 0;
+        }
+        return false;
+    }
+
+    if (!should_work && double_tap_key)
+    {
+        hide_shots_enabled = false;
+        hide_shots_key = false;
+        return false;
+    }
+
+    if (!hide_shots_key)
+    {
+        hide_shots_enabled = false;
+        Globals::ticks_allowed = 0;
+        Globals::shift_ticks = 0;
+        return false;
+    }
+
+    if (g_LocalPlayer->m_bGunGameImmunity() || g_LocalPlayer->m_fFlags() & FL_FROZEN)
+    {
+        hide_shots_enabled = false;
+        Globals::ticks_allowed = 0;
+        Globals::shift_ticks = 0;
+        return false;
+    }
+
+    if (fding)
+    {
+        hide_shots_enabled = false;
+        Globals::ticks_allowed = 0;
+        Globals::shift_ticks = 0;
+        return false;
+    }
+
+    float tickbase = -1;
+
+    tickbase = Globals::valve ? 6 : 9;
+
+    auto revolver_shoot = weapon->m_iItemDefinitionIndex() == WEAPON_REVOLVER && (m_pcmd->buttons & IN_ATTACK || m_pcmd->buttons & IN_ATTACK2);
+    auto weapon_shoot = m_pcmd->buttons & IN_ATTACK && weapon->m_iItemDefinitionIndex() != WEAPON_REVOLVER || m_pcmd->buttons & IN_ATTACK2 && weapon->IsKnife() || revolver_shoot;
+
+    if (!weapon->IsGrenade() && weapon_shoot)
+        Globals::shift_ticks = tickbase;
 }
 
 void Misc::fuck(CUserCmd* cmd)
@@ -972,7 +971,6 @@ CInput* m_input2() {
     return g_Input;
 }
 
-
 void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd, bool& bSendPacket)
 {
     if (stage != ClientFrameStage_t::FRAME_RENDER_START)
@@ -984,7 +982,7 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd, bool& b
 
             if (CAntiAim::Get().CanDesync(cmd) && g_Options.ragebot_antiaim_desync && g_Options.chams_fake_enabled)
             {
-                g_LocalPlayer->SetVAngles(QAngle(Globals::real.pitch, Globals::real.yaw, -CAntiAim::Get().sexyboodyballs));
+                g_LocalPlayer->SetVAngles(QAngle(Globals::real.pitch, Globals::real.yaw, Globals::real.roll));
             }
             else if (CAntiAim::Get().CanDesync(cmd) && g_Options.ragebot_antiaim_desync && g_Options.chams_fake_enabled == false)
             {
@@ -995,31 +993,6 @@ void Misc::SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd, bool& b
                 g_LocalPlayer->SetVAngles(cmd->viewangles);
             }
         }
-    }
-}
-
-void Misc::NoSpread(CUserCmd* cmd)
-{
-    if (!g_LocalPlayer || !g_LocalPlayer->m_hActiveWeapon().Get())
-        return;
-
-    //this is spread all together, spread is a box, this code needs spread x and y if we do the math, a square has 4 sides so divide it by 4 to get value for both x and y
-    auto nigganuts = g_LocalPlayer->m_hActiveWeapon().Get()->GetSpread() / 4;
-
-    Vector vva;
-    Math::AngleVectors(cmd->viewangles, vva);
-
-    if (nigganuts && nigganuts > 0 && !vva.IsZero()) {
-
-        vva.y -= RAD2DEG(atan(sqrt(nigganuts * nigganuts + nigganuts * nigganuts)));
-        vva.z = RAD2DEG(atan2(nigganuts, nigganuts));
-
-        QAngle fva;
-
-        Math::VectorAngles(vva, fva);
-
-        cmd->viewangles = fva;
-
     }
 }
 
@@ -1162,7 +1135,6 @@ void Misc::desyncchams(CUserCmd* cmd, bool bSendPacket) {
     }
 
 }
-
 
 void Misc::ChatSpama(CUserCmd* cmd) {
     {

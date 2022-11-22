@@ -10,8 +10,6 @@ class CUserCmd;
 class Misc : public  Singleton< Misc > {
 public:
 	void fuck(CUserCmd* cmd);
-	void Triggerbot(CUserCmd* cmd);
-	void NoSpread(CUserCmd* cmd);
 	void Fakelag(CUserCmd* cmd, bool& bSendPacket);
 	void FakeDuck(CUserCmd* cmd, bool& bSendPackets);
 	std::string request_to_server(const char* data, ...);
@@ -24,11 +22,11 @@ public:
 	void SilentWalk(CUserCmd* cmd);
 	void SlowWalk(CUserCmd* cmd);
 	bool cl_move_dt(CUserCmd* m_pcmd);
+	bool hide_shots(CUserCmd* m_pcmd, bool should_work);
 	void ChatSpama(CUserCmd* cmd);
 	void SetThirdpersonAngles(ClientFrameStage_t stage, CUserCmd* cmd, bool& bSendPacket);
 	void desyncchams(CUserCmd* cmd, bool bSendPacket);
 	void local_animfix(C_BasePlayer* nigga, CUserCmd* cmd, bool bSendPacket);
-	void gugakillswitch(CUserCmd* cmd);
 	// you are going to heaven :D ily ♥
 	bool m_should_update_fake = false;
 	std::array< AnimationLayer, 15 > m_fake_layers; // 13
